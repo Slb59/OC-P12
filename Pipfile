@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 pytest = "*"
 pytest-cov = "*"
+psycopg2 = "*"
+sqlalchemy = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
