@@ -44,3 +44,5 @@ Journalisation : Sentry
 
 ## Documentation
 
+## Execution des tests
+
