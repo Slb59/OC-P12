@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy import (
     ForeignKey,
     Column, Integer, String, TIMESTAMP
@@ -28,11 +28,22 @@ class Department(Base):
     __tablename__ = 'departments'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String)
+    name = Column(String, nullable=False)
     employees = relationship('Employee', back_populates='department')
 
     def __repr__(self):
-        return f'Department {self.name}'
+        return f'Department {self.id}:{self.name}'
+
+    @classmethod
+    def getall(cls, session):
+        return session.query(cls).all()
+
+    @classmethod
+    def find_by_name(cls, session, name):
+        return session.query(cls).filter_by(name=name).one()
+
+    def getemployees(self, session):
+        return Employee.find_by_department(session, self.id)
 
 
 class Employee(Base):
@@ -44,7 +55,7 @@ class Employee(Base):
     )
 
     id = Column(Integer, primary_key=True)
-    username = Column(String)
+    username = Column(String, nullable=False)
     email = Column(String)
     password = Column(String)
     role = Column(String)
@@ -57,19 +68,29 @@ class Employee(Base):
         )
     department = relationship('Department', back_populates='employees')
 
-    clients = relationship('Client', back_populates='commercial')
     tasks = relationship('Task', back_populates='employee')
 
     def __repr__(self):
-        return f'User {self.name}'
+        return f'User {self.username}'
 
     @classmethod
     def find_by_username(cls, session, username):
-        return session.query(cls).filter_by(username=username).all()
+        return session.query(cls).filter_by(username=username).one()
 
     @classmethod
-    def find_by_departmentname(cls, session, departmentname):
-        return None
+    def find_by_department(cls, session, department_id):
+        return session.query(cls).filter_by(department_id=department_id).all()
+
+
+class Commercial(Employee):
+
+    clients = relationship('Client', back_populates='commercial')
+
+    def get_contracts(self):
+        contracts = []
+        for c in self.clients:
+            contracts.extend(c.contracts)
+        return contracts
 
 
 class Task(Base):
@@ -101,17 +122,21 @@ class Client(Base, DateFields):
     __tablename__ = 'clients'
 
     id = Column(Integer, primary_key=True)
-    full_name = Column(String)
+    full_name = Column(String, nullable=False)
     email = Column(String)
     phone = Column(String)
     company_name = Column(String)
     commercial_id = Column(Integer, ForeignKey('employees.id'))
-    commercial = relationship('Employee', back_populates='clients')
+    commercial = relationship('Commercial', back_populates='clients')
 
     contracts = relationship('Contract', back_populates='client')
 
     def __repr__(self):
         return f'Client {self.full_name}'
+
+    @classmethod
+    def find_by_name(cls, session, name):
+        return session.query(cls).filter_by(full_name=name).one()
 
 
 class Contract(Base, DateFields):
@@ -124,8 +149,8 @@ class Contract(Base, DateFields):
     )
 
     id = Column(Integer, primary_key=True)
-    description = Column(String)
-    total_amount = Column(Integer)
+    description = Column(String, nullable=False)
+    total_amount = Column(Integer, nullable=False)
     state = Column(
         ChoiceType(CONTRACT_STATES, impl=String(length=1)), default='C'
         )
@@ -133,5 +158,21 @@ class Contract(Base, DateFields):
     client_id = Column(Integer, ForeignKey('clients.id'))
     client = relationship('Client', back_populates='contracts')
 
+    paiements = relationship('Paiement', back_populates='contract')
+
     def __repr__(self):
-        return f'Contract {self.description}'
+        return f'{self.description}'
+
+    def outstanding(self):
+        total_paiements = 0
+        return self.total_amount - total_paiements
+
+
+class Paiement(Base):
+    __tablename__ = 'paiements'
+    id = Column(Integer, primary_key=True)
+    date_amount = Column(TIMESTAMP, nullable=False, default=datetime.now())
+    amount = Column(Integer)
+
+    contract_id = Column(Integer, ForeignKey('contracts.id'))
+    contract = relationship('Contract', back_populates='paiements')
