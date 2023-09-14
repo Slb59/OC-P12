@@ -26,8 +26,6 @@ class TestClients:
         self.add_commercials(db_session)
         self.add_clients_to_yuka(db_session)
         e = Commercial.find_by_username(db_session, 'Yuka')
-        print('---------------> ' + str(e))
-        print('---------------> ' + str(e.clients))
         assert str(e.clients[0]) == 'Client Client 1'
         assert str(e.clients[1]) == 'Client Client 2'
         assert str(e.clients[2]) == 'Client Client 3'

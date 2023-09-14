@@ -28,11 +28,11 @@ class Department(Base):
     __tablename__ = 'departments'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, unique=True)
     employees = relationship('Employee', back_populates='department')
 
     def __repr__(self):
-        return f'Department {self.id}:{self.name}'
+        return f'{self.name}'
 
     @classmethod
     def getall(cls, session):
@@ -41,9 +41,6 @@ class Department(Base):
     @classmethod
     def find_by_name(cls, session, name):
         return session.query(cls).filter_by(name=name).one()
-
-    def getemployees(self, session):
-        return Employee.find_by_department(session, self.id)
 
 
 class Employee(Base):
@@ -55,7 +52,7 @@ class Employee(Base):
     )
 
     id = Column(Integer, primary_key=True)
-    username = Column(String, nullable=False)
+    username = Column(String, nullable=False, unique=True)
     email = Column(String)
     password = Column(String)
     role = Column(String)
@@ -71,7 +68,19 @@ class Employee(Base):
     tasks = relationship('Task', back_populates='employee')
 
     def __repr__(self):
-        return f'User {self.username}'
+        if self.state == 'A':
+            s = f'username: {self.username}\n'
+            s += f'email: {self.email}\n'
+            s += f'department: {self.department}'
+        else:
+            s = f'Employee n°{self.id} is inactivate'
+        return s
+
+    def __str__(self):
+        if self.state == 'A':
+            return f'{self.username}'
+        else:
+            return f'Employee n°{self.id} is inactivate'
 
     @classmethod
     def find_by_username(cls, session, username):
@@ -91,6 +100,15 @@ class Commercial(Employee):
         for c in self.clients:
             contracts.extend(c.contracts)
         return contracts
+
+
+class Support(Employee):
+
+    events = relationship('Event', back_populates='support')
+
+
+class Manager(Employee):
+    ...
 
 
 class Task(Base):
@@ -122,7 +140,7 @@ class Client(Base, DateFields):
     __tablename__ = 'clients'
 
     id = Column(Integer, primary_key=True)
-    full_name = Column(String, nullable=False)
+    full_name = Column(String, nullable=False, unique=True)
     email = Column(String)
     phone = Column(String)
     company_name = Column(String)
@@ -144,12 +162,14 @@ class Contract(Base, DateFields):
 
     CONTRACT_STATES = (
         ('C', 'Created'),
-        ('S', 'signed'),
-        ('B', 'balanced')
+        ('S', 'Signed'),
+        ('B', 'Balanced'),
+        ('X', 'Canceled')
     )
 
     id = Column(Integer, primary_key=True)
-    description = Column(String, nullable=False)
+    ref = Column(String, nullable=False, unique=True)
+    description = Column(String)
     total_amount = Column(Integer, nullable=False)
     state = Column(
         ChoiceType(CONTRACT_STATES, impl=String(length=1)), default='C'
@@ -159,20 +179,85 @@ class Contract(Base, DateFields):
     client = relationship('Client', back_populates='contracts')
 
     paiements = relationship('Paiement', back_populates='contract')
+    events = relationship('Event', back_populates='contract')
 
     def __repr__(self):
         return f'{self.description}'
 
+    @classmethod
+    def find_by_ref(cls, session, ref):
+        return session.query(cls).filter_by(ref=ref).one()
+
     def outstanding(self):
         total_paiements = 0
+        for p in self.paiements:
+            print('-----------> ' + str(p.amount))
+            total_paiements += p.amount
         return self.total_amount - total_paiements
 
 
 class Paiement(Base):
     __tablename__ = 'paiements'
     id = Column(Integer, primary_key=True)
+    ref = Column(String, nullable=False, unique=True)
     date_amount = Column(TIMESTAMP, nullable=False, default=datetime.now())
     amount = Column(Integer)
 
     contract_id = Column(Integer, ForeignKey('contracts.id'))
     contract = relationship('Contract', back_populates='paiements')
+
+    def __repr__(self):
+        return f'{self.date_amount}: {self.ref}/{self.amount}'
+
+
+class EventType(Base):
+    __tablename__ = 'eventstype'
+    id = Column(Integer, primary_key=True)
+    title = Column(String, nullable=False, unique=True)
+
+    events = relationship('Event', back_populates='type')
+
+    def __repr__(self):
+        return f'{self.title}'
+
+    @classmethod
+    def find_by_title(cls, session, title):
+        return session.query(cls).filter_by(title=title).one()
+
+
+class Event(Base):
+    __tablename__ = 'events'
+
+    EVENT_STATES = (
+        ('U', 'Upcoming'),
+        ('C', 'Completed'),
+        ('X', 'Canceled')
+    )
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String, nullable=False)
+    description = Column(String)
+    location = Column(String)
+    attendees = Column(Integer)
+    report = Column(String)
+    date_started = Column(TIMESTAMP, nullable=False)
+    date_ended = Column(TIMESTAMP, nullable=False)
+    state = Column(
+        ChoiceType(EVENT_STATES, impl=String(length=1)), default='U'
+        )
+
+    contract_id = Column(Integer, ForeignKey('contracts.id'))
+    contract = relationship('Contract', back_populates='events')
+
+    type_id = Column(Integer, ForeignKey('eventstype.id'))
+    type = relationship('EventType', back_populates='events')
+
+    support_id = Column(Integer, ForeignKey('employees.id'))
+    support = relationship('Support', back_populates='events')
+
+    def __repr__(self):
+        return f'{self.title}'
+
+    @classmethod
+    def find_by_title(cls, session, title):
+        return session.query(cls).filter_by(title=title).one()
