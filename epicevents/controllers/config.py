@@ -1,5 +1,5 @@
-# import os
-# import dotenv
+import os
+import dotenv
 from configparser import ConfigParser
 
 
@@ -48,21 +48,18 @@ class Config():
         return str(self.db_config)
 
 
-# class Environ():
+class Environ():
 
-#     def __init__(self) -> None:
-#         """
-#         Load the .env file
-#         :raise FileEnvNotExists if the file doesn't exists
-#         or DATABASE var is not set
-#         """
-#         dotenv_file = dotenv.find_dotenv()
-#         dotenv.load_dotenv(dotenv_file)
-#         self.DATABASE = os.getenv('DATABASE')
-#         if self.DATABASE is None:
-#             raise FileEnvNotExists()
+    def __init__(self) -> None:
+        """
+        Load the .env file
+        :raise FileEnvNotExists if the file doesn't exists
+        """
+        dotenv_file = dotenv.find_dotenv()
+        dotenv.load_dotenv(dotenv_file)
+        self.DEFAULT_DATABASE = os.getenv('DEFAULT_DATABASE')
+        if self.DEFAULT_DATABASE is None:
+            raise FileEnvNotExists()
 
-#         self.HOST = os.getenv('HOST')
-#         self.USER = os.getenv('USER')
-#         self.PASSWORD = os.getenv('PASSWORD')
-#         self.PORT = os.getenv('PORT')
+        self.SECRET_KEY = os.getenv('SECRET_KEY')
+        self.TOKEN_DELTA = int(os.getenv('TOKEN_DELTA'))

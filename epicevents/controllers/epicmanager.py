@@ -1,11 +1,11 @@
 import jwt
+from jwt.exceptions import InvalidSignatureError, ExpiredSignatureError
+from datetime import datetime, timedelta, timezone
 from epicevents.views.menu import MenuView
 from epicevents.models.entities import Employee
-from .config import Config
+from .config import Config, Environ
 from .database import EpicDatabase
-from .session import save_session
-
-SECRET_KEY = 'My secret key'
+from .session import save_session, load_session
 
 
 class EpicManager:
@@ -13,7 +13,7 @@ class EpicManager:
     def __init__(self) -> None:
         # load .env file
         db = Config()
-        print(db)
+        self.env = Environ()
 
         # create database
         self.epic = EpicDatabase(**db.db_config)
@@ -26,27 +26,51 @@ class EpicManager:
 
     def run(self) -> None:
 
+        # try token connection
+        token = load_session()
+        if token is None:
+            is_authenticated = False
+        else:
+            try:
+                decoded_token = jwt.decode(
+                    token, self.env.SECRET_KEY, algorithms=['HS256'])
+
+                username = decoded_token['username']
+                password = decoded_token['password']
+                e = self.check_connection(username, password)
+            except InvalidSignatureError as error:
+                print(f'{error}')
+                e = None
+            except ExpiredSignatureError as error:
+                print(f'{error}')
+                e = None
+            is_authenticated = (e is not None)
+
         # show menu
         menuview = MenuView(self)
-        menuview.display_welcome()
+        if not is_authenticated:
+            menuview.display_welcome()
 
-        (username, password) = menuview.display_login()
-        e = self.check_connection(username, password)
-
-        while e is None:
-            menuview.display_error_login()
             (username, password) = menuview.display_login()
             e = self.check_connection(username, password)
 
-        token = jwt.encode(e.to_dict(), SECRET_KEY, algorithm='HS256')
-        save_session(e.to_dict(), token)
-        print(token)
-        print(jwt.decode(token, SECRET_KEY, algorithms=['HS256']))
+            while e is None:
+                menuview.display_error_login()
+                (username, password) = menuview.display_login()
+                e = self.check_connection(username, password)
 
-        running = False
+            data = e.to_dict()
+            data['exp'] = datetime.now(tz=timezone.utc) + timedelta(seconds=self.env.TOKEN_DELTA)
+            print('----------->')
+            print(data)
+            token = jwt.encode(
+                data, self.env.SECRET_KEY, algorithm='HS256')
+            save_session(e.to_dict(), token)
+
+        running = True
 
         while running:
-            
+
             match e.role.value:
                 case "Manager":
                     answer = menuview.display_menu_manager()

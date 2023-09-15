@@ -103,6 +103,7 @@ class Employee(Base):
     def to_dict(self) -> dict:
         return {
                 'username': self.username,
+                'password': self.password,
                 'email': self.email,
                 'role': self.role.value,
                 'state': self.state.value
