@@ -43,7 +43,7 @@ class Config():
                 self.db_config[param[0]] = param[1]
         else:
             raise NoSectionPostgresql(section)
-    
+
     def __str__(self) -> str:
         return str(self.db_config)
 

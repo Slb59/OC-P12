@@ -34,10 +34,17 @@ class EpicManager:
             (username, password) = menuview.display_login()
             e = self.check_connection(username, password)
 
-        menuview.display_main_menu(e.role)
-
         running = True
 
         while running:
             
+            match e.role.value:
+                case "Manager":
+                    answer = menuview.display_menu_manager()
+                    choice = menuview.manager_choices()
+                    index = choice.index(answer)
+                    print('answer ---> ' + answer)
+                    print(index)
+                
+
             running = False

@@ -8,9 +8,34 @@ class MenuView:
     def __init__(self, manager):
         self.manager = manager
 
-    def main_menu_choices(self) -> list:
+    def common_choices(self) -> list:
         return [
+            "My profile",
+            "My tasks",
+            "List of employees",
+            "List of clients",
+            "List of contracts",
+            "Liste of events",
+            "Logout",
+            "Exit"
             ]
+
+    def manager_choices(self) -> list:
+        return self.common_choices() + [
+            "Add new employee",
+            "Update employee role",
+            "Update employee department",
+            "Invalidate an employee connection",
+            "Create a contract",
+            "Modify a contract",
+            "Affecte support on event"
+            ]
+
+    def menu_choices(self, role) -> list:
+        match role:
+
+            case 'Manager':
+                return self.manager_choices()
 
     def display_welcome(self) -> None:
         text = " Welcome in EpicEvent manager "
@@ -39,19 +64,11 @@ class MenuView:
 
     def display_error_login(self):
         rprint('[bold red]ERROR : password or user not defined')
-    
+
     def display_menu_manager(self) -> str:
+        print(self.manager_choices())
         answer = questionary.select(
                     "Que souhaitez-vous faire ?",
-                    choices=self.main_menu_choices()
+                    choices=self.manager_choices()
                 ).ask()
         return answer
-
-    def display_main_menu(self, role) -> str:
-        print('')
-        print(50 * '-')
-
-        match role:
-            
-            case 'M':
-                return self.display_menu_manager()

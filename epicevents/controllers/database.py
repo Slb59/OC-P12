@@ -23,12 +23,14 @@ class EpicDatabase:
         )
 
         print(url)
+
         try:
             drop_database(url)
         except ProgrammingError:
             ...
 
-        if not database_exists(url):
+        # if not database_exists(url):
+        if True:
             print('no database --> creating one')
             create_database(url)
             # init database structure
@@ -40,7 +42,7 @@ class EpicDatabase:
 
         self.engine = create_engine(url)
 
-        self.session = scoped_session(sessionmaker(bind=engine))
+        self.session = scoped_session(sessionmaker(bind=self.engine))
 
     def first_initdb(self):
         # add departments
