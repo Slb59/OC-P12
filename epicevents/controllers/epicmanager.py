@@ -1,11 +1,7 @@
-from sqlalchemy.orm import (
-    sessionmaker,
-    scoped_session
-    )
-from sqlalchemy import func
+from epicevents.views.menu import MenuView
+from epicevents.models.entities import Employee, NoResultFound
 from .config import Config
 from .database import EpicDatabase
-from epicevents.models.entities import Client, Employee, Department
 
 
 class EpicManager:
@@ -18,42 +14,30 @@ class EpicManager:
         # create database
         self.epic = EpicDatabase(**db.db_config)
 
-        # init data
-        # login
-
     def __str__(self) -> str:
         return "CRM EPIC EVENTS"
+
+    def check_connection(self, username, password) -> Employee:
+        return Employee.find_by_userpwd(self.epic.session, username, password)
 
     def run(self) -> None:
 
         # show menu
+        menuview = MenuView(self)
+        menuview.display_welcome()
+
+        (username, password) = menuview.display_login()
+        e = self.check_connection(username, password)
+
+        while e is None:
+            menuview.display_error_login()
+            (username, password) = menuview.display_login()
+            e = self.check_connection(username, password)
+
+        menuview.display_main_menu(e.role)
+
         running = True
 
         while running:
-
-            Session = scoped_session(sessionmaker(bind=self.epic.engine))
-            q = Session.query(Department)
-            for _d in q.all():
-                print(f'{_d.name}')
-            client1 = Client(full_name='client 1')
-            client2 = Client(full_name='client 2')
-            employee = Employee(username='Yuka', department_id=3)
-            client1.commercial = employee
-            client2.commercial = employee
-            Session.add(employee)
-            Session.add(client1)
-            Session.add(client2)
-            q = Session.query(Client)
-            for _c in q.all():
-                print(f'{_c.full_name}')
-            client1.full_name = 'client1b'
-            Session.add(client1)
-            q = Session.query(Employee, func.count(Client.id))\
-                .join(Client)\
-                .group_by(Employee.id)
-            for _e, _c in q.all():
-                print('employee: {}, nb_client: {}'.format(_e.username, _c))
-            Session.commit()
-            Session.remove()
-
+            
             running = False

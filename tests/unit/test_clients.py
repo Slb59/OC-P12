@@ -9,9 +9,9 @@ class TestClients:
 
     def add_commercials(self, db_session):
         d = Department.find_by_name(db_session, 'commercial department')
-        e1 = Commercial(username='Yuka', department_id=d.id)
-        e2 = Commercial(username='Esumi', department_id=d.id)
-        e3 = Commercial(username='Morihei', department_id=d.id)
+        e1 = Commercial(username='Yuka', department_id=d.id, role='C')
+        e2 = Commercial(username='Esumi', department_id=d.id, role='C')
+        e3 = Commercial(username='Morihei', department_id=d.id, role='C')
         db_session.add_all([e1, e2, e3])
 
     def add_clients_to_yuka(self, db_session):

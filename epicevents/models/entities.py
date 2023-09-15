@@ -7,6 +7,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy_utils import ChoiceType
+from sqlalchemy.exc import NoResultFound
 
 Base = declarative_base()
 
@@ -17,7 +18,6 @@ class DateFields():
     updated_on = Column(TIMESTAMP, onupdate=func.now())
     # created_by_id = Column(Integer, ForeignKey('employees.id'))
     # created_by = relationship('Employee', back_populates='creators')
-
     # updated_by = Column(Integer, ForeignKey('employees.id'))
 
     class Meta:
@@ -51,11 +51,19 @@ class Employee(Base):
         ('I', 'Inactif')
     )
 
+    EMPLOYEE_ROLES = (
+        ('C', 'Commercial'),
+        ('M', 'Manager'),
+        ('S', 'Support')
+    )
+
     id = Column(Integer, primary_key=True)
     username = Column(String, nullable=False, unique=True)
     email = Column(String)
     password = Column(String)
-    role = Column(String)
+    role = Column(
+        ChoiceType(EMPLOYEE_ROLES, impl=String(length=1)),
+        nullable=False)
     state = Column(
         ChoiceType(EMPLOYEE_STATES, impl=String(length=1)), default='A'
         )
@@ -66,6 +74,16 @@ class Employee(Base):
     department = relationship('Department', back_populates='employees')
 
     tasks = relationship('Task', back_populates='employee')
+
+    class Meta:
+        abstract = True
+
+    # def __init__(self, username, department_id, email, password, role):
+    #     self.username = username
+    #     self.depatment_id = department_id
+    #     self.email = email
+    #     self.password = password
+    #     self.role = role
 
     def __repr__(self):
         if self.state == 'A':
@@ -83,6 +101,14 @@ class Employee(Base):
             return f'Employee n°{self.id} is inactivate'
 
     @classmethod
+    def find_by_userpwd(cls, session, username, password):
+        try:
+            return session.query(cls).filter_by(
+                username=username, password=password).one()
+        except NoResultFound:
+            return None
+
+    @classmethod
     def find_by_username(cls, session, username):
         return session.query(cls).filter_by(username=username).one()
 
@@ -90,16 +116,43 @@ class Employee(Base):
     def find_by_department(cls, session, department_id):
         return session.query(cls).filter_by(department_id=department_id).all()
 
+    def update_role(self, new_role):
+        self.role = new_role
+
+
+class ContractsAreActived(Exception):
+    def __init__(self, message="Some contracts are actived"):
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self) -> str:
+        return 'Some contracts are actived'
+
 
 class Commercial(Employee):
 
     clients = relationship('Client', back_populates='commercial')
 
-    def get_contracts(self):
+    @property
+    def contracts(self):
         contracts = []
         for c in self.clients:
             contracts.extend(c.contracts)
         return contracts
+
+    # def __init__(self, username, department_id, email='', password=''):
+    #     super().__init__(username, department_id, email, password, 'C')
+
+    def update_role(self, new_role):
+        # check all contracts are balanced
+        all_contracts_balanced = True
+        for c in self.contracts:
+            if c.state != 'X' and c.state != 'B':
+                all_contracts_balanced = False
+        if all_contracts_balanced:
+            self.role = new_role
+        else:
+            raise ContractsAreActived()
 
 
 class Support(Employee):
@@ -188,10 +241,10 @@ class Contract(Base, DateFields):
     def find_by_ref(cls, session, ref):
         return session.query(cls).filter_by(ref=ref).one()
 
+    @property
     def outstanding(self):
         total_paiements = 0
         for p in self.paiements:
-            print('-----------> ' + str(p.amount))
             total_paiements += p.amount
         return self.total_amount - total_paiements
 

@@ -5,7 +5,7 @@ from sqlalchemy.orm import (
     sessionmaker,
     scoped_session
     )
-from epicevents.models.entities import Base, Department
+from epicevents.models.entities import Base, Department, Manager
 
 
 class EpicDatabase:
@@ -30,12 +30,27 @@ class EpicDatabase:
             # init database structure
             engine = create_engine(url)
             Base.metadata.create_all(engine)
-            Session = scoped_session(sessionmaker(bind=engine))
-            management_dpt = Department(name='management department')
-            support_dpt = Department(name='support department')
-            commercial_dpt = Department(name='commercial department')
-            Session.add_all([management_dpt, support_dpt, commercial_dpt])
-            Session.commit()
-            Session.remove()
+            self.session = scoped_session(sessionmaker(bind=engine))
+            self.first_initdb()
+            self.session.remove()
 
         self.engine = create_engine(url)
+
+        self.session = scoped_session(sessionmaker(bind=engine))
+
+    def first_initdb(self):
+        # add departments
+        management_dpt = Department(name='management department')
+        support_dpt = Department(name='support department')
+        commercial_dpt = Department(name='commercial department')
+        self.session.add_all([management_dpt, support_dpt, commercial_dpt])
+        self.session.commit()
+        # add a manager
+        d = Department.find_by_name(self.session, 'management department')
+        e = Manager(
+            username='Osynia',
+            password='osyA!111',
+            department_id=d.id,
+            role='M')
+        self.session.add(e)
+        self.session.commit()

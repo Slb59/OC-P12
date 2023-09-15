@@ -20,12 +20,12 @@ class TestEvent:
 
     def add_employees(self, db_session):
         d = Department.find_by_name(db_session, 'commercial department')
-        e1 = Commercial(username='Yuka', department_id=d.id)
+        e1 = Commercial(username='Yuka', department_id=d.id, role='C')
         db_session.add(e1)
         d = Department.find_by_name(db_session, 'support department')
-        e1 = Support(username='Aritomo', department_id=d.id)
-        e2 = Support(username='Michio', department_id=d.id)
-        e3 = Support(username='Poemu', department_id=d.id)
+        e1 = Support(username='Aritomo', department_id=d.id, role='S')
+        e2 = Support(username='Michio', department_id=d.id, role='S')
+        e3 = Support(username='Poemu', department_id=d.id, role='S')
         db_session.add_all([e1, e2, e3])
 
     def add_client_to_yuka(self, db_session):
@@ -73,7 +73,7 @@ class TestEvent:
         self.initdb(db_session)
         self.add_employees(db_session)
         d = Department.find_by_name(db_session, 'support department')
-        assert len(d.getemployees(db_session)) == 3
+        assert len(d.employees) == 3
 
     def test_list_events_from_contract(self, db_session):
         self.initdb(db_session)

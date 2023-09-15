@@ -10,6 +10,10 @@ psycopg2 = "*"
 sqlalchemy = "*"
 python-dotenv = "*"
 sqlalchemy-utils = "*"
+click = "*"
+rich = "*"
+questionary = "*"
+pylance = "*"
 
 [dev-packages]
 
