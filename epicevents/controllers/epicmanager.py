@@ -1,7 +1,11 @@
+import jwt
 from epicevents.views.menu import MenuView
-from epicevents.models.entities import Employee, NoResultFound
+from epicevents.models.entities import Employee
 from .config import Config
 from .database import EpicDatabase
+from .session import save_session
+
+SECRET_KEY = 'My secret key'
 
 
 class EpicManager:
@@ -34,7 +38,12 @@ class EpicManager:
             (username, password) = menuview.display_login()
             e = self.check_connection(username, password)
 
-        running = True
+        token = jwt.encode(e.to_dict(), SECRET_KEY, algorithm='HS256')
+        save_session(e.to_dict(), token)
+        print(token)
+        print(jwt.decode(token, SECRET_KEY, algorithms=['HS256']))
+
+        running = False
 
         while running:
             
@@ -44,7 +53,6 @@ class EpicManager:
                     choice = menuview.manager_choices()
                     index = choice.index(answer)
                     print('answer ---> ' + answer)
-                    print(index)
-                
+                    print(index)                
 
             running = False

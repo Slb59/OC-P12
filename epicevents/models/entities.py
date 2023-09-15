@@ -100,6 +100,14 @@ class Employee(Base):
         else:
             return f'Employee n°{self.id} is inactivate'
 
+    def to_dict(self) -> dict:
+        return {
+                'username': self.username,
+                'email': self.email,
+                'role': self.role.value,
+                'state': self.state.value
+            }
+
     @classmethod
     def find_by_userpwd(cls, session, username, password):
         try:
