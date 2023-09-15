@@ -39,6 +39,13 @@ class MenuView:
 
     def display_error_login(self):
         rprint('[bold red]ERROR : password or user not defined')
+    
+    def display_menu_manager(self) -> str:
+        answer = questionary.select(
+                    "Que souhaitez-vous faire ?",
+                    choices=self.main_menu_choices()
+                ).ask()
+        return answer
 
     def display_main_menu(self, role) -> str:
         print('')
@@ -47,8 +54,4 @@ class MenuView:
         match role:
             
             case 'M':
-                answer = questionary.select(
-                    "Que souhaitez-vous faire ?",
-                    choices=self.main_menu_choices()
-                ).ask()
-                return answer
+                return self.display_menu_manager()

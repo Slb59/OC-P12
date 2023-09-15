@@ -1,4 +1,5 @@
 # no environments files
+__pycache__
 .env
 .venv
 

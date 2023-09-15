@@ -5,6 +5,7 @@ from sqlalchemy.orm import (
     sessionmaker,
     scoped_session
     )
+from sqlalchemy.exc import ProgrammingError
 from epicevents.models.entities import Base, Department, Manager
 
 
@@ -22,7 +23,10 @@ class EpicDatabase:
         )
 
         print(url)
-        drop_database(url)
+        try:
+            drop_database(url)
+        except ProgrammingError:
+            ...
 
         if not database_exists(url):
             print('no database --> creating one')
