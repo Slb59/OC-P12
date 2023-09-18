@@ -10,7 +10,10 @@ from .session import save_session, load_session
 
 class EpicManager:
 
-    def __init__(self) -> None:
+    def __init__(self, args) -> None:
+
+        self.args = args
+
         # load .env file
         db = Config()
         self.env = Environ()
@@ -26,24 +29,31 @@ class EpicManager:
 
     def run(self) -> None:
 
-        # try token connection
-        token = load_session()
-        if token is None:
-            is_authenticated = False
-        else:
-            try:
-                decoded_token = jwt.decode(
-                    token, self.env.SECRET_KEY, algorithms=['HS256'])
+        if not self.args.login:
 
-                username = decoded_token['username']
-                password = decoded_token['password']
-                e = self.check_connection(username, password)
-            except InvalidSignatureError as error:
-                print(f'{error}')
-                e = None
-            except ExpiredSignatureError as error:
-                print(f'{error}')
-                e = None
+            # try token connection
+            token = load_session()
+            if token is None:
+                is_authenticated = False
+            else:
+                try:
+                    decoded_token = jwt.decode(
+                        token, self.env.SECRET_KEY, algorithms=['HS256'])
+
+                    username = decoded_token['username']
+                    password = decoded_token['password']
+                    e = self.check_connection(username, password)
+                except InvalidSignatureError as error:
+                    print(f'{error}')
+                    e = None
+                except ExpiredSignatureError as error:
+                    print(f'{error}')
+                    e = None
+                is_authenticated = (e is not None)
+
+        else:
+            (username, password) = self.args.login.split('/')
+            e = self.check_connection(username, password)
             is_authenticated = (e is not None)
 
         # show menu

@@ -11,8 +11,10 @@ pytest = "*"
 sqlalchemy-utils = "*"
 pytest-cov = "*"
 psycopg2 = "*"
-pyjwt = {extras = ["crypto"], version = "*"}
+pyjwt = {extras = ["crypto"] }
 python-dotenv = "*"
+pyargon2 = "*"
+argparse = "*"
 
 [dev-packages]
 

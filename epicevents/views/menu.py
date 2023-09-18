@@ -8,27 +8,31 @@ class MenuView:
     def __init__(self, manager):
         self.manager = manager
 
+    def common_lists(self) -> list:
+        return [
+            "Liste des clients",
+            "Liste des contrats",
+            "Liste des évènements"
+            ]
+
     def common_choices(self) -> list:
         return [
-            "My profile",
-            "My tasks",
-            "List of employees",
-            "List of clients",
-            "List of contracts",
-            "Liste of events",
-            "Logout",
-            "Exit"
+            "Mes données",
+            "Mes tâches",
+            "Listes",
+            "Déconnexion",
+            "Quitter l'application"
             ]
 
     def manager_choices(self) -> list:
         return self.common_choices() + [
-            "Add new employee",
-            "Update employee role",
-            "Update employee department",
-            "Invalidate an employee connection",
-            "Create a contract",
-            "Modify a contract",
-            "Affecte support on event"
+            "Nouvel employé",
+            "Modifier le role d'un employé",
+            "Modifier le département d'un employé",
+            "Invalider la connexion d'un employé",
+            "Créer un contrat",
+            "Modifier un contrat",
+            "Affecter un support à un évènement"
             ]
 
     def menu_choices(self, role) -> list:
@@ -38,7 +42,7 @@ class MenuView:
                 return self.manager_choices()
 
     def display_welcome(self) -> None:
-        text = " Welcome in EpicEvent manager "
+        text = " Bienvenu sur EpicEvent - Gestionnaire d'évènements "
         print(len(text) * '-')
         print(text)
         print(len(text) * '-')
@@ -48,7 +52,7 @@ class MenuView:
         username = questionary.text(
             "Username:",
             validate=lambda text: True if re.match(r"\w", text)
-            else "No special characters please"
+            else "Pas de caractère spéciaux"
         ).ask()
         regex_password = r"(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])"
         regex_password += "(?=.*?[#?!@$%^&*-]).{8,}"
@@ -58,12 +62,12 @@ class MenuView:
             if re.match(
                 regex_password,
                 text)
-            else "The password format is invalid"
+            else "Le format du mot de passe est invalide"
         ).ask()
         return username, password
 
     def display_error_login(self):
-        rprint('[bold red]ERROR : password or user not defined')
+        rprint('[bold red]ERROR : Utilisateur ou mot de passe inconnu')
 
     def display_menu_manager(self) -> str:
         print(self.manager_choices())
