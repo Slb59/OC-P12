@@ -1,4 +1,17 @@
+import os
 import json
+import jwt
+from datetime import datetime, timedelta, timezone
+
+
+def create_session(e, delta, secret):
+    data = e.to_dict()
+    data['exp'] = datetime.now(tz=timezone.utc)\
+        + timedelta(seconds=delta)
+    print('----------->')
+    print(data)
+    token = jwt.encode(data, secret, algorithm='HS256')
+    save_session(e.to_dict(), token)
 
 
 def save_session(user, token):
@@ -22,3 +35,13 @@ def load_session():
             return session_data.get('token', None)
     except FileNotFoundError:
         return None
+
+
+def stop_session():
+    """
+    delete file 'session.json'
+    """
+    try:
+        os.remove('session.json')
+    except OSError:
+        pass

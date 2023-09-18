@@ -1,9 +1,9 @@
 import questionary
 import re
-from rich import print as rprint
+# from rich import print as rprint
 
 
-class MenuView:
+class AuthView:
 
     def __init__(self, manager):
         self.manager = manager
@@ -65,9 +65,6 @@ class MenuView:
             else "Le format du mot de passe est invalide"
         ).ask()
         return username, password
-
-    def display_error_login(self):
-        rprint('[bold red]ERROR : Utilisateur ou mot de passe inconnu')
 
     def display_menu_manager(self) -> str:
         print(self.manager_choices())
