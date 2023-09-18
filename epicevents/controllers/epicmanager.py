@@ -1,11 +1,10 @@
 import jwt
-from datetime import datetime, timedelta, timezone
 from epicevents.views.auth_views import display_logout, display_welcome
 from epicevents.views.error import display_error_login
-from epicevents.models.entities import Employee
+# from epicevents.models.entities import Employee
 from .config import Config, Environ
 from .database import EpicDatabase
-from .session import save_session, load_session, stop_session
+from .session import load_session, stop_session, create_session
 from .decorators import (
     is_authenticated,
     # is_commercial,
@@ -30,19 +29,6 @@ class EpicManager:
     def __str__(self) -> str:
         return "CRM EPIC EVENTS"
 
-    def check_connection(self, username, password) -> Employee:
-        """
-        Check the username/password is in database employee
-
-        Args:
-            username (str): the username
-            password (str): the password
-
-        Returns:
-            Employee: an instance of Employee
-        """
-        return Employee.find_by_userpwd(self.epic.session, username, password)
-
     def check_logout(self) -> bool:
         """
         Stop the current session
@@ -55,20 +41,12 @@ class EpicManager:
         return True
 
     def check_login(self) -> bool:
-
         if self.args.login:
             stop_session()
             (username, password) = self.args.login.split('/')
-            e = self.check_connection(username, password)
+            e = self.epic.check_connection(username, password)
             if e:
-                data = e.to_dict()
-                data['exp'] = datetime.now(tz=timezone.utc)\
-                    + timedelta(seconds=self.env.TOKEN_DELTA)
-                print('----------->')
-                print(data)
-                token = jwt.encode(
-                    data, self.env.SECRET_KEY, algorithm='HS256')
-                save_session(e.to_dict(), token)
+                create_session(e, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
             else:
                 display_error_login()
 
@@ -78,8 +56,7 @@ class EpicManager:
         user_info = jwt.decode(
                         token, self.env.SECRET_KEY, algorithms=['HS256'])
         username = user_info['username']
-        password = user_info['password']
-        e = self.check_connection(username, password)
+        e = self.epic.check_employee(username)
         if e:
             display_welcome(username)
             return e

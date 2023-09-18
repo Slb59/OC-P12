@@ -5,9 +5,11 @@ from datetime import datetime, timedelta, timezone
 
 
 def create_session(e, delta, secret):
-    data = e.to_dict()
-    data['exp'] = datetime.now(tz=timezone.utc)\
-        + timedelta(seconds=delta)
+    # data = e.to_dict()
+    data = {
+        'username': e.username,
+        'exp': datetime.now(tz=timezone.utc) + timedelta(seconds=delta)
+    }
     print('----------->')
     print(data)
     token = jwt.encode(data, secret, algorithm='HS256')
