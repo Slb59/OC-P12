@@ -2,10 +2,7 @@ import jwt
 
 from epicevents.views.auth_views import display_logout, display_welcome
 from epicevents.views.error import display_error_login
-from epicevents.views.menu_views import (
-    prompt_choice,
-    display_main_menu
-)
+from epicevents.views.menu_views import menu_choice
 from epicevents.views.crud_views import display_list_clients
 from .config import Config, Environ
 from .database import EpicDatabase
@@ -69,9 +66,7 @@ class EpicManager:
             return None
 
     @is_authenticated
-    def show_menu(self, e):
-        # show_mainmenu()
-        # print(self.epic.get_clients())
+    def list_of_clients(self):
         display_list_clients(self.epic.get_clients())
 
     def run(self) -> None:
@@ -81,12 +76,21 @@ class EpicManager:
         e = self.check_session()
         if e:
             running = True
+            display_welcome(e.username)
             try:
-                while running:
-                    display_welcome(e.username)
-                    display_main_menu(e.role.value)
-                    prompt_choice()
-                    create_session(
-                        e, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
+                while running:        
+                    result = menu_choice(e.role.value)
+
+                    match result:
+                        case '03':
+                            self.list_of_clients()
+                        case 'D':
+                            stop_session()
+                            running = False
+                        case 'Q':
+                            running = False
+                            create_session(
+                                e, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
+
             except KeyboardInterrupt:
                 pass

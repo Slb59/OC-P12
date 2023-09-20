@@ -13,5 +13,10 @@ def display_list_clients(all_clients):
     table.add_column("Nb contrats actifs")
     table.add_column("Nb contrats")
     for c in all_clients:
-        table.add_row(c.full_name, c.email, c.phone, c.company_name)
-    console.print(table)
+        table.add_row(
+            c.full_name, c.email, c.phone, c.company_name,
+            str(c.commercial), str(len(c.actif_contracts)),
+            str(len(c.contracts)),
+            )
+    with console.pager():
+        console.print(table)

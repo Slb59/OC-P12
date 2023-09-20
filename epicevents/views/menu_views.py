@@ -1,10 +1,11 @@
 import time
+import re
 from rich.panel import Panel
-from rich.prompt import Prompt
 from rich.columns import Columns
 from rich.align import Align
 from rich import box
-from .console import console
+import questionary
+from .console import console, error_console
 
 
 def thinking():
@@ -16,67 +17,108 @@ def show_waiting(f):
         f()
 
 
-def menu_manager(idx) -> (int, Panel):
-    menu_text = f"    {idx+1}-Créer un nouvel employé\n"
-    menu_text += f"    {idx+2}-Modifier le role d'un employé\n"
-    menu_text += f"    {idx+3}-Modifier le département d'un employé\n"
-    menu_text += f"    {idx+4}-Invalider la connexion d'un employé\n"
-    menu_text += f"   {idx+5}-Créer un contrat\n"
-    menu_text += f"   {idx+6}-Modifier un contrat\n"
-    menu_text += f"   {idx+7}-Affecter un support à un évènement"
+def menu_manager() -> Panel:
+    menu_text = "    06-Créer un nouvel employé\n"
+    menu_text += "    07-Modifier le role d'un employé\n"
+    menu_text += "    08-Modifier le département d'un employé\n"
+    menu_text += "    09-Invalider la connexion d'un employé\n"
+    menu_text += "    10-Créer un contrat\n"
+    menu_text += "    11-Modifier un contrat\n"
+    menu_text += "    12-Affecter un support à un évènement"
     p = Panel(
         Align.left(menu_text, vertical='top'),
         box=box.ROUNDED,
         title_align='left',
         title='Menu manager')
-    return idx+7, p
+    return p
 
 
-def menu_role(idx, role) -> int:
-    idx = 5
+def menu_commercial() -> Panel:
+    menu_text = "    06-Créer un nouveau client\n"
+    menu_text += "    07-Modifier les données d'un client\n"
+    menu_text += "    08-Creer un évènement\n"
+    menu_text += "    09-Effectuer une demande de création de contrat\n"
+    p = Panel(
+        Align.left(menu_text, vertical='top'),
+        box=box.ROUNDED,
+        title_align='left',
+        title='Menu commercial')
+    return p
+
+
+def menu_support() -> Panel:
+    menu_text = "    06-Clôturer un évènement\n"
+    p = Panel(
+        Align.left(menu_text, vertical='top'),
+        box=box.ROUNDED,
+        title_align='left',
+        title='Menu support')
+    return p
+
+
+def menu_role(role) -> Panel:
     match role:
         case "Manager":
-            idx, menu = menu_manager(idx)
+            menu = menu_manager()
         case "Commercial":
-            ...
+            menu = menu_commercial()
         case "Support":
-            ...
-    return idx, menu
+            menu = menu_support()
+    return menu
 
 
-def menu_accueil(idx) -> (int, Panel):
-    menu_text = f"    {idx+1}-Voir mes données\n"
-    menu_text += f"    {idx+2}-Voir mes tâches\n"
-    menu_text += f"    {idx+3}-Liste des clients\n"
-    menu_text += f"    {idx+4}-Liste des contrats\n"
-    menu_text += f"    {idx+5}-Liste des évènements"
+def menu_accueil() -> Panel:
+    menu_text = "    01-Voir mes données\n"
+    menu_text += "    02-Voir mes tâches\n"
+    menu_text += "    03-Liste des clients\n"
+    menu_text += "    04-Liste des contrats\n"
+    menu_text += "    05-Liste des évènements"
     p = Panel(
         Align.left(menu_text, vertical='top'),
         box=box.ROUNDED,
         title_align='left',
         title='Accueil')
-    return idx+5, p
+    return p
 
 
-def menu_quit(idx) -> (int, Panel):
-    menu_text = f"    {idx+1}-Me déconnecter\n"
-    menu_text += f"    {idx+2}-Quitter l'application"
+def menu_quit() -> Panel:
+    menu_text = "    D-Me déconnecter\n"
+    menu_text += "    Q-Quitter l'application"
     p = Panel(
         Align.left(menu_text, vertical='top'),
         box=box.ROUNDED,
         title_align='left',
         title='Quitter')
-    return idx+2, p
+    return p
 
 
-def display_main_menu(role):
+def menu_choice(role):
+
+    def ask_prompt():
+        return questionary.text(
+            "Que voulez-vous faire ?",
+            validate=lambda text: True if re.match(r"[0-1][0-9]|D|Q", text)
+            else "Votre choix est invalide").ask()
+
+    def check_prompt(result):
+        match role:
+            case 'Manager': max_menu_idx = 12
+            case 'Commercial': max_menu_idx = 9
+            case 'Support': max_menu_idx = 6
+        if result in ['D', 'Q']:
+            return True
+        elif int(result) <= max_menu_idx:
+            return True
+        else:
+            return False
+
     console.print()
-    (idx, menu1) = menu_accueil(0)
-    (idx, menu2) = menu_role(idx, role)
-    (idx, menu3) = menu_quit(idx)
-    menu = [menu1, menu2, menu3]
+    menu = [menu_accueil(), menu_role(role), menu_quit()]
     console.print(Columns(menu))
 
+    result = ask_prompt()
+    while not check_prompt(result):
+        error_console.print('Votre choix est invalide')
+        result = ask_prompt()
 
-def prompt_choice():
-    Prompt.ask('Que voulez-vous faire ?')
+    return result

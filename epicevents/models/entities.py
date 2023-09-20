@@ -222,6 +222,14 @@ class Client(Base, DateFields):
     def getall(cls, session):
         return session.query(cls).all()
 
+    @property
+    def actif_contracts(self):
+        actifs = []
+        for c in self.contracts:
+            if c.state in ['C', 'S']:
+                actifs.append(c)
+        return actifs
+
 
 class Contract(Base, DateFields):
     __tablename__ = 'contracts'
