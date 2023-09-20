@@ -1,27 +1,27 @@
-from rich import print as rprint
+from .console import error_console
 
 
 def display_error_login():
-    rprint('[bold red]ERROR : Utilisateur ou mot de passe inconnu')
+    error_console.print('ERROR : Utilisateur ou mot de passe inconnu')
 
 
 def display_token_expired():
-    s = '[bold red]ERROR : Token expiré ! veuillez vous reconnecter.\n'
+    s = 'ERROR : Token expiré ! veuillez vous reconnecter.\n'
     s += 'commande: python epicevent.py --login username/password'
-    rprint(s)
+    error_console.print(s)
 
 
 def display_token_invalid():
-    rprint('[bold red]ERROR : Token invalide! veuillez vous reconnecter.')
+    error_console.print('ERROR : Token invalide! veuillez vous reconnecter.')
 
 
 def display_not_commercial():
-    rprint('[bold red]ERROR : Accès refusé, rôle commercial requis.')
+    error_console.print('ERROR : Accès refusé, rôle commercial requis.')
 
 
 def display_not_manager():
-    rprint('[bold red]ERROR : Accès refusé, rôle manager requis.')
+    error_console.print('ERROR : Accès refusé, rôle manager requis.')
 
 
 def display_not_support():
-    rprint('[bold red]ERROR : Accès refusé, rôle support requis.')
+    error_console.print('ERROR : Accès refusé, rôle support requis.')

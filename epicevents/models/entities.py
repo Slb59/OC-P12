@@ -218,6 +218,10 @@ class Client(Base, DateFields):
     def find_by_name(cls, session, name):
         return session.query(cls).filter_by(full_name=name).one()
 
+    @classmethod
+    def getall(cls, session):
+        return session.query(cls).all()
+
 
 class Contract(Base, DateFields):
     __tablename__ = 'contracts'

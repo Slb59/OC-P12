@@ -16,6 +16,7 @@ python-dotenv = "*"
 argparse = "*"
 passlib = "*"
 argon2-cffi = "*"
+getchlib = "*"
 
 [dev-packages]
 

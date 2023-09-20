@@ -10,14 +10,19 @@ from sqlalchemy.orm import (
     scoped_session
     )
 from sqlalchemy.exc import ProgrammingError
-from epicevents.models.entities import Base, Department, Manager, Employee
+from epicevents.models.entities import (
+    Base, Department, Manager,
+    Employee, Commercial,
+    Client
+    )
+from epicevents.views.auth_views import display_waiting_databasecreation
 
 
 class EpicDatabase:
 
     def __init__(self, database, host, user, password, port) -> None:
 
-        url = URL.create(
+        self.url = URL.create(
             drivername="postgresql",
             database=database,
             host=host,
@@ -26,27 +31,31 @@ class EpicDatabase:
             port=int(port)
         )
 
-        print(url)
+        print(self.url)
 
         try:
-            drop_database(url)
+            drop_database(self.url)
         except ProgrammingError:
             ...
 
         # if not database_exists(url):
         if True:
-            print('no database --> creating one')
-            create_database(url)
-            # init database structure
-            engine = create_engine(url)
-            Base.metadata.create_all(engine)
-            self.session = scoped_session(sessionmaker(bind=engine))
-            self.first_initdb()
-            self.session.remove()
+            display_waiting_databasecreation(self.database_creation)
 
-        self.engine = create_engine(url)
+        self.engine = create_engine(self.url)
 
         self.session = scoped_session(sessionmaker(bind=self.engine))
+
+    def database_creation(self):
+        create_database(self.url)
+        # init database structure
+        engine = create_engine(self.url)
+        Base.metadata.create_all(engine)
+        self.session = scoped_session(sessionmaker(bind=engine))
+        # add initial data
+        self.first_initdb()
+        self.add_some_clients()
+        self.session.remove()
 
     def check_connection(self, username, password) -> Employee:
         """
@@ -92,9 +101,17 @@ class EpicDatabase:
                     password=hashed_password,
                     department_id=d.id,
                     role='M')
-                self.session.add(e)
-                self.session.commit()
-        
+            case 'Commercial':
+                d = Department.find_by_name(
+                    self.session, 'commercial department')
+                e = Manager(
+                    username=username,
+                    password=hashed_password,
+                    department_id=d.id,
+                    role='C')
+        self.session.add(e)
+        self.session.commit()
+
     def first_initdb(self):
         # add departments
         management_dpt = Department(name='management department')
@@ -103,3 +120,14 @@ class EpicDatabase:
         self.session.add_all([management_dpt, support_dpt, commercial_dpt])
         self.session.commit()
         self.add_employee('Osynia', 'osyA!111', 'Manager')
+
+    def add_some_clients(self):
+        self.add_employee('Yuka', 'yuka!111', 'Commercial')        
+        e = Commercial.find_by_username(self.session, 'Yuka')
+        c1 = Client(full_name='Client 1', commercial_id=e.id)
+        self.session.add(c1)
+        self.session.commit()
+
+    def get_clients(self):
+        result = Client.getall(self.session)
+        return result

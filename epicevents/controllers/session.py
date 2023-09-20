@@ -10,8 +10,6 @@ def create_session(e, delta, secret):
         'username': e.username,
         'exp': datetime.now(tz=timezone.utc) + timedelta(seconds=delta)
     }
-    print('----------->')
-    print(data)
     token = jwt.encode(data, secret, algorithm='HS256')
     save_session(e.to_dict(), token)
 
