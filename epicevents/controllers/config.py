@@ -3,20 +3,25 @@ import dotenv
 from configparser import ConfigParser
 
 
-class FileEnvNotExists(Exception):
+class FileNotExists(Exception):
     def __init__(
             self,
-            message="The file database.ini doesn't exists"
+            filename,
+            message="The file doesn't exists"
             ):
         self.message = message
+        self.filename = filename
         super().__init__(self.message)
+
+    def __str__(self) -> str:
+        return "the file " + self.filename + " doesn't exists"
 
 
 class NoSectionPostgresql(Exception):
     def __init__(
             self,
             filename,
-            section,
+            section='',
             message="The file doesn't have the correct section"
             ):
         self.message = message
@@ -25,8 +30,8 @@ class NoSectionPostgresql(Exception):
         super().__init__(self.message)
 
     def __str__(self) -> str:
-        return "the file " + self.filename + "doesn't have "\
-            + self.section + "section"
+        return "the file " + self.filename + " doesn't have "\
+            + self.section + " section"
 
 
 class Config():
@@ -35,14 +40,20 @@ class Config():
         self.filename = filename
         section = 'postgresql'
         parser = ConfigParser()
-        parser.read(self.filename)
+
+        try:
+            with open(self.filename):
+                parser.read(self.filename)
+        except IOError:
+            raise FileNotExists(self.filename)
+
         self.db_config = {}
         if parser.has_section(section):
             params = parser.items(section)
             for param in params:
                 self.db_config[param[0]] = param[1]
         else:
-            raise NoSectionPostgresql(section)
+            raise NoSectionPostgresql(filename='database.ini', section=section)
 
     def __str__(self) -> str:
         return str(self.db_config)
@@ -59,7 +70,7 @@ class Environ():
         dotenv.load_dotenv(dotenv_file)
         self.DEFAULT_DATABASE = os.getenv('DEFAULT_DATABASE')
         if self.DEFAULT_DATABASE is None:
-            raise FileEnvNotExists()
+            raise FileNotExists(dotenv_file)
 
         self.SECRET_KEY = os.getenv('SECRET_KEY')
         self.TOKEN_DELTA = int(os.getenv('TOKEN_DELTA'))

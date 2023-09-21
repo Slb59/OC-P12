@@ -3,7 +3,10 @@ import jwt
 from epicevents.views.auth_views import display_logout, display_welcome
 from epicevents.views.error import display_error_login
 from epicevents.views.menu_views import menu_choice
-from epicevents.views.crud_views import display_list_clients
+from epicevents.views.crud_views import (
+    display_list_clients,
+    display_list_contracts
+)
 from .config import Config, Environ
 from .database import EpicDatabase
 from .session import load_session, stop_session, create_session
@@ -69,6 +72,10 @@ class EpicManager:
     def list_of_clients(self):
         display_list_clients(self.epic.get_clients())
 
+    @is_authenticated
+    def list_of_contracts(self):
+        display_list_contracts(self.epic.get_contracts())
+
     def run(self) -> None:
 
         self.check_logout()
@@ -82,6 +89,8 @@ class EpicManager:
                     result = menu_choice(e.role.value)
 
                     match result:
+                        case '04':
+                            self.list_of_contracts()
                         case '03':
                             self.list_of_clients()
                         case 'D':

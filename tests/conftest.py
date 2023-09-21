@@ -47,3 +47,11 @@ def db_session(db_session_factory):
     yield session_
     session_.rollback()
     session_.close()
+
+
+@pytest.fixture(scope='function')
+def db_session_no_rollback(db_session_factory):
+    """yields a SQLAlchemy connection which is rollbacked after the test"""
+    session_ = db_session_factory()
+    yield session_
+    session_.close()

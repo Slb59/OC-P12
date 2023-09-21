@@ -88,12 +88,32 @@ class TestEmployees:
         # then
         assert len(e.tasks) == 3
 
+
+class TestEmployeeUnique:
+
     def test_department_unique_name(self, db_session):
         # given
-        self.initdb(db_session)
+        management_dpt = Department(name='management department')
+        db_session.add(management_dpt)
         # when
         newdpt = Department(name='management department')
-        with pytest.raises(Exception) as e_info:
+        with pytest.raises(IntegrityError) as e_info:
             db_session.add(newdpt)
+            db_session.commit()
+        # then except IntegrityError
+        assert e_info.type is IntegrityError
+
+    def test_employee_unique_name(self, db_session):
+        # given
+        management_dpt = Department(name='management department')
+        db_session.add(management_dpt)
+        d = Department.find_by_name(db_session, 'management department')
+        e1 = Commercial(username='Yuka', department_id=d.id, role='C')
+        db_session.add(e1)
+        # when
+        e2 = Commercial(username='Yuka', department_id=d.id, role='C')
+        with pytest.raises(IntegrityError) as e_info:
+            db_session.add(e2)
+            db_session.commit()
         # then except IntegrityError
         assert e_info.type is IntegrityError

@@ -20,3 +20,21 @@ def display_list_clients(all_clients):
             )
     with console.pager():
         console.print(table)
+
+
+def display_list_contracts(all_contracts):
+    table = Table(title="Liste des contracts", box=box.SQUARE)
+    table.add_column("Référence")
+    table.add_column("Client")
+    table.add_column("Montant")
+    table.add_column("Reste dû")
+    table.add_column("Statut")
+    table.add_column("Nb évènements")
+    for c in all_contracts:
+        table.add_row(
+            c.ref, c.client.full_name,
+            str(c.total_amount), str(c.outstanding),
+            c.state.value, str(len(c.events))
+        )
+    with console.pager():
+        console.print(table)

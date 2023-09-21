@@ -94,11 +94,14 @@ class Employee(Base):
             s = f'Employee n°{self.id} is inactivate'
         return s
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.state == 'A':
             return f'{self.username}'
         else:
             return f'Employee n°{self.id} is inactivate'
+
+    def __eq__(self, e) -> bool:
+        return self.username == e.username
 
     def to_dict(self) -> dict:
         return {
@@ -235,10 +238,10 @@ class Contract(Base, DateFields):
     __tablename__ = 'contracts'
 
     CONTRACT_STATES = (
-        ('C', 'Created'),
-        ('S', 'Signed'),
-        ('B', 'Balanced'),
-        ('X', 'Canceled')
+        ('C', 'Créé'),
+        ('S', 'Signé'),
+        ('B', 'Soldé'),
+        ('X', 'Annulé')
     )
 
     id = Column(Integer, primary_key=True)
@@ -261,6 +264,10 @@ class Contract(Base, DateFields):
     @classmethod
     def find_by_ref(cls, session, ref):
         return session.query(cls).filter_by(ref=ref).one()
+
+    @classmethod
+    def getall(cls, session):
+        return session.query(cls).all()
 
     @property
     def outstanding(self):

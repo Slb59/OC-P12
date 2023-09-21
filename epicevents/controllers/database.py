@@ -1,7 +1,8 @@
 import random
+from argon2 import PasswordHasher
 from datetime import datetime
 from random import randint
-from passlib.hash import argon2
+# from passlib.hash import argon2
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 from sqlalchemy_utils import (
@@ -34,7 +35,8 @@ class EpicDatabase:
             port=int(port)
         )
 
-        print(self.url)
+        print(f'checking {self.url} ...')
+        self.ph = PasswordHasher()
 
         try:
             drop_database(self.url)
@@ -45,9 +47,12 @@ class EpicDatabase:
         if True:
             display_waiting_databasecreation(self.database_creation)
 
+        self.name = database
         self.engine = create_engine(self.url)
-
         self.session = scoped_session(sessionmaker(bind=self.engine))
+
+    def __str__(self) -> str:
+        return f'{self.name} database'
 
     def database_creation(self):
         create_database(self.url)
@@ -72,7 +77,7 @@ class EpicDatabase:
             Employee: an instance of Employee
         """
         e = Employee.find_by_username(self.session, username)
-        if argon2.verify(password, e.password):
+        if self.ph.verify(e.password, password):
             return e
         else:
             return None
@@ -93,7 +98,8 @@ class EpicDatabase:
 
     def add_employee(self, username, password, role):
         # hashed_password = password
-        hashed_password = argon2.hash(password)
+        
+        hashed_password = self.ph.hash(password)
 
         match role:
             case 'Manager':
@@ -169,4 +175,8 @@ class EpicDatabase:
 
     def get_clients(self):
         result = Client.getall(self.session)
+        return result
+
+    def get_contracts(self):
+        result = Contract.getall(self.session)
         return result
