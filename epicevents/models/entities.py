@@ -78,13 +78,6 @@ class Employee(Base):
     class Meta:
         abstract = True
 
-    # def __init__(self, username, department_id, email, password, role):
-    #     self.username = username
-    #     self.depatment_id = department_id
-    #     self.email = email
-    #     self.password = password
-    #     self.role = role
-
     def __repr__(self):
         if self.state == 'A':
             s = f'username: {self.username}\n'
@@ -111,6 +104,10 @@ class Employee(Base):
                 'role': self.role.value,
                 'state': self.state.value
             }
+
+    @classmethod
+    def getall(cls, session):
+        return session.query(cls).all()
 
     @classmethod
     def find_by_userpwd(cls, session, username, password):
@@ -305,14 +302,18 @@ class EventType(Base):
     def find_by_title(cls, session, title):
         return session.query(cls).filter_by(title=title).one()
 
+    @classmethod
+    def getall(cls, session):
+        return session.query(cls).all()
+
 
 class Event(Base):
     __tablename__ = 'events'
 
     EVENT_STATES = (
-        ('U', 'Upcoming'),
-        ('C', 'Completed'),
-        ('X', 'Canceled')
+        ('U', 'A venir'),
+        ('C', 'Terminé'),
+        ('X', 'Annulé')
     )
 
     id = Column(Integer, primary_key=True)
@@ -342,3 +343,7 @@ class Event(Base):
     @classmethod
     def find_by_title(cls, session, title):
         return session.query(cls).filter_by(title=title).one()
+
+    @classmethod
+    def getall(cls, session):
+        return session.query(cls).all()

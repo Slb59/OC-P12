@@ -1,8 +1,4 @@
-import random
 from argon2 import PasswordHasher
-from datetime import datetime
-from random import randint
-# from passlib.hash import argon2
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 from sqlalchemy_utils import (
@@ -16,8 +12,9 @@ from sqlalchemy.orm import (
 from sqlalchemy.exc import ProgrammingError
 from epicevents.models.entities import (
     Base, Department, Manager,
-    Employee, Commercial,
-    Client, Contract
+    Employee,
+    Client, Contract, Event,
+    EventType
     )
 from epicevents.views.auth_views import display_waiting_databasecreation
 
@@ -62,7 +59,6 @@ class EpicDatabase:
         self.session = scoped_session(sessionmaker(bind=engine))
         # add initial data
         self.first_initdb()
-        self.create_a_test_database()
         self.session.remove()
 
     def check_connection(self, username, password) -> Employee:
@@ -98,7 +94,7 @@ class EpicDatabase:
 
     def add_employee(self, username, password, role):
         # hashed_password = password
-        
+
         hashed_password = self.ph.hash(password)
 
         match role:
@@ -127,50 +123,16 @@ class EpicDatabase:
         support_dpt = Department(name='support department')
         commercial_dpt = Department(name='commercial department')
         self.session.add_all([management_dpt, support_dpt, commercial_dpt])
-        self.session.commit()
+        # add a superuser
         self.add_employee('Osynia', 'osyA!111', 'Manager')
-
-    def create_a_test_database(self):
-        self.add_some_clients()
-        self.add_some_contracts()
-
-    def add_some_contracts(self):
-        clients = Client.getall(self.session)
-        for c in clients:
-            nb_of_contracts = randint(0, 10)
-            for i in range(nb_of_contracts):
-                contract_description = f"Contract {i} for {c.full_name}"
-                dt = datetime.now().strftime('%Y%m%d-%H%M%S:%f')
-                state = random.choice(Contract.CONTRACT_STATES)[0]
-                new_contract = Contract(
-                    ref=f"{dt}-{randint(1000, 9999)}",
-                    description=contract_description,
-                    client_id=c.id,
-                    total_amount=randint(500, 30000),
-                    state=state
-                    )
-                self.session.add(new_contract)
-        self.session.commit()
-
-    def add_some_clients(self):
-        self.add_employee('Yuka', 'yuka!111', 'Commercial')  
-        e1 = Commercial.find_by_username(self.session, 'Yuka')
-        self.add_employee('Esumi', 'esumi!111', 'Commercial')
-        e2 = Commercial.find_by_username(self.session, 'Esumi')        
-        company_names = ['League Computing',
-                         'Valley Dressing',
-                         'Jumpstart Travel',
-                         'Social bleu-ciel',
-                         'Restaurants de la citadelle']
-        for i in range(20):
-            c = Client(
-                full_name=f'Client n°{i}',
-                email=f'Client{i}@example.com',
-                phone=f'{randint(10,80)}.{randint(100,800)}.{randint(10,80)}',
-                company_name=random.choice(company_names),
-                commercial_id=random.choice([e1.id, e2.id])
+        # add types of events
+        event_type1 = EventType(title='conference')
+        event_type2 = EventType(title='forum')
+        event_type3 = EventType(title='show')
+        event_type4 = EventType(title='seminar')
+        self.session.add_all(
+            [event_type1, event_type2, event_type3, event_type4]
             )
-            self.session.add(c)
         self.session.commit()
 
     def get_clients(self):
@@ -179,4 +141,8 @@ class EpicDatabase:
 
     def get_contracts(self):
         result = Contract.getall(self.session)
+        return result
+
+    def get_events(self):
+        result = Event.getall(self.session)
         return result

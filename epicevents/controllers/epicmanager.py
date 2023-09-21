@@ -3,12 +3,14 @@ import jwt
 from epicevents.views.auth_views import display_logout, display_welcome
 from epicevents.views.error import display_error_login
 from epicevents.views.menu_views import menu_choice
-from epicevents.views.crud_views import (
+from epicevents.views.list_views import (
     display_list_clients,
-    display_list_contracts
+    display_list_contracts,
+    display_list_events
 )
+from epicevents.views.prompt_views import prompt_commercial
 from .config import Config, Environ
-from .database import EpicDatabase
+from .databasetools import EpicDatabaseWithData
 from .session import load_session, stop_session, create_session
 from .decorators import (
     is_authenticated,
@@ -29,7 +31,7 @@ class EpicManager:
         self.env = Environ()
 
         # create database
-        self.epic = EpicDatabase(**db.db_config)
+        self.epic = EpicDatabaseWithData(**db.db_config)
 
     def __str__(self) -> str:
         return "CRM EPIC EVENTS"
@@ -70,11 +72,16 @@ class EpicManager:
 
     @is_authenticated
     def list_of_clients(self):
+        prompt_commercial()
         display_list_clients(self.epic.get_clients())
 
     @is_authenticated
     def list_of_contracts(self):
         display_list_contracts(self.epic.get_contracts())
+
+    @is_authenticated
+    def list_of_events(self):
+        display_list_events(self.epic.get_events())
 
     def run(self) -> None:
 
@@ -85,14 +92,16 @@ class EpicManager:
             running = True
             display_welcome(e.username)
             try:
-                while running:        
+                while running:
                     result = menu_choice(e.role.value)
 
                     match result:
-                        case '04':
-                            self.list_of_contracts()
                         case '03':
                             self.list_of_clients()
+                        case '04':
+                            self.list_of_contracts()
+                        case '05':
+                            self.list_of_events()
                         case 'D':
                             stop_session()
                             running = False
