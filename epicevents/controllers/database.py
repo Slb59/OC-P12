@@ -143,7 +143,17 @@ class EpicDatabase:
             result = Client.getall(self.session)
         return result
 
-    def get_contracts(self, commercial_name='', client_name=''):
+    def get_contracts_states(self):
+        states = Contract.CONTRACT_STATES
+        result = []
+        for s in states:
+            result.append(s[1])
+        return result
+
+    def get_contracts(
+            self, commercial_name='',
+            client_name='',
+            state_value=''):
         contracts = []
         if client_name:
             c = Client.find_by_name(self.session, client_name)
@@ -152,7 +162,14 @@ class EpicDatabase:
             clients = self.get_clients(commercial_name)
             for c in clients:
                 contracts.extend(c.contracts)
-        return contracts
+        if state_value:
+            result = []
+            for c in contracts:
+                if c.state.value == state_value:
+                    result.append(c)
+        else:
+            result = contracts
+        return result
 
     def get_events(self):
         result = Event.getall(self.session)
