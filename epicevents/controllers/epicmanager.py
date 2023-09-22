@@ -81,6 +81,16 @@ class EpicManager:
             cname = PromptView.prompt_commercial(commercials_name)
         return cname
 
+    def choice_client(self, commercial_name) -> str:
+        # select a client
+        result = PromptView.prompt_confirm_client()
+        if result:
+            clients_name = []
+            for c in self.epic.get_clients(commercial_name):
+                clients_name.append(c.full_name)
+            client = PromptView.prompt_client(clients_name)
+        return client
+
     @is_authenticated
     def list_of_clients(self):
         cname = self.choice_commercial()
@@ -91,13 +101,7 @@ class EpicManager:
         client = None
         state = None
         cname = self.choice_commercial()
-        # select a client
-        result = PromptView.prompt_confirm_client()
-        if result:
-            clients_name = []
-            for c in self.epic.get_clients(cname):
-                clients_name.append(c.full_name)
-            client = PromptView.prompt_client(clients_name)
+        client = self.choice_client(cname)
         # select a state
         result = PromptView.prompt_confirm_statut()
         if result:
@@ -108,7 +112,8 @@ class EpicManager:
     @is_authenticated
     def list_of_events(self):
         cname = self.choice_commercial()
-        display_list_events(self.epic.get_events(cname))
+        client = self.choice_client(cname)
+        display_list_events(self.epic.get_events(cname, client))
 
     def run(self) -> None:
 

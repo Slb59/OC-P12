@@ -14,7 +14,7 @@ from sqlalchemy.exc import ProgrammingError
 from epicevents.models.entities import (
     Base, Department, Manager,
     Employee, Commercial,
-    Client, Contract, Event,
+    Client, Contract,
     EventType
     )
 from epicevents.views.auth_views import display_waiting_databasecreation
@@ -174,17 +174,18 @@ class EpicDatabase:
             result = contracts
         return result
 
-    def get_events(self, commercial_name=''):
-        if commercial_name:
-            events = []
+    def get_events(self, commercial_name='', client_name=''):
+        contracts = []
+        events = []
+        if client_name:
+            c = Client.find_by_name(self.session, client_name)
+            contracts = c.contracts
+        else:
             e = Commercial.find_by_username(self.session, commercial_name)
             contracts = e.contracts
-            for c in contracts:
-                events.extend(c.events)
-            result = events
-        else:
-            result = Event.getall(self.session)
-        return result
+        for c in contracts:
+            events.extend(c.events)
+        return events
 
     def get_commercials(self):
         return Commercial.getall(self.session)
