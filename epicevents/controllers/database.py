@@ -143,16 +143,16 @@ class EpicDatabase:
             result = Client.getall(self.session)
         return result
 
-    def get_contracts(self, commercial_name=''):
-        if commercial_name:
-            contracts = []
-            e = Commercial.find_by_username(self.session, commercial_name)
-            for c in e.clients:
-                contracts.extend(c.contracts)
-            result = contracts
+    def get_contracts(self, commercial_name='', client_name=''):
+        contracts = []
+        if client_name:
+            c = Client.find_by_name(self.session, client_name)
+            contracts = c.contracts
         else:
-            result = Contract.getall(self.session)
-        return result
+            clients = self.get_clients(commercial_name)
+            for c in clients:
+                contracts.extend(c.contracts)
+        return contracts
 
     def get_events(self):
         result = Event.getall(self.session)

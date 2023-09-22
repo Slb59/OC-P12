@@ -269,6 +269,10 @@ class Contract(Base, DateFields):
         return session.query(cls).filter_by(ref=ref).one()
 
     @classmethod
+    def find_by_client(cls, session, client):
+        return session.query(cls).filter_by(client=client).all()
+
+    @classmethod
     def getall(cls, session):
         return session.query(cls).all()
 
