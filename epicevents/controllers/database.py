@@ -12,7 +12,7 @@ from sqlalchemy.orm import (
 from sqlalchemy.exc import ProgrammingError
 from epicevents.models.entities import (
     Base, Department, Manager,
-    Employee,
+    Employee, Commercial,
     Client, Contract, Event,
     EventType
     )
@@ -135,8 +135,12 @@ class EpicDatabase:
             )
         self.session.commit()
 
-    def get_clients(self):
-        result = Client.getall(self.session)
+    def get_clients(self, commercial_name=''):
+        if commercial_name:
+            e = Commercial.find_by_username(self.session, commercial_name)
+            result = e.clients
+        else:
+            result = Client.getall(self.session)
         return result
 
     def get_contracts(self):
@@ -146,3 +150,6 @@ class EpicDatabase:
     def get_events(self):
         result = Event.getall(self.session)
         return result
+
+    def get_commercials(self):
+        return Commercial.getall(self.session)

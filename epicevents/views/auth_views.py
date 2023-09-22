@@ -25,7 +25,7 @@ def display_login():
     console.print(username)
     password = console.input("Mot de passe:")
     console.print(password)
-    # username = questionary.text(
+    # console = questionary.text(
     #     "Username:",
     #     validate=lambda text: True if re.match(r"\w", text)
     #     else "Pas de caractère spéciaux"

@@ -8,7 +8,9 @@ from epicevents.views.list_views import (
     display_list_contracts,
     display_list_events
 )
-from epicevents.views.prompt_views import prompt_commercial
+from epicevents.views.prompt_views import (
+    prompt_commercial, prompt_confirm_commercial
+)
 from .config import Config, Environ
 from .databasetools import EpicDatabaseWithData
 from .session import load_session, stop_session, create_session
@@ -72,8 +74,15 @@ class EpicManager:
 
     @is_authenticated
     def list_of_clients(self):
-        prompt_commercial()
-        display_list_clients(self.epic.get_clients())
+        result = prompt_confirm_commercial()
+        if result:
+            commercials_name = []
+            for c in self.epic.get_commercials():
+                commercials_name.append(c.username)
+            cname = prompt_commercial(commercials_name)
+            display_list_clients(self.epic.get_clients(cname))
+        else:
+            display_list_clients(self.epic.get_clients())
 
     @is_authenticated
     def list_of_contracts(self):

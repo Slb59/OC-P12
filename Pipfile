@@ -17,6 +17,7 @@ argparse = "*"
 passlib = "*"
 argon2-cffi = "*"
 getchlib = "*"
+pytest-mock = "*"
 
 [dev-packages]
 

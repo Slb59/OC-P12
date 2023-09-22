@@ -142,15 +142,21 @@ class Commercial(Employee):
 
     clients = relationship('Client', back_populates='commercial')
 
+    @classmethod
+    def getall(cls, session):
+        all_commercials = []
+        all_employees = Employee.getall(session)
+        for e in all_employees:
+            if e.role == 'C':
+                all_commercials.append(e)
+        return all_commercials
+
     @property
     def contracts(self):
         contracts = []
         for c in self.clients:
             contracts.extend(c.contracts)
         return contracts
-
-    # def __init__(self, username, department_id, email='', password=''):
-    #     super().__init__(username, department_id, email, password, 'C')
 
     def update_role(self, new_role):
         # check all contracts are balanced
