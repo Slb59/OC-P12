@@ -86,7 +86,15 @@ class EpicManager:
 
     @is_authenticated
     def list_of_contracts(self):
-        display_list_contracts(self.epic.get_contracts())
+        result = prompt_confirm_commercial()
+        if result:
+            commercials_name = []
+            for c in self.epic.get_commercials():
+                commercials_name.append(c.username)
+            cname = prompt_commercial(commercials_name)
+            display_list_contracts(self.epic.get_contracts(cname))
+        else:
+            display_list_contracts(self.epic.get_contracts())
 
     @is_authenticated
     def list_of_events(self):
