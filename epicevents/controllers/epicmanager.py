@@ -1,7 +1,7 @@
 import jwt
 
 from epicevents.views.auth_views import display_logout, display_welcome
-from epicevents.views.error import display_error_login
+from epicevents.views.error import ErrorView
 from epicevents.views.menu_views import menu_choice
 from epicevents.views.list_views import (
     display_list_clients,
@@ -55,7 +55,7 @@ class EpicManager:
             if e:
                 create_session(e, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
             else:
-                display_error_login()
+                ErrorView.display_error_login()
 
     @is_authenticated
     def check_session(self):
@@ -67,33 +67,30 @@ class EpicManager:
         if e:
             return e
         else:
-            display_error_login()
+            ErrorView.display_error_login()
             return None
+
+    def choice_commercial(self) -> str:
+        # select a commercial
+        cname = None
+        result = PromptView.prompt_confirm_commercial()
+        if result:
+            commercials_name = []
+            for c in self.epic.get_commercials():
+                commercials_name.append(c.username)
+            cname = PromptView.prompt_commercial(commercials_name)
+        return cname
 
     @is_authenticated
     def list_of_clients(self):
-        result = PromptView.prompt_confirm_commercial()
-        if result:
-            commercials_name = []
-            for c in self.epic.get_commercials():
-                commercials_name.append(c.username)
-            cname = PromptView.prompt_commercial(commercials_name)
-            display_list_clients(self.epic.get_clients(cname))
-        else:
-            display_list_clients(self.epic.get_clients())
+        cname = self.choice_commercial()
+        display_list_clients(self.epic.get_clients(cname))
 
     @is_authenticated
     def list_of_contracts(self):
-        cname = None
         client = None
         state = None
-        # select a commercial
-        result = PromptView.prompt_confirm_commercial()
-        if result:
-            commercials_name = []
-            for c in self.epic.get_commercials():
-                commercials_name.append(c.username)
-            cname = PromptView.prompt_commercial(commercials_name)
+        cname = self.choice_commercial()
         # select a client
         result = PromptView.prompt_confirm_client()
         if result:
@@ -110,7 +107,8 @@ class EpicManager:
 
     @is_authenticated
     def list_of_events(self):
-        display_list_events(self.epic.get_events())
+        cname = self.choice_commercial()
+        display_list_events(self.epic.get_events(cname))
 
     def run(self) -> None:
 

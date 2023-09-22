@@ -1,4 +1,5 @@
 from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 from sqlalchemy_utils import (
@@ -73,9 +74,12 @@ class EpicDatabase:
             Employee: an instance of Employee
         """
         e = Employee.find_by_username(self.session, username)
-        if self.ph.verify(e.password, password):
-            return e
-        else:
+        try:
+            if self.ph.verify(e.password, password):
+                return e
+            else:
+                return None
+        except VerifyMismatchError:
             return None
 
     def check_employee(self, username) -> Employee:
@@ -159,9 +163,8 @@ class EpicDatabase:
             c = Client.find_by_name(self.session, client_name)
             contracts = c.contracts
         else:
-            clients = self.get_clients(commercial_name)
-            for c in clients:
-                contracts.extend(c.contracts)
+            e = Commercial.find_by_username(self.session, commercial_name)
+            contracts = e.contracts
         if state_value:
             result = []
             for c in contracts:
@@ -171,8 +174,16 @@ class EpicDatabase:
             result = contracts
         return result
 
-    def get_events(self):
-        result = Event.getall(self.session)
+    def get_events(self, commercial_name=''):
+        if commercial_name:
+            events = []
+            e = Commercial.find_by_username(self.session, commercial_name)
+            contracts = e.contracts
+            for c in contracts:
+                events.extend(c.events)
+            result = events
+        else:
+            result = Event.getall(self.session)
         return result
 
     def get_commercials(self):

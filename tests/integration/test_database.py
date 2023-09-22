@@ -4,16 +4,23 @@ from epicevents.models.entities import Manager
 
 
 def test_init_database():
-    db = EpicDatabase('epictest', "localhost", "postgres", "postgres", "5432")
-    assert str(db) == 'epictest database'
+    db = EpicDatabase('epictest2', "localhost", "postgres", "postgres", "5432")
     drop_database(db.url)
+    assert str(db) == 'epictest2 database'
 
 
 def test_check_connection():
-    db = EpicDatabase('epictest', "localhost", "postgres", "postgres", "5432")
+    db = EpicDatabase('epictest2', "localhost", "postgres", "postgres", "5432")
     db.add_employee('Misoka', 'Misoka', 'Manager')
     e_base = Manager.find_by_username(session=db.session, username='Misoka')
-    print(e_base.username)
     e_result = db.check_connection('Misoka', 'Misoka')
-    assert e_base == e_result
     drop_database(db.url)
+    assert e_base == e_result
+
+
+def test_check_connection_error():
+    db = EpicDatabase('epictest2', "localhost", "postgres", "postgres", "5432")
+    db.add_employee('Misoka', 'Misoka', 'Manager')
+    e_result = db.check_connection('Misoka', 'Misoka2')
+    drop_database(db.url)
+    assert e_result is None
