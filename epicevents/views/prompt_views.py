@@ -62,3 +62,15 @@ class PromptView:
             "Choix du support:",
             choices=all_supports,
         ).ask()
+
+    @classmethod
+    def prompt_confirm_task(cls):
+        return questionary.confirm(
+            "Souhaitez-vous finaliser une tache ?").ask()
+
+    @classmethod
+    def prompt_task(cls, all_tasks):
+        return questionary.select(
+            "Identifiant de la tâche à terminer:",
+            choices=all_tasks,
+        ).ask()

@@ -2,7 +2,7 @@ from datetime import datetime
 from sqlalchemy import (
     ForeignKey,
     Column, Integer, String, TIMESTAMP,
-    or_
+    or_, exists
     )
 from sqlalchemy.orm import relationship, aliased, declarative_base
 from sqlalchemy.sql import func
@@ -180,7 +180,12 @@ class Support(Employee):
 
 
 class Manager(Employee):
-    ...
+
+    @classmethod
+    def getall(cls, session):
+        return session.query(cls)\
+            .filter_by(role='M')\
+            .order_by(cls.username).all()
 
 
 class Task(Base):
@@ -207,6 +212,17 @@ class Task(Base):
     def __repr__(self):
         return f'Task {self.description}'
 
+    @classmethod
+    def find_active_tasks(cls, session, e):
+        return session.query(cls)\
+            .filter_by(employee_id=e.id, state='T')\
+            .order_by(cls.started_time).all()
+
+    @classmethod
+    def terminate(cls, session, task_id):
+        data_to_update = dict(ended_time=datetime.now(), state='D')
+        session.query(cls).filter_by(id=task_id).update(data_to_update)
+
 
 class Client(Base, DateFields):
     __tablename__ = 'clients'
@@ -230,7 +246,9 @@ class Client(Base, DateFields):
 
     @classmethod
     def getall(cls, session):
-        return session.query(cls).all()
+        return session.query(cls)\
+            .order_by(cls.full_name)\
+            .all()
 
     @property
     def actif_contracts(self):
@@ -239,6 +257,14 @@ class Client(Base, DateFields):
             if c.state in ['C', 'S']:
                 actifs.append(c)
         return actifs
+
+    @classmethod
+    def find_without_contract(cls, session):
+        result = session.query(cls)\
+            .filter(~exists().where(Contract.client_id == cls.id))\
+            .order_by(cls.full_name)\
+            .all()
+        return result
 
 
 class Contract(Base, DateFields):

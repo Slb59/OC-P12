@@ -5,8 +5,9 @@ from psycopg2.errors import UniqueViolation
 from .database import EpicDatabase
 from epicevents.models.entities import (
     Client, Contract,
-    Commercial, Support,
-    Event, EventType
+    Commercial, Support, Manager,
+    Event, EventType,
+    Task
 )
 
 
@@ -101,7 +102,20 @@ class EpicDatabaseWithData(EpicDatabase):
                 self.session.add(e)
         self.session.commit()
 
+    def add_some_tasks(self):
+        managers = Manager.getall(self.session)
+        for c in Client.find_without_contract(self.session):
+            print('------>')
+            ch_manager = random.choice(managers)
+            t = Task(
+                description=f'Creer un contrat pour le client {c.full_name}',
+                employee_id=ch_manager.id)
+            self.session.add(t)
+            print(f'task for {ch_manager.username} - {c.full_name}')
+        self.session.commit()
+
     def create_a_test_database(self):
         self.add_some_clients()
         self.add_some_contracts()
         self.add_some_events()
+        self.add_some_tasks()

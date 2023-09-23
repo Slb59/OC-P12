@@ -3,11 +3,7 @@ import jwt
 from epicevents.views.auth_views import display_logout, display_welcome
 from epicevents.views.error import ErrorView
 from epicevents.views.menu_views import menu_choice
-from epicevents.views.list_views import (
-    display_list_clients,
-    display_list_contracts,
-    display_list_events
-)
+from epicevents.views.list_views import DisplayView
 from epicevents.views.prompt_views import PromptView
 from .config import Config, Environ
 from .databasetools import EpicDatabaseWithData
@@ -95,7 +91,7 @@ class EpicManager:
     @is_authenticated
     def list_of_clients(self):
         cname = self.choice_commercial()
-        display_list_clients(self.epic.get_clients(cname))
+        DisplayView.display_list_clients(self.epic.get_clients(cname))
 
     @is_authenticated
     def list_of_contracts(self):
@@ -107,7 +103,8 @@ class EpicManager:
         if result:
             state = PromptView.prompt_statut(self.epic.get_contracts_states())
         # display list
-        display_list_contracts(self.epic.get_contracts(cname, client, state))
+        DisplayView.display_list_contracts(
+            self.epic.get_contracts(cname, client, state))
 
     @is_authenticated
     def list_of_events(self):
@@ -131,9 +128,23 @@ class EpicManager:
                 supports_name.append(c.username)
             support_username = PromptView.prompt_support(supports_name)
         # display list
-        display_list_events(
+        DisplayView.display_list_events(
             self.epic.get_events(
                 cname, client, contract_ref, support_username))
+
+    @is_authenticated
+    def list_of_task(self, e):
+        DisplayView.display_list_tasks(self.epic.get_tasks(e))
+
+    @is_authenticated
+    def terminate_a_task(self, e):
+        result = PromptView.prompt_confirm_task()
+        if result:
+            all_tasks_id = []
+            for t in self.epic.get_tasks(e):
+                all_tasks_id.append(str(t.id))
+            task = PromptView.prompt_task(all_tasks_id)
+            self.epic.terminate_task(task)
 
     def run(self) -> None:
 
@@ -143,11 +154,15 @@ class EpicManager:
         if e:
             running = True
             display_welcome(e.username)
+            self.list_of_task(e)
             try:
                 while running:
                     result = menu_choice(e.role.value)
 
                     match result:
+                        case '02':
+                            self.list_of_task(e)
+                            self.terminate_a_task(e)
                         case '03':
                             self.list_of_clients()
                         case '04':

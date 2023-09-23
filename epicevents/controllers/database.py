@@ -15,7 +15,7 @@ from epicevents.models.entities import (
     Base, Department, Manager,
     Employee, Commercial, Support,
     Client, Contract, Event,
-    EventType
+    EventType, Task
     )
 from epicevents.views.auth_views import display_waiting_databasecreation
 
@@ -185,9 +185,16 @@ class EpicDatabase:
             self.session, commercial_name, client_name,
             contract_ref, support_name
         )
- 
+
     def get_commercials(self):
         return Commercial.getall(self.session)
-    
+
     def get_supports(self):
         return Support.getall(self.session)
+
+    def get_tasks(self, e):
+        return Task.find_active_tasks(self.session, e)
+
+    def terminate_task(self, task_id):
+        Task.terminate(self.session, task_id)
+        self.session.commit()
