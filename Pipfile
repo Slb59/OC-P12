@@ -18,6 +18,7 @@ passlib = "*"
 argon2-cffi = "*"
 getchlib = "*"
 pytest-mock = "*"
+freezegun = "*"
 
 [dev-packages]
 

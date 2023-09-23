@@ -4,6 +4,7 @@ from epicevents.views.auth_views import display_logout, display_welcome
 from epicevents.views.error import ErrorView
 from epicevents.views.menu_views import menu_choice
 from epicevents.views.list_views import DisplayView
+from epicevents.views.data_views import DataView
 from epicevents.views.prompt_views import PromptView
 from .config import Config, Environ
 from .databasetools import EpicDatabaseWithData
@@ -146,6 +147,10 @@ class EpicManager:
             task = PromptView.prompt_task(all_tasks_id)
             self.epic.terminate_task(task)
 
+    @is_authenticated
+    def show_profil(self, e):
+        DataView.display_profil(e, 5)
+
     def run(self) -> None:
 
         self.check_logout()
@@ -160,6 +165,8 @@ class EpicManager:
                     result = menu_choice(e.role.value)
 
                     match result:
+                        case '01':
+                            self.show_profil(e)
                         case '02':
                             self.list_of_task(e)
                             self.terminate_a_task(e)

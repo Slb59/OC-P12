@@ -105,7 +105,6 @@ class EpicDatabaseWithData(EpicDatabase):
     def add_some_tasks(self):
         managers = Manager.getall(self.session)
         for c in Client.find_without_contract(self.session):
-            print('------>')
             ch_manager = random.choice(managers)
             t = Task(
                 description=f'Creer un contrat pour le client {c.full_name}',

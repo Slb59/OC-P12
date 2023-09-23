@@ -210,7 +210,8 @@ class Task(Base):
     employee = relationship('Employee', back_populates='tasks')
 
     def __repr__(self):
-        return f'Task {self.description}'
+        fmt = '%d/%m/%Y'
+        return f'{self.started_time.strftime(fmt)}:{self.description}'
 
     @classmethod
     def find_active_tasks(cls, session, e):
