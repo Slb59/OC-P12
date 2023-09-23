@@ -38,3 +38,15 @@ class PromptView:
             "Choix du statut:",
             choices=all_states,
         ).ask()
+
+    @classmethod
+    def prompt_confirm_contract(cls):
+        return questionary.confirm(
+            "Souhaitez-vous sélectionner un contrat ?").ask()
+
+    @classmethod
+    def prompt_contract(cls, all_contracts):
+        return questionary.select(
+            "Choix du contrat:",
+            choices=all_contracts,
+        ).ask()

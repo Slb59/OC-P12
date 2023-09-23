@@ -119,7 +119,7 @@ class Employee(Base):
 
     @classmethod
     def find_by_username(cls, session, username):
-        return session.query(cls).filter_by(username=username).one()
+        return session.query(cls).filter_by(username=username).first()
 
     @classmethod
     def find_by_department(cls, session, department_id):

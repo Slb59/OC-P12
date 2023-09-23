@@ -82,6 +82,7 @@ class EpicManager:
         return cname
 
     def choice_client(self, commercial_name) -> str:
+        client = None
         # select a client
         result = PromptView.prompt_confirm_client()
         if result:
@@ -98,7 +99,6 @@ class EpicManager:
 
     @is_authenticated
     def list_of_contracts(self):
-        client = None
         state = None
         cname = self.choice_commercial()
         client = self.choice_client(cname)
@@ -111,9 +111,17 @@ class EpicManager:
 
     @is_authenticated
     def list_of_events(self):
+        contract_ref = None
         cname = self.choice_commercial()
         client = self.choice_client(cname)
-        display_list_events(self.epic.get_events(cname, client))
+        # select a contract
+        result = PromptView.prompt_confirm_contract()
+        if result:
+            contracts_ref = []
+            for c in self.epic.get_contracts(cname, client):
+                contracts_ref.append(c.ref)
+            contract_ref = PromptView.prompt_contract(contracts_ref)
+        display_list_events(self.epic.get_events(cname, client, contract_ref))
 
     def run(self) -> None:
 
