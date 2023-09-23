@@ -1,13 +1,14 @@
 from datetime import datetime
-from sqlalchemy.orm import declarative_base
 from sqlalchemy import (
     ForeignKey,
-    Column, Integer, String, TIMESTAMP
+    Column, Integer, String, TIMESTAMP,
+    or_
     )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, aliased, declarative_base
 from sqlalchemy.sql import func
 from sqlalchemy_utils import ChoiceType
 from sqlalchemy.exc import NoResultFound
+
 
 Base = declarative_base()
 
@@ -107,7 +108,7 @@ class Employee(Base):
 
     @classmethod
     def getall(cls, session):
-        return session.query(cls).all()
+        return session.query(cls).order_by(cls.username).all()
 
     @classmethod
     def find_by_userpwd(cls, session, username, password):
@@ -144,12 +145,9 @@ class Commercial(Employee):
 
     @classmethod
     def getall(cls, session):
-        all_commercials = []
-        all_employees = Employee.getall(session)
-        for e in all_employees:
-            if e.role == 'C':
-                all_commercials.append(e)
-        return all_commercials
+        return session.query(cls)\
+            .filter_by(role='C')\
+            .order_by(cls.username).all()
 
     @property
     def contracts(self):
@@ -173,6 +171,12 @@ class Commercial(Employee):
 class Support(Employee):
 
     events = relationship('Event', back_populates='support')
+
+    @classmethod
+    def getall(cls, session):
+        return session.query(cls)\
+            .filter_by(role='S')\
+            .order_by(cls.username).all()
 
 
 class Manager(Employee):
@@ -270,11 +274,25 @@ class Contract(Base, DateFields):
 
     @classmethod
     def find_by_client(cls, session, client):
-        return session.query(cls).filter_by(client=client).all()
+        return session.query(cls)\
+            .filter_by(client=client)\
+            .order_by(cls.ref)\
+            .all()
 
     @classmethod
     def getall(cls, session):
-        return session.query(cls).all()
+        return session.query(cls).order_by(cls.ref).all()
+
+    @classmethod
+    def find_by_selection(cls, session, commercial, client, state):
+        return session.query(cls)\
+            .join(Client, Client.id == cls.client_id)\
+            .join(Employee, Employee.id == Client.commercial_id)\
+            .filter(or_(client is None, Client.full_name == client))\
+            .filter(or_(commercial is None, Employee.username == commercial))\
+            .filter(or_(state is None, cls.state == state))\
+            .order_by(cls.ref)\
+            .all()
 
     @property
     def outstanding(self):
@@ -357,3 +375,21 @@ class Event(Base):
     @classmethod
     def getall(cls, session):
         return session.query(cls).all()
+
+    @classmethod
+    def find_by_selection(cls, session,
+                          commercial, client, contract, support):
+        EmployeeC = aliased(Employee)
+        EmployeeS = aliased(Employee)
+        return session.query(cls)\
+            .join(Contract, Contract.id == cls.contract_id)\
+            .join(Client, Client.id == Contract.id)\
+            .join(EmployeeC, EmployeeC.id == Client.commercial_id)\
+            .outerjoin(EmployeeS, EmployeeS.id == cls.support_id)\
+            .filter(or_(client is None, Client.full_name == client))\
+            .filter(or_(
+                commercial is None, EmployeeC.username == commercial))\
+            .filter(or_(contract is None, Contract.ref == contract))\
+            .filter(or_(support is None, EmployeeS.username == support))\
+            .order_by(cls.date_started)\
+            .all()

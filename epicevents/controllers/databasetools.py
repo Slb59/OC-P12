@@ -59,6 +59,8 @@ class EpicDatabaseWithData(EpicDatabase):
         self.session.commit()
 
     def add_some_events(self):
+        self.add_employee('Aritomo', 'ari!111', 'Support')
+        self.add_employee('Michio', 'michi!111', 'Support')
         contracts = Contract.getall(self.session)
         locations = [
             'France',

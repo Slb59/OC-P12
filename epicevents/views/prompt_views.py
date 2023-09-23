@@ -50,3 +50,15 @@ class PromptView:
             "Choix du contrat:",
             choices=all_contracts,
         ).ask()
+
+    @classmethod
+    def prompt_confirm_support(cls):
+        return questionary.confirm(
+            "Souhaitez-vous sélectionner un support ?").ask()
+
+    @classmethod
+    def prompt_support(cls, all_supports):
+        return questionary.select(
+            "Choix du support:",
+            choices=all_supports,
+        ).ask()

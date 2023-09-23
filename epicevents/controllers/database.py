@@ -13,8 +13,8 @@ from sqlalchemy.orm import (
 from sqlalchemy.exc import ProgrammingError
 from epicevents.models.entities import (
     Base, Department, Manager,
-    Employee, Commercial,
-    Client, Contract,
+    Employee, Commercial, Support,
+    Client, Contract, Event,
     EventType
     )
 from epicevents.views.auth_views import display_waiting_databasecreation
@@ -118,6 +118,14 @@ class EpicDatabase:
                     password=hashed_password,
                     department_id=d.id,
                     role='C')
+            case 'Support':
+                d = Department.find_by_name(
+                    self.session, 'support department')
+                e = Manager(
+                    username=username,
+                    password=hashed_password,
+                    department_id=d.id,
+                    role='S')
         self.session.add(e)
         self.session.commit()
 
@@ -158,42 +166,28 @@ class EpicDatabase:
             self, commercial_name='',
             client_name='',
             state_value=''):
-        contracts = []
-        if client_name:
-            c = Client.find_by_name(self.session, client_name)
-            contracts = c.contracts
-        elif commercial_name:
-            e = Commercial.find_by_username(self.session, commercial_name)
-            contracts = e.contracts
-        else:
-            contracts = Contract.getall(self.session)    
+        state = None
         if state_value:
-            result = []
-            for c in contracts:
-                if c.state.value == state_value:
-                    result.append(c)
-        else:
-            result = contracts
-        return result
+            states = Contract.CONTRACT_STATES
+            for s in states:
+                if state_value in s:
+                    state = s[0]
+        return Contract.find_by_selection(
+            self.session, commercial_name, client_name, state)
 
-    def get_events(self, commercial_name='', client_name='', contract_ref=''):
-        contracts = []
-        events = []
-        if contract_ref:
-            c = Contract.find_by_ref(self.session, contract_ref)
-            events = c.events
-        else:
-            if client_name:
-                c = Client.find_by_name(self.session, client_name)
-                contracts = c.contracts
-            elif commercial_name:
-                e = Commercial.find_by_username(self.session, commercial_name)
-                contracts = e.contracts
-            else:
-                contracts = Contract.getall(self.session)
-            for c in contracts:
-                events.extend(c.events)
-        return events
-
+    def get_events(
+            self,
+            commercial_name='',
+            client_name='',
+            contract_ref='',
+            support_name=''):
+        return Event.find_by_selection(
+            self.session, commercial_name, client_name,
+            contract_ref, support_name
+        )
+ 
     def get_commercials(self):
         return Commercial.getall(self.session)
+    
+    def get_supports(self):
+        return Support.getall(self.session)

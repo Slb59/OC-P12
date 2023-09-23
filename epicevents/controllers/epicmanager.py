@@ -112,6 +112,7 @@ class EpicManager:
     @is_authenticated
     def list_of_events(self):
         contract_ref = None
+        support_username = None
         cname = self.choice_commercial()
         client = self.choice_client(cname)
         # select a contract
@@ -121,7 +122,18 @@ class EpicManager:
             for c in self.epic.get_contracts(cname, client):
                 contracts_ref.append(c.ref)
             contract_ref = PromptView.prompt_contract(contracts_ref)
-        display_list_events(self.epic.get_events(cname, client, contract_ref))
+        # select a support
+        result = PromptView.prompt_confirm_support()
+        if result:
+            supports = self.epic.get_supports()
+            supports_name = []
+            for c in supports:
+                supports_name.append(c.username)
+            support_username = PromptView.prompt_support(supports_name)
+        # display list
+        display_list_events(
+            self.epic.get_events(
+                cname, client, contract_ref, support_username))
 
     def run(self) -> None:
 
