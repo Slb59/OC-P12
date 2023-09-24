@@ -110,7 +110,6 @@ class EpicDatabaseWithData(EpicDatabase):
                 description=f'Creer un contrat pour le client {c.full_name}',
                 employee_id=ch_manager.id)
             self.session.add(t)
-            print(f'task for {ch_manager.username} - {c.full_name}')
         self.session.commit()
 
     def create_a_test_database(self):

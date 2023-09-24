@@ -7,6 +7,10 @@ from epicevents.views.console import console
 class DataView:
 
     @classmethod
+    def display_data_update(cls):
+        console.print('Vos modifications ont été enregistrées')
+
+    @classmethod
     def display_profil(cls, e, nb):
         text = f'Email: {e.email}\n' if e.email else 'Email: \n'
         text += f'Role: {e.role.value}\n'

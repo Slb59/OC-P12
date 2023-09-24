@@ -149,7 +149,15 @@ class EpicManager:
 
     @is_authenticated
     def show_profil(self, e):
-        DataView.display_profil(e, 5)
+        DataView.display_profil(e, len(self.epic.get_tasks(e)))
+
+    @is_authenticated
+    def update_profil(self, e):
+        result = PromptView.prompt_confirm_profil()
+        if result:
+            profil = PromptView.prompt_data_profil()
+            self.epic.update_profil(e, profil)
+            DataView.display_data_update()
 
     def run(self) -> None:
 
@@ -167,6 +175,7 @@ class EpicManager:
                     match result:
                         case '01':
                             self.show_profil(e)
+                            self.update_profil(e)
                         case '02':
                             self.list_of_task(e)
                             self.terminate_a_task(e)

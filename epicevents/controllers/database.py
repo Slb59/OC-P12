@@ -198,3 +198,8 @@ class EpicDatabase:
     def terminate_task(self, task_id):
         Task.terminate(self.session, task_id)
         self.session.commit()
+
+    def update_profil(self, e, data):
+        data['password'] = self.ph.hash(data['password'])
+        e.update_profil(self.session, data)
+        self.session.commit
