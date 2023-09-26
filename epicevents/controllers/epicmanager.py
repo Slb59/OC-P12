@@ -158,8 +158,15 @@ class EpicManager:
 
     @is_authenticated
     @is_manager
-    def create_new_employee():
-        ...
+    def list_of_employees(self):
+        DisplayView.display_list_employees(self.epic.get_employees())
+
+    @is_authenticated
+    @is_manager
+    def create_new_employee(self):
+        roles = self.epic.get_roles()
+        data = PromptView.prompt_data_employee(roles)
+        self.epic.create_employee(data)
 
     def run(self) -> None:
 
@@ -172,7 +179,7 @@ class EpicManager:
             self.list_of_task(e)
             try:
                 while running:
-                    result = menu_choice(e.role.value)
+                    result = menu_choice(e.role.code)
 
                     match result:
                         case '01':
@@ -188,6 +195,14 @@ class EpicManager:
                         case '05':
                             self.list_of_events()
                         case '06':
+                            match e.role.code:
+                                case 'M':
+                                    self.list_of_employees()
+                                case 'C':
+                                    ...  # creer un nouveau client
+                                case 'S':
+                                    ...  # cloturer un evenement
+                        case '07':
                             match e.role.code:
                                 case 'M':
                                     self.create_new_employee()

@@ -19,13 +19,12 @@ def show_waiting(f):
 
 def menu_manager() -> Panel:
     menu_text = "    06-Liste des employés\n"
-    menu_text = "    07-Créer un nouvel employé\n"
+    menu_text += "    07-Créer un nouvel employé\n"
     menu_text += "    08-Modifier le role d'un employé\n"
-    menu_text += "    09-Modifier le département d'un employé\n"
-    menu_text += "    10-Invalider la connexion d'un employé\n"
-    menu_text += "    11-Créer un contrat\n"
-    menu_text += "    12-Modifier un contrat\n"
-    menu_text += "    13-Affecter un support à un évènement"
+    menu_text += "    09-Invalider la connexion d'un employé\n"
+    menu_text += "    10-Créer un contrat\n"
+    menu_text += "    11-Modifier un contrat\n"
+    menu_text += "    12-Affecter un support à un évènement"
     p = Panel(
         Align.left(menu_text, vertical='top'),
         box=box.ROUNDED,
@@ -59,11 +58,11 @@ def menu_support() -> Panel:
 
 def menu_role(role) -> Panel:
     match role:
-        case "Manager":
+        case "M":
             menu = menu_manager()
-        case "Commercial":
+        case "C":
             menu = menu_commercial()
-        case "Support":
+        case "S":
             menu = menu_support()
     return menu
 
@@ -103,9 +102,9 @@ def menu_choice(role):
 
     def check_prompt(result):
         match role:
-            case 'Manager': max_menu_idx = 13
-            case 'Commercial': max_menu_idx = 9
-            case 'Support': max_menu_idx = 6
+            case 'M': max_menu_idx = 12
+            case 'C': max_menu_idx = 9
+            case 'S': max_menu_idx = 6
         if result in ['D', 'Q']:
             return True
         elif int(result) <= max_menu_idx:

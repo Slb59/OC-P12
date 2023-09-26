@@ -3,21 +3,23 @@ from argon2.exceptions import VerifyMismatchError
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 from sqlalchemy_utils.functions import (
-    # database_exists,
-    create_database, drop_database,
+    database_exists,
+    create_database
 )
 from sqlalchemy.orm import (
     sessionmaker,
     scoped_session
     )
-from sqlalchemy.exc import ProgrammingError
 from epicevents.models.entities import (
     Base, Department, Manager,
     Employee, Commercial, Support,
     Client, Contract, Event,
     EventType, Task
     )
-from epicevents.views.auth_views import display_waiting_databasecreation
+from epicevents.views.auth_views import (
+    display_waiting_databasecreation,
+    display_database_connection
+)
 
 
 class EpicDatabase:
@@ -33,18 +35,12 @@ class EpicDatabase:
             port=int(port)
         )
 
-        print(f'checking {self.url} ...')
         self.ph = PasswordHasher()
 
-        try:
-            drop_database(self.url)
-        except ProgrammingError:
-            ...
-
-        # if not database_exists(self.url):
-        #     ...
-
-        if True:
+        print(f'checking {self.url} ...')
+        if database_exists(self.url):
+            display_database_connection(database)
+        else:
             display_waiting_databasecreation(self.database_creation)
 
         self.name = database
@@ -149,12 +145,20 @@ class EpicDatabase:
             )
         self.session.commit()
 
+    def get_employees(self):
+        return Employee.getall(self.session)
+
     def get_clients(self, commercial_name=''):
         if commercial_name:
             e = Commercial.find_by_username(self.session, commercial_name)
             result = e.clients
         else:
             result = Client.getall(self.session)
+        return result
+
+    def get_roles(self):
+        roles = Employee.EMPLOYEE_ROLES
+        result = [r[1] for r in roles]
         return result
 
     def get_contracts_states(self):
@@ -203,3 +207,26 @@ class EpicDatabase:
         data['password'] = self.ph.hash(data['password'])
         e.update_profil(self.session, data)
         self.session.commit
+
+    def create_employee(self, data):
+        data['password'] = self.ph.hash(data['password'])
+        roles = Employee.EMPLOYEE_ROLES
+        for r in roles:
+            if data['role'] in r:
+                role = r[0]
+        match role:
+            case 'M': d = Department.find_by_name(
+                self.session, 'management department')
+            case 'C': d = Department.find_by_name(
+                self.session, 'commercial department')
+            case 'S': d = Department.find_by_name(
+                self.session, 'support department')
+
+        e = Employee(
+            username=data['username'],
+            password=data['password'],
+            email=data['email'],
+            department_id=d.id,
+            role=role)
+
+        self.session.add(e)

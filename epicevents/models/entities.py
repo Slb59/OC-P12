@@ -108,7 +108,9 @@ class Employee(Base):
 
     @classmethod
     def getall(cls, session):
-        return session.query(cls).order_by(cls.username).all()
+        return session.query(cls)\
+            .join(Department, Department.id == cls.department_id)\
+            .order_by(Department.name, cls.username).all()
 
     @classmethod
     def find_by_userpwd(cls, session, username, password):

@@ -24,5 +24,9 @@ def display_login():
     username = console.input("Identifiant:")
     console.print(username)
     password = console.input("Mot de passe:")
-    console.print(password)    
+    console.print(password)
     return username, password
+
+
+def display_database_connection(name):
+    console.print(f'Vous êtes connecté à la base {name}')

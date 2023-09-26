@@ -37,6 +37,15 @@ def load_session():
         return None
 
 
+def read_role():
+    try:
+        with open('session.json', 'r') as f:
+            session_data = json.load(f)
+            return session_data.get('role', None)
+    except FileNotFoundError:
+        return None
+
+
 def stop_session():
     """
     delete file 'session.json'

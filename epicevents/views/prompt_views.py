@@ -98,7 +98,7 @@ class PromptView:
         regex_email = '^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*'
         regex_email += '@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$'
         questionary.password(
-            "Confirmez votre mot de passe:",
+            "Confirmez le mot de passe:",
             validate=lambda text: True if text == password
             else "Les mots de passe ne correspondent pas").ask()
         email = questionary.text(
@@ -106,4 +106,41 @@ class PromptView:
             validate=lambda text: True if re.match(regex_email, text)
             else "Le format de l'email est invalide").ask()
         return {'username': username, 'password': password, 'email': email}
+
+    @classmethod
+    def prompt_data_employee(cls, all_roles):
+        data = cls.prompt_data_profil()
+        role = questionary.select(
+            "Role:",
+            choices=all_roles,
+        ).ask()
+        data['role'] = role
+        return data
+
+    @classmethod
+    def prompt_data_client(cls):
+        full_name = questionary.text(
+            "Nom complet:",
+            validate=lambda text: True
+            if re.match(r"(?=.*?[a-z])(?=.*?[A-Z])", text)
+            else "Seul des caractères alpha sont autorisés").ask()
+        regex_email = '^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*'
+        regex_email += '@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$'
+        email = questionary.text(
+            "Email:",
+            validate=lambda text: True if re.match(regex_email, text)
+            else "Le format de l'email est invalide").ask()
+        regex_phone = "/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/"
+        phone = questionary.text(
+            "Phone:",
+            validate=lambda text: True if re.match(regex_phone, text)
+            else "Ce n'est pas un numéro de téléphone valide").ask()
+        company_name = questionary.text(
+            "Entreprise:",
+            validate=lambda text: True
+            if re.match(r"(?=.*?[a-z])(?=.*?[A-Z])", text)
+            else "Seul des caractères alpha sont autorisés").ask()
+        return {'full_name': full_name, 'email': email, 'phone': phone,
+                'company_name': company_name}
+
     

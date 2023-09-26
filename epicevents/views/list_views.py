@@ -101,3 +101,26 @@ class DisplayView:
                 console.print(table)
         else:
             console.print(table)
+
+    @classmethod
+    def display_list_employees(
+            cls, all_employees, pager=True):
+
+        table = Table(title="Liste des employés", box=box.SQUARE)
+        table.add_column("Département")
+        table.add_column("Id")
+        table.add_column("Identifiant")
+        table.add_column("Email")
+        table.add_column("Role")
+        table.add_column("Statut")
+
+        for e in all_employees:
+            table.add_row(
+                e.department.name,
+                str(e.id), e.username, e.email, e.role.value, e.state.value)
+
+        if pager:
+            with console.pager():
+                console.print(table)
+        else:
+            console.print(table)

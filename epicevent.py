@@ -1,5 +1,5 @@
 import argparse
-import sentry_sdk
+# import sentry_sdk
 from epicevents.controllers.epicmanager import EpicManager
 
 

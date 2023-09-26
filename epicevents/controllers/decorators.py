@@ -1,6 +1,6 @@
 import jwt
 from epicevents.views.error import ErrorView
-from .session import load_session
+from .session import load_session, read_role
 from .config import Environ
 
 
@@ -40,8 +40,8 @@ def is_support(f):
 
 def is_manager(f):
     def decorator(*args, **kwargs):
-        e = args[1]
-        if e.role.value == 'Manager':
+        role = read_role()
+        if role == 'Manager':
             return f(*args, **kwargs)
         else:
             return ErrorView.display_not_manager()
