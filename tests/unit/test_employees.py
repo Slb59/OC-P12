@@ -1,4 +1,5 @@
 import pytest
+from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 from epicevents.models.entities import (
     Department, Employee, Commercial, Task, Manager
@@ -169,7 +170,7 @@ class TestTask:
             db_session.add(t)
         t = db_session.query(Task).filter_by(id=1).first()
         print(repr(t))
-        assert repr(t) == '01/09/2023:ma description'
+        assert repr(t) == f'{datetime.now()}:ma description'
 
 
 class TestEmployeeUnique:

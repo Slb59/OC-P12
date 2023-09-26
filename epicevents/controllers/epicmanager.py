@@ -12,7 +12,7 @@ from .session import load_session, stop_session, create_session
 from .decorators import (
     is_authenticated,
     # is_commercial,
-    # is_manager,
+    is_manager,
     # is_support
 )
 
@@ -27,6 +27,8 @@ class EpicManager:
         db = Config()
         self.env = Environ()
 
+        print(db)
+        print(db.db_config)
         # create database
         self.epic = EpicDatabaseWithData(**db.db_config)
 
@@ -72,9 +74,8 @@ class EpicManager:
         cname = None
         result = PromptView.prompt_confirm_commercial()
         if result:
-            commercials_name = []
-            for c in self.epic.get_commercials():
-                commercials_name.append(c.username)
+            commercials = self.epic.get_commercials()
+            commercials_name = [c.username for c in commercials]
             cname = PromptView.prompt_commercial(commercials_name)
         return cname
 
@@ -83,9 +84,8 @@ class EpicManager:
         # select a client
         result = PromptView.prompt_confirm_client()
         if result:
-            clients_name = []
-            for c in self.epic.get_clients(commercial_name):
-                clients_name.append(c.full_name)
+            employees = self.epic.get_clients(commercial_name)
+            clients_name = [c.full_name for c in employees]
             client = PromptView.prompt_client(clients_name)
         return client
 
@@ -116,17 +116,14 @@ class EpicManager:
         # select a contract
         result = PromptView.prompt_confirm_contract()
         if result:
-            contracts_ref = []
-            for c in self.epic.get_contracts(cname, client):
-                contracts_ref.append(c.ref)
+            contracts = self.epic.get_contracts(cname, client)
+            contracts_ref = [c.ref for c in contracts]
             contract_ref = PromptView.prompt_contract(contracts_ref)
         # select a support
         result = PromptView.prompt_confirm_support()
         if result:
             supports = self.epic.get_supports()
-            supports_name = []
-            for c in supports:
-                supports_name.append(c.username)
+            supports_name = [c.username for c in supports]
             support_username = PromptView.prompt_support(supports_name)
         # display list
         DisplayView.display_list_events(
@@ -159,6 +156,11 @@ class EpicManager:
             self.epic.update_profil(e, profil)
             DataView.display_data_update()
 
+    @is_authenticated
+    @is_manager
+    def create_new_employee():
+        ...
+
     def run(self) -> None:
 
         self.check_logout()
@@ -185,6 +187,14 @@ class EpicManager:
                             self.list_of_contracts()
                         case '05':
                             self.list_of_events()
+                        case '06':
+                            match e.role.code:
+                                case 'M':
+                                    self.create_new_employee()
+                                case 'C':
+                                    ...
+                                case 'S':
+                                    ...
                         case 'D':
                             stop_session()
                             running = False

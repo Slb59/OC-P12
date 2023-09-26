@@ -19,6 +19,7 @@ argon2-cffi = "*"
 getchlib = "*"
 pytest-mock = "*"
 freezegun = "*"
+sentry-sdk = "*"
 
 [dev-packages]
 

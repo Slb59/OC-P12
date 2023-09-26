@@ -2,9 +2,9 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
-from sqlalchemy_utils import (
+from sqlalchemy_utils.functions import (
     # database_exists,
-    create_database, drop_database
+    create_database, drop_database,
 )
 from sqlalchemy.orm import (
     sessionmaker,
@@ -41,7 +41,9 @@ class EpicDatabase:
         except ProgrammingError:
             ...
 
-        # if not database_exists(url):
+        # if not database_exists(self.url):
+        #     ...
+
         if True:
             display_waiting_databasecreation(self.database_creation)
 
@@ -157,9 +159,7 @@ class EpicDatabase:
 
     def get_contracts_states(self):
         states = Contract.CONTRACT_STATES
-        result = []
-        for s in states:
-            result.append(s[1])
+        result = [s[1] for s in states]
         return result
 
     def get_contracts(
