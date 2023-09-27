@@ -159,14 +159,25 @@ class EpicManager:
     @is_authenticated
     @is_manager
     def list_of_employees(self):
-        DisplayView.display_list_employees(self.epic.get_employees())
+        employees = self.epic.dbemployees.get_employees()
+        DisplayView.display_list_employees(employees)
 
     @is_authenticated
     @is_manager
     def create_new_employee(self):
-        roles = self.epic.get_roles()
+        roles = self.epic.dbemployees.get_roles()
         data = PromptView.prompt_data_employee(roles)
-        self.epic.create_employee(data)
+        self.epic.dbemployees.create_employee(data)
+
+    @is_authenticated
+    @is_manager
+    def update_employee_role(self):
+        employees = self.epic.dbemployees.get_employees()
+        enames = [e.username for e in employees]
+        ename = PromptView.prompt_employee(enames)
+        roles = self.epic.dbemployees.get_roles()
+        role = PromptView.prompt_role(roles)
+        self.epic.dbemployees.update_employee(ename, role)
 
     def run(self) -> None:
 
@@ -180,7 +191,6 @@ class EpicManager:
             try:
                 while running:
                     result = menu_choice(e.role.code)
-
                     match result:
                         case '01':
                             self.show_profil(e)
@@ -208,8 +218,12 @@ class EpicManager:
                                     self.create_new_employee()
                                 case 'C':
                                     ...
-                                case 'S':
-                                    ...
+                        case '08':
+                            match e.role.code:
+                                case 'M':
+                                    self.update_employee_role()
+                                case 'C':
+                                    ...  # creer un evenement
                         case 'D':
                             stop_session()
                             running = False

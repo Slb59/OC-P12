@@ -1,4 +1,5 @@
 import pytest
+import argparse
 from datetime import datetime
 from freezegun import freeze_time
 from contextlib import contextmanager
@@ -28,7 +29,6 @@ def db_url(request):
 def db_engine(request):
     """yields a SQLAlchemy engine which is suppressed after the test session"""
     db_url = request.config.getoption("--dburl")
-    print(db_url)
     create_database(db_url)
     engine_ = create_engine(db_url, echo=True)
     Base.metadata.create_all(engine_)
@@ -76,3 +76,18 @@ def patch_time(time_to_freeze, tick=True):
 @pytest.fixture(scope='function')
 def patch_current_time():
     return patch_time
+
+
+@pytest.fixture(scope='function')
+def mockparser():
+    parser = argparse.ArgumentParser(
+        prog="EpicEvent-Test",
+        description="Gestionnaire d'évènements",
+        epilog="------ CRM EpicEvent ------"
+    )
+    return parser
+
+
+@pytest.fixture(scope='function')
+def mocklogin():
+    return 'Osynia/osyA!111'

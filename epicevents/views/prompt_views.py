@@ -61,7 +61,14 @@ class PromptView:
     def prompt_support(cls, all_supports):
         return questionary.select(
             "Choix du support:",
-            choices=all_supports,
+            choices=all_supports
+        ).ask()
+
+    @classmethod
+    def prompt_employee(cls, all_employees):
+        return questionary.select(
+            "Sélectionnez un employé:",
+            choices=all_employees
         ).ask()
 
     @classmethod
@@ -108,13 +115,17 @@ class PromptView:
         return {'username': username, 'password': password, 'email': email}
 
     @classmethod
-    def prompt_data_employee(cls, all_roles):
-        data = cls.prompt_data_profil()
+    def prompt_role(cls, all_roles):
         role = questionary.select(
             "Role:",
             choices=all_roles,
         ).ask()
-        data['role'] = role
+        return role
+
+    @classmethod
+    def prompt_data_employee(cls, all_roles):
+        data = cls.prompt_data_profil()
+        data['role'] = cls.prompt_role(all_roles)
         return data
 
     @classmethod
@@ -130,7 +141,7 @@ class PromptView:
             "Email:",
             validate=lambda text: True if re.match(regex_email, text)
             else "Le format de l'email est invalide").ask()
-        regex_phone = "/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/"
+        regex_phone = "/\\(?([0-9]{3})\\)?([ .-]?)([0-9]{3})\2([0-9]{4})/"
         phone = questionary.text(
             "Phone:",
             validate=lambda text: True if re.match(regex_phone, text)
@@ -142,5 +153,3 @@ class PromptView:
             else "Seul des caractères alpha sont autorisés").ask()
         return {'full_name': full_name, 'email': email, 'phone': phone,
                 'company_name': company_name}
-
-    

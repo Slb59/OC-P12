@@ -113,9 +113,18 @@ class TestContracts:
         e = Commercial.find_by_username(db_session, 'Yuka')
         # when
         self.add_clients_to_yuka(db_session)
-        self.add_contracts_on_client1(db_session)
-        c = Contract.find_by_ref(db_session, '2023091303')
+        c = Client.find_by_name(db_session, 'Client 1')
+        contract_description = "Contract 1 for the client 1"
+        contract1 = Contract(
+            ref='2023091301',
+            description=contract_description,
+            client_id=c.id,
+            total_amount=10000
+            )
+        db_session.add(contract1)
+        c = Contract.find_by_ref(db_session, '2023091301')
         c.state = 'X'
+        db_session.add(c)
         # and when
         e.update_role('S')
         # then

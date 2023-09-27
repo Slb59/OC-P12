@@ -22,7 +22,103 @@ from epicevents.views.auth_views import (
 )
 
 
+class EmployeeBase:
+
+    """ Manage crud operations on Employee base """
+
+    def __init__(self, session) -> None:
+        self.ph = PasswordHasher()
+        self.session = session
+
+    def add_employee(self, username, password, role):
+        # hashed_password = password
+
+        hashed_password = self.ph.hash(password)
+
+        match role:
+            case 'Manager':
+                d = Department.find_by_name(
+                    self.session, 'management department')
+                e = Manager(
+                    username=username,
+                    password=hashed_password,
+                    department_id=d.id,
+                    role='M')
+            case 'Commercial':
+                d = Department.find_by_name(
+                    self.session, 'commercial department')
+                e = Commercial(
+                    username=username,
+                    password=hashed_password,
+                    department_id=d.id,
+                    role='C')
+            case 'Support':
+                d = Department.find_by_name(
+                    self.session, 'support department')
+                e = Support(
+                    username=username,
+                    password=hashed_password,
+                    department_id=d.id,
+                    role='S')
+        self.session.add(e)
+        self.session.commit()
+
+    def get_employees(self):
+        return Employee.getall(self.session)
+
+    def get_roles(self):
+        roles = Employee.EMPLOYEE_ROLES
+        result = [r[1] for r in roles]
+        return result
+
+    def get_commercials(self):
+        return Commercial.getall(self.session)
+
+    def get_supports(self):
+        return Support.getall(self.session)
+
+    def update_profil(self, e, data):
+        data['password'] = self.ph.hash(data['password'])
+        e.update_profil(self.session, data)
+        self.session.commit
+
+    def get_rolecode(self, rolename):
+        roles = Employee.EMPLOYEE_ROLES
+        for r in roles:
+            if rolename in r:
+                return r[0]
+        return None
+
+    def create_employee(self, data):
+        data['password'] = self.ph.hash(data['password'])
+        role = self.get_rolecode(data['role'])
+        match role:
+            case 'M': d = Department.find_by_name(
+                self.session, 'management department')
+            case 'C': d = Department.find_by_name(
+                self.session, 'commercial department')
+            case 'S': d = Department.find_by_name(
+                self.session, 'support department')
+
+        e = Employee(
+            username=data['username'],
+            password=data['password'],
+            email=data['email'],
+            department_id=d.id,
+            role=role)
+
+        self.session.add(e)
+
+    def update_employee(self, name, role):
+        e = Employee.find_by_username(self.session, name)
+        e.role = self.get_rolecode(role)
+        self.session.add(e)
+        self.session.commit()
+
+
 class EpicDatabase:
+
+    """ connect on db and manage crud operations """
 
     def __init__(self, database, host, user, password, port) -> None:
 
@@ -38,14 +134,18 @@ class EpicDatabase:
         self.ph = PasswordHasher()
 
         print(f'checking {self.url} ...')
-        if database_exists(self.url):
-            display_database_connection(database)
-        else:
+        try:
+            if database_exists(self.url):
+                display_database_connection(database)
+            else:
+                display_waiting_databasecreation(self.database_creation)
+        except Exception:
             display_waiting_databasecreation(self.database_creation)
 
         self.name = database
         self.engine = create_engine(self.url)
         self.session = scoped_session(sessionmaker(bind=self.engine))
+        self.dbemployees = EmployeeBase(self.session)
 
     def __str__(self) -> str:
         return f'{self.name} database'
@@ -56,6 +156,7 @@ class EpicDatabase:
         engine = create_engine(self.url)
         Base.metadata.create_all(engine)
         self.session = scoped_session(sessionmaker(bind=engine))
+        self.dbemployees = EmployeeBase(self.session)
         # add initial data
         self.first_initdb()
         self.session.remove()
@@ -94,39 +195,6 @@ class EpicDatabase:
         print(f'-----> check employee {username}')
         return Employee.find_by_username(self.session, username)
 
-    def add_employee(self, username, password, role):
-        # hashed_password = password
-
-        hashed_password = self.ph.hash(password)
-
-        match role:
-            case 'Manager':
-                d = Department.find_by_name(
-                    self.session, 'management department')
-                e = Manager(
-                    username=username,
-                    password=hashed_password,
-                    department_id=d.id,
-                    role='M')
-            case 'Commercial':
-                d = Department.find_by_name(
-                    self.session, 'commercial department')
-                e = Manager(
-                    username=username,
-                    password=hashed_password,
-                    department_id=d.id,
-                    role='C')
-            case 'Support':
-                d = Department.find_by_name(
-                    self.session, 'support department')
-                e = Manager(
-                    username=username,
-                    password=hashed_password,
-                    department_id=d.id,
-                    role='S')
-        self.session.add(e)
-        self.session.commit()
-
     def first_initdb(self):
         # add departments
         management_dpt = Department(name='management department')
@@ -134,7 +202,7 @@ class EpicDatabase:
         commercial_dpt = Department(name='commercial department')
         self.session.add_all([management_dpt, support_dpt, commercial_dpt])
         # add a superuser
-        self.add_employee('Osynia', 'osyA!111', 'Manager')
+        self.dbemployees.add_employee('Osynia', 'osyA!111', 'Manager')
         # add types of events
         event_type1 = EventType(title='conference')
         event_type2 = EventType(title='forum')
@@ -145,9 +213,6 @@ class EpicDatabase:
             )
         self.session.commit()
 
-    def get_employees(self):
-        return Employee.getall(self.session)
-
     def get_clients(self, commercial_name=''):
         if commercial_name:
             e = Commercial.find_by_username(self.session, commercial_name)
@@ -156,20 +221,15 @@ class EpicDatabase:
             result = Client.getall(self.session)
         return result
 
-    def get_roles(self):
-        roles = Employee.EMPLOYEE_ROLES
-        result = [r[1] for r in roles]
-        return result
-
     def get_contracts_states(self):
         states = Contract.CONTRACT_STATES
         result = [s[1] for s in states]
         return result
 
     def get_contracts(
-            self, commercial_name='',
-            client_name='',
-            state_value=''):
+            self, commercial_name=None,
+            client_name=None,
+            state_value=None):
         state = None
         if state_value:
             states = Contract.CONTRACT_STATES
@@ -181,20 +241,14 @@ class EpicDatabase:
 
     def get_events(
             self,
-            commercial_name='',
-            client_name='',
-            contract_ref='',
-            support_name=''):
+            commercial_name=None,
+            client_name=None,
+            contract_ref=None,
+            support_name=None):
         return Event.find_by_selection(
             self.session, commercial_name, client_name,
             contract_ref, support_name
         )
-
-    def get_commercials(self):
-        return Commercial.getall(self.session)
-
-    def get_supports(self):
-        return Support.getall(self.session)
 
     def get_tasks(self, e):
         return Task.find_active_tasks(self.session, e)
@@ -203,30 +257,3 @@ class EpicDatabase:
         Task.terminate(self.session, task_id)
         self.session.commit()
 
-    def update_profil(self, e, data):
-        data['password'] = self.ph.hash(data['password'])
-        e.update_profil(self.session, data)
-        self.session.commit
-
-    def create_employee(self, data):
-        data['password'] = self.ph.hash(data['password'])
-        roles = Employee.EMPLOYEE_ROLES
-        for r in roles:
-            if data['role'] in r:
-                role = r[0]
-        match role:
-            case 'M': d = Department.find_by_name(
-                self.session, 'management department')
-            case 'C': d = Department.find_by_name(
-                self.session, 'commercial department')
-            case 'S': d = Department.find_by_name(
-                self.session, 'support department')
-
-        e = Employee(
-            username=data['username'],
-            password=data['password'],
-            email=data['email'],
-            department_id=d.id,
-            role=role)
-
-        self.session.add(e)

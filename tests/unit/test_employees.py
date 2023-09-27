@@ -33,7 +33,7 @@ def add_yuka(db_session):
     e1 = Commercial(
         username='Yuka', password='Yuka', department_id=d.id, role='C')
     db_session.add(e1)
-
+ 
 
 def add_tasks_on_yuka(db_session):
     e = Commercial.find_by_username(db_session, 'Yuka')
@@ -162,15 +162,18 @@ class TestEmployees:
 
 class TestTask:
 
-    def test_repr_task(self, db_session, patch_current_time):
+    def test_repr_task(self, db_session):
+        # given
         initdb(db_session)
         add_yuka(db_session)
-        with patch_current_time("2023-09-01 00:00:00", tick=True):
-            t = Task(description='ma description', employee_id=1)
-            db_session.add(t)
-        t = db_session.query(Task).filter_by(id=1).first()
-        print(repr(t))
-        assert repr(t) == f'{datetime.now()}:ma description'
+        e = Employee.find_by_username(db_session, 'Yuka')
+        # when
+        t = Task(description='ma description', employee_id=e.id)
+        db_session.add(t)
+        t = db_session.query(Task).first()
+        # then
+        fmt = '%d/%m/%Y'
+        assert repr(t) == f'{datetime.now().strftime(fmt)}:ma description'
 
 
 class TestEmployeeUnique:

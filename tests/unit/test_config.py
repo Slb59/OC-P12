@@ -1,7 +1,16 @@
 import pytest
 from epicevents.controllers.config import (
-    Config, NoSectionPostgresql, FileNotExists
+    Config, NoSectionPostgresql, FileNotExists,
+    Environ
 )
+
+
+def test_init_config():
+    s = "{'database': 'epic', 'host': 'localhost', "
+    s += "'user': 'postgres', 'password': 'postgres', 'port': '5432'}"
+    config = Config()
+    print(config)
+    assert str(config) == s
 
 
 def test_config_file_exists():
@@ -30,3 +39,8 @@ def test_config_not_exists():
     assert str(e_info.value) == msg
 
 
+def test_init_environ():
+    env = Environ()
+    assert env.DEFAULT_DATABASE == 'epic'
+    assert env.SECRET_KEY == 'm59r06yt*+d4h8zo@fx0%@y3jn*$^(!$)_m30k=9qov4jmx&'
+    assert env.TOKEN_DELTA > 1
