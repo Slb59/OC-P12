@@ -110,7 +110,7 @@ class EpicManager:
     @is_authenticated
     def list_of_events(self):
         contract_ref = None
-        support_username = None
+        sname = None
         cname = self.choice_commercial()
         client = self.choice_client(cname)
         # select a contract
@@ -122,13 +122,13 @@ class EpicManager:
         # select a support
         result = PromptView.prompt_confirm_support()
         if result:
-            supports = self.epic.get_supports()
+            supports = self.epic.dbemployees.get_supports()
             supports_name = [c.username for c in supports]
-            support_username = PromptView.prompt_support(supports_name)
+            supports_name.append('-- sans support --')
+            sname = PromptView.prompt_support(supports_name)
         # display list
-        DisplayView.display_list_events(
-            self.epic.get_events(
-                cname, client, contract_ref, support_username))
+        events = self.epic.get_events(cname, client, contract_ref, sname)
+        DisplayView.display_list_events(events)
 
     @is_authenticated
     def list_of_task(self, e):
@@ -179,6 +179,14 @@ class EpicManager:
         role = PromptView.prompt_role(roles)
         self.epic.dbemployees.update_employee(ename, role)
 
+    @is_authenticated
+    @is_manager
+    def inactivate_employee(self):
+        employees = self.epic.dbemployees.get_employees()
+        enames = [e.username for e in employees]
+        ename = PromptView.prompt_employee(enames)
+        self.epic.dbemployees.inactivate(ename)
+
     def run(self) -> None:
 
         self.check_logout()
@@ -224,12 +232,20 @@ class EpicManager:
                                     self.update_employee_role()
                                 case 'C':
                                     ...  # creer un evenement
+                        case '09':
+                            match e.role.code:
+                                case 'M':
+                                    self.inactivate_employee()
+                                case 'C':
+                                    ...  # 
                         case 'D':
                             stop_session()
                             running = False
                         case 'Q':
                             running = False
                             create_session(
+                                e, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
+                    create_session(
                                 e, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
 
             except KeyboardInterrupt:

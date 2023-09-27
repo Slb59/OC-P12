@@ -11,8 +11,8 @@ from sqlalchemy.orm import (
     scoped_session
     )
 from epicevents.models.entities import (
-    Base, Department, Manager,
-    Employee, Commercial, Support,
+    Base, Department,
+    Employee, Commercial,
     Client, Contract, Event,
     EventType, Task
     )
@@ -20,100 +20,7 @@ from epicevents.views.auth_views import (
     display_waiting_databasecreation,
     display_database_connection
 )
-
-
-class EmployeeBase:
-
-    """ Manage crud operations on Employee base """
-
-    def __init__(self, session) -> None:
-        self.ph = PasswordHasher()
-        self.session = session
-
-    def add_employee(self, username, password, role):
-        # hashed_password = password
-
-        hashed_password = self.ph.hash(password)
-
-        match role:
-            case 'Manager':
-                d = Department.find_by_name(
-                    self.session, 'management department')
-                e = Manager(
-                    username=username,
-                    password=hashed_password,
-                    department_id=d.id,
-                    role='M')
-            case 'Commercial':
-                d = Department.find_by_name(
-                    self.session, 'commercial department')
-                e = Commercial(
-                    username=username,
-                    password=hashed_password,
-                    department_id=d.id,
-                    role='C')
-            case 'Support':
-                d = Department.find_by_name(
-                    self.session, 'support department')
-                e = Support(
-                    username=username,
-                    password=hashed_password,
-                    department_id=d.id,
-                    role='S')
-        self.session.add(e)
-        self.session.commit()
-
-    def get_employees(self):
-        return Employee.getall(self.session)
-
-    def get_roles(self):
-        roles = Employee.EMPLOYEE_ROLES
-        result = [r[1] for r in roles]
-        return result
-
-    def get_commercials(self):
-        return Commercial.getall(self.session)
-
-    def get_supports(self):
-        return Support.getall(self.session)
-
-    def update_profil(self, e, data):
-        data['password'] = self.ph.hash(data['password'])
-        e.update_profil(self.session, data)
-        self.session.commit
-
-    def get_rolecode(self, rolename):
-        roles = Employee.EMPLOYEE_ROLES
-        for r in roles:
-            if rolename in r:
-                return r[0]
-        return None
-
-    def create_employee(self, data):
-        data['password'] = self.ph.hash(data['password'])
-        role = self.get_rolecode(data['role'])
-        match role:
-            case 'M': d = Department.find_by_name(
-                self.session, 'management department')
-            case 'C': d = Department.find_by_name(
-                self.session, 'commercial department')
-            case 'S': d = Department.find_by_name(
-                self.session, 'support department')
-
-        e = Employee(
-            username=data['username'],
-            password=data['password'],
-            email=data['email'],
-            department_id=d.id,
-            role=role)
-
-        self.session.add(e)
-
-    def update_employee(self, name, role):
-        e = Employee.find_by_username(self.session, name)
-        e.role = self.get_rolecode(role)
-        self.session.add(e)
-        self.session.commit()
+from epicevents.controllers.employee_base import EmployeeBase
 
 
 class EpicDatabase:
@@ -245,6 +152,8 @@ class EpicDatabase:
             client_name=None,
             contract_ref=None,
             support_name=None):
+        if support_name == '-- sans support --':
+            support_name = 'None'
         return Event.find_by_selection(
             self.session, commercial_name, client_name,
             contract_ref, support_name
@@ -256,4 +165,3 @@ class EpicDatabase:
     def terminate_task(self, task_id):
         Task.terminate(self.session, task_id)
         self.session.commit()
-

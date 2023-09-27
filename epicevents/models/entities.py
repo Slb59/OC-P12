@@ -1,3 +1,4 @@
+import random
 from datetime import datetime
 from sqlalchemy import (
     ForeignKey,
@@ -180,7 +181,7 @@ class Support(Employee):
     @classmethod
     def getall(cls, session):
         return session.query(cls)\
-            .filter_by(role='S')\
+            .filter_by(role='S', state='A')\
             .order_by(cls.username).all()
 
 
@@ -191,6 +192,13 @@ class Manager(Employee):
         return session.query(cls)\
             .filter_by(role='M')\
             .order_by(cls.username).all()
+
+    @classmethod
+    def getone(cls, session):
+        alls = session.query(cls)\
+            .filter_by(role='M', state='A')\
+            .order_by(cls.username).all()
+        return random.choice(alls)
 
 
 class Task(Base):
@@ -413,15 +421,32 @@ class Event(Base):
                           commercial, client, contract, support):
         EmployeeC = aliased(Employee)
         EmployeeS = aliased(Employee)
-        return session.query(cls)\
-            .join(Contract, Contract.id == cls.contract_id)\
-            .join(Client, Client.id == Contract.id)\
-            .join(EmployeeC, EmployeeC.id == Client.commercial_id)\
-            .outerjoin(EmployeeS, EmployeeS.id == cls.support_id)\
-            .filter(or_(client is None, Client.full_name == client))\
-            .filter(or_(
-                commercial is None, EmployeeC.username == commercial))\
-            .filter(or_(contract is None, Contract.ref == contract))\
-            .filter(or_(support is None, EmployeeS.username == support))\
-            .order_by(cls.date_started)\
-            .all()
+
+        if support == 'None':
+            return session.query(cls)\
+                .join(Contract, Contract.id == cls.contract_id)\
+                .join(Client, Client.id == Contract.id)\
+                .join(EmployeeC, EmployeeC.id == Client.commercial_id)\
+                .filter(cls.support_id.is_(None))\
+                .filter(or_(client is None, Client.full_name == client))\
+                .filter(or_(
+                    commercial is None, EmployeeC.username == commercial))\
+                .filter(or_(contract is None, Contract.ref == contract))\
+                .order_by(cls.date_started)\
+                .all()
+        else:
+            return session.query(cls)\
+                .join(Contract, Contract.id == cls.contract_id)\
+                .join(Client, Client.id == Contract.id)\
+                .join(EmployeeC, EmployeeC.id == Client.commercial_id)\
+                .outerjoin(EmployeeS, EmployeeS.id == cls.support_id)\
+                .filter(or_(client is None, Client.full_name == client))\
+                .filter(or_(
+                    commercial is None, EmployeeC.username == commercial))\
+                .filter(or_(contract is None, Contract.ref == contract))\
+                .filter(or_(
+                    support is None,
+                    EmployeeS.username == support
+                    ))\
+                .order_by(cls.date_started)\
+                .all()

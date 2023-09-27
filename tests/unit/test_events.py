@@ -1,7 +1,11 @@
+import logging
 from epicevents.models.entities import (
     Department, Commercial, Support,
     Client, Contract, Event, EventType
     )
+
+
+log = logging.getLogger()
 
 
 class TestEvent:
@@ -101,3 +105,36 @@ class TestEvent:
             )
         event.support_id = support.id
         assert len(support.events) == 2
+    
+    def test_list_events_no_support(self, db_session):
+        self.initdb(db_session)
+        self.add_employees(db_session)
+        self.add_client_to_yuka(db_session)
+        self.add_contract_on_client(db_session)
+        self.add_events_on_contract(db_session)
+        events = Event.getall(db_session)
+        assert len(events) == 3
+        event = Event.find_by_title(
+            db_session, 'conference on contract 2023091301'
+            )
+        support = Support.find_by_username(db_session, 'Aritomo')
+        event.support_id = support.id
+        db_session.add(event)
+        events = Event.getall(db_session)
+        for e in events:
+            if e.support_id:
+                log.debug(e.support.username)
+            else:
+                log.debug(f'{e.id} Pas de support')
+        events = Event.find_by_selection(
+            session=db_session,
+            commercial=None, client=None, contract=None,
+            support='Aritomo')
+        log.debug(events)
+        assert len(events) == 1
+        events = Event.find_by_selection(
+            session=db_session,
+            commercial=None, client=None, contract=None,
+            support='None')
+        assert len(events) == 2
+        
