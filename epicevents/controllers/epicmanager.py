@@ -1,5 +1,4 @@
 import jwt
-
 from epicevents.views.auth_views import display_logout, display_welcome
 from epicevents.views.error import ErrorView
 from epicevents.views.menu_views import menu_choice
@@ -74,7 +73,7 @@ class EpicManager:
         cname = None
         result = PromptView.prompt_confirm_commercial()
         if result:
-            commercials = self.epic.get_commercials()
+            commercials = self.epic.dbemployees.get_commercials()
             commercials_name = [c.username for c in commercials]
             cname = PromptView.prompt_commercial(commercials_name)
         return cname
@@ -84,7 +83,7 @@ class EpicManager:
         # select a client
         result = PromptView.prompt_confirm_client()
         if result:
-            employees = self.epic.get_clients(commercial_name)
+            employees = self.epic.dbclients.get_clients(commercial_name)
             clients_name = [c.full_name for c in employees]
             client = PromptView.prompt_client(clients_name)
         return client
@@ -92,7 +91,8 @@ class EpicManager:
     @is_authenticated
     def list_of_clients(self):
         cname = self.choice_commercial()
-        DisplayView.display_list_clients(self.epic.get_clients(cname))
+        clients = self.epic.dbclients.get_clients(cname)
+        DisplayView.display_list_clients(clients)
 
     @is_authenticated
     def list_of_contracts(self):
@@ -102,10 +102,11 @@ class EpicManager:
         # select a state
         result = PromptView.prompt_confirm_statut()
         if result:
-            state = PromptView.prompt_statut(self.epic.get_contracts_states())
+            states = self.epic.dbcontracts.get_states()
+            state = PromptView.prompt_statut(states)
         # display list
         DisplayView.display_list_contracts(
-            self.epic.get_contracts(cname, client, state))
+            self.epic.dbcontracts.get_contracts(cname, client, state))
 
     @is_authenticated
     def list_of_events(self):
@@ -116,7 +117,7 @@ class EpicManager:
         # select a contract
         result = PromptView.prompt_confirm_contract()
         if result:
-            contracts = self.epic.get_contracts(cname, client)
+            contracts = self.epic.dbcontracts.get_contracts(cname, client)
             contracts_ref = [c.ref for c in contracts]
             contract_ref = PromptView.prompt_contract(contracts_ref)
         # select a support
@@ -132,29 +133,30 @@ class EpicManager:
 
     @is_authenticated
     def list_of_task(self, e):
-        DisplayView.display_list_tasks(self.epic.get_tasks(e))
+        tasks = self.epic.dbemployees.get_tasks(e)
+        DisplayView.display_list_tasks(tasks)
 
     @is_authenticated
     def terminate_a_task(self, e):
         result = PromptView.prompt_confirm_task()
         if result:
             all_tasks_id = []
-            for t in self.epic.get_tasks(e):
+            for t in self.epic.dbemployees.get_tasks(e):
                 all_tasks_id.append(str(t.id))
             task = PromptView.prompt_task(all_tasks_id)
-            self.epic.terminate_task(task)
+            self.epic.dbemployees.terminate_task(task)
 
     @is_authenticated
     def show_profil(self, e):
-        DataView.display_profil(e, len(self.epic.get_tasks(e)))
+        tasks = self.epic.dbemployees.get_tasks(e)
+        DataView.display_profil(e, len(tasks))
 
     @is_authenticated
     def update_profil(self, e):
         result = PromptView.prompt_confirm_profil()
         if result:
             profil = PromptView.prompt_data_profil()
-            self.epic.update_profil(e, profil)
-            DataView.display_data_update()
+            self.epic.dbemployees.update_profil(e, profil)
 
     @is_authenticated
     @is_manager
@@ -166,8 +168,11 @@ class EpicManager:
     @is_manager
     def create_new_employee(self):
         roles = self.epic.dbemployees.get_roles()
-        data = PromptView.prompt_data_employee(roles)
-        self.epic.dbemployees.create_employee(data)
+        try:
+            data = PromptView.prompt_data_employee(roles)
+            self.epic.dbemployees.create_employee(data)
+        except KeyboardInterrupt:
+            DataView.display_interupt()
 
     @is_authenticated
     @is_manager
@@ -186,6 +191,18 @@ class EpicManager:
         enames = [e.username for e in employees]
         ename = PromptView.prompt_employee(enames)
         self.epic.dbemployees.inactivate(ename)
+
+    @is_authenticated
+    @is_manager
+    def create_contract(self):
+        clients = self.epic.dbclients.get_clients()
+        enames = [c.full_name for c in clients]
+        ename = PromptView.prompt_client(enames)
+        try:
+            data = PromptView.prompt_data_contract()
+            self.epic.dbcontracts.create(ename, data)
+        except KeyboardInterrupt:
+            DataView.display_interupt()
 
     def run(self) -> None:
 
@@ -237,7 +254,9 @@ class EpicManager:
                                 case 'M':
                                     self.inactivate_employee()
                                 case 'C':
-                                    ...  # 
+                                    ...  #
+                        case '10':
+                            self.create_contract()
                         case 'D':
                             stop_session()
                             running = False

@@ -5,9 +5,9 @@ import re
 class PromptView:
 
     @classmethod
-    def prompt_confirm_commercial(cls):
+    def prompt_confirm_commercial(cls, **kwargs):
         return questionary.confirm(
-            "Souhaitez-vous sélectionner un commercial ?").ask()
+            "Souhaitez-vous sélectionner un commercial ?", **kwargs).ask()
 
     @classmethod
     def prompt_commercial(cls, all_commercials):
@@ -17,21 +17,23 @@ class PromptView:
         ).ask()
 
     @classmethod
-    def prompt_confirm_client(cls):
+    def prompt_confirm_client(cls, **kwargs):
         return questionary.confirm(
-            "Souhaitez-vous sélectionner un client ?").ask()
+            "Souhaitez-vous sélectionner un client ?", **kwargs).ask()
 
     @classmethod
-    def prompt_client(cls, all_clients):
+    def prompt_client(cls, all_clients, **kwargs):
+        # print(kwargs['input'])
         return questionary.select(
             "Choix du client:",
             choices=all_clients,
+            **kwargs
         ).ask()
 
     @classmethod
-    def prompt_confirm_statut(cls):
+    def prompt_confirm_statut(cls, **kwargs):
         return questionary.confirm(
-            "Souhaitez-vous sélectionner un statut ?").ask()
+            "Souhaitez-vous sélectionner un statut ?", **kwargs).ask()
 
     @classmethod
     def prompt_statut(cls, all_states):
@@ -41,9 +43,9 @@ class PromptView:
         ).ask()
 
     @classmethod
-    def prompt_confirm_contract(cls):
+    def prompt_confirm_contract(cls, **kwargs):
         return questionary.confirm(
-            "Souhaitez-vous sélectionner un contrat ?").ask()
+            "Souhaitez-vous sélectionner un contrat ?", **kwargs).ask()
 
     @classmethod
     def prompt_contract(cls, all_contracts):
@@ -53,9 +55,9 @@ class PromptView:
         ).ask()
 
     @classmethod
-    def prompt_confirm_support(cls):
+    def prompt_confirm_support(cls, **kwargs):
         return questionary.confirm(
-            "Souhaitez-vous sélectionner un support ?").ask()
+            "Souhaitez-vous sélectionner un support ?", **kwargs).ask()
 
     @classmethod
     def prompt_support(cls, all_supports):
@@ -72,9 +74,9 @@ class PromptView:
         ).ask()
 
     @classmethod
-    def prompt_confirm_task(cls):
+    def prompt_confirm_task(cls, **kwargs):
         return questionary.confirm(
-            "Souhaitez-vous finaliser une tache ?").ask()
+            "Souhaitez-vous finaliser une tache ?", **kwargs).ask()
 
     @classmethod
     def prompt_task(cls, all_tasks):
@@ -84,17 +86,48 @@ class PromptView:
         ).ask()
 
     @classmethod
-    def prompt_confirm_profil(cls):
+    def prompt_confirm_profil(cls, **kwargs):
         return questionary.confirm(
-            "Souhaitez-vous modifier vos données ?").ask()
+            "Souhaitez-vous modifier vos données ?", **kwargs).ask()
+
+    @classmethod
+    def prompt_data_contract(cls):
+        error_text = "Au moins 3 caractères sont requis, alpha ou numérique"
+        ref = questionary.text(
+            "Référence:",
+            validate=lambda text: True
+            if re.match(r"^[A-Za-z0-9-]+$", text) and len(text) >= 3
+            else error_text).ask()
+        if ref is None:
+            raise KeyboardInterrupt
+        description = questionary.text(
+            "Description:",
+            validate=lambda text: True
+            if re.match(r"^[a-zA-Z0-9 ]+$", text)
+            else "Seul des caractères alpha sont autorisés").ask()
+        if description is None:
+            raise KeyboardInterrupt
+        regex_ctrl = r"(?<!-)\b([1-3]?\d{1,5}|100000)\b"
+        total_amount = questionary.text(
+            "Montant:",
+            validate=lambda text: True
+            if re.match(regex_ctrl, text)
+            else "Le montant doit être positif et inférieur à 100 000").ask()
+        if total_amount is None:
+            raise KeyboardInterrupt
+
+        return {'ref': ref, 'description': description,
+                'total_amount': total_amount}
 
     @classmethod
     def prompt_data_profil(cls):
         username = questionary.text(
             "Identifiant:",
             validate=lambda text: True
-            if re.match(r"(?=.*?[a-z])(?=.*?[A-Z])", text)
+            if re.match(r"^[a-zA-Z]+$", text)
             else "Seul des caractères alpha sont autorisés").ask()
+        if username is None:
+            raise KeyboardInterrupt
         regex_password = r"(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])"
         regex_password += "(?=.*?[#?!@$%^&*-]).{8,}"
         password = questionary.password(
@@ -102,16 +135,22 @@ class PromptView:
             validate=lambda text: True
             if re.match(regex_password, text)
             else "Le format du mot de passe est invalide").ask()
+        if password is None:
+            raise KeyboardInterrupt
         regex_email = '^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*'
         regex_email += '@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$'
-        questionary.password(
+        result = questionary.password(
             "Confirmez le mot de passe:",
             validate=lambda text: True if text == password
             else "Les mots de passe ne correspondent pas").ask()
+        if result is None:
+            raise KeyboardInterrupt
         email = questionary.text(
             "Email:",
             validate=lambda text: True if re.match(regex_email, text)
             else "Le format de l'email est invalide").ask()
+        if email is None:
+            raise KeyboardInterrupt
         return {'username': username, 'password': password, 'email': email}
 
     @classmethod

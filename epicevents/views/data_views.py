@@ -7,6 +7,22 @@ from epicevents.views.console import console
 class DataView:
 
     @classmethod
+    def display_interupt(cls):
+        console.print('Opération abandonée')
+
+    @classmethod
+    def display_commercial_with_contracts(cls):
+        console.print('Ce commercial gère des contracts actifs')
+
+    @classmethod
+    def display_need_one_manager(cls):
+        console.print('La base doit contenir au moins un manager')
+
+    @classmethod
+    def display_error_unique(cls):
+        console.print('Impossible: cet enregistrement existe déjà')
+
+    @classmethod
     def display_data_update(cls):
         console.print('Vos modifications ont été enregistrées')
 

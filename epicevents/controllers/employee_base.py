@@ -1,4 +1,6 @@
 from argon2 import PasswordHasher
+from sqlalchemy.exc import IntegrityError
+from epicevents.views.data_views import DataView
 from epicevents.models.entities import (
     Department, Manager, Commercial, Support,
     Employee, Task
@@ -89,37 +91,60 @@ class EmployeeBase:
             email=data['email'],
             department_id=d.id,
             role=role)
-
-        self.session.add(e)
+        try:
+            self.session.add(e)
+            self.session.commit()
+            DataView.display_data_update()
+        except IntegrityError:
+            self.session.rollback()
+            DataView.display_error_unique()
 
     def update_employee(self, name, role):
         e = Employee.find_by_username(self.session, name)
         e.role = self.get_rolecode(role)
         self.session.add(e)
         self.session.commit()
+        DataView.display_data_update()
 
     def inactivate(self, name):
         e = Employee.find_by_username(self.session, name)
         check = True
-        if e.role == 'C':
-            e = Commercial.find_by_username(self.session, name)
-            for c in e.clients:
-                if len(c.actif_contracts) > 0:
+        match e.role:
+            case 'M':
+                e = Manager.getall(self.session)
+                if len(e) == 1:
+                    DataView.display_need_one_manager()
                     check = False
-        if e.role == 'S':
-            e = Support.find_by_username(self.session, name)
-            for event in e.events:
-                event.support_id = None
-                self.session.add(event)
-                description = "Ajouter un support à l'évènement "
-                description += event.title + " du contrat "
-                description += event.contract.ref
-                manager = Manager.getone(self.session)
-                t = Task(description=description, employee_id=manager.id)
-                self.session.add(t)
+            case 'C':
+                e = Commercial.find_by_username(self.session, name)
+                for c in e.clients:
+                    if len(c.actif_contracts) > 0:
+                        DataView.display_commercial_with_contracts()             
+                        check = False
+                        break  
+            case 'S':
+                e = Support.find_by_username(self.session, name)
+                for event in e.events:
+                    event.support_id = None
+                    self.session.add(event)
+                    description = "Ajouter un support à l'évènement "
+                    description += event.title + " du contrat "
+                    description += event.contract.ref
+                    manager = Manager.getone(self.session)
+                    t = Task(description=description, employee_id=manager.id)
+                    self.session.add(t)
+                check = True
         if check:
             e.email = ''
             e.state = 'I'
             e.username = '<<' + e.username + '>>'
             self.session.add(e)
             self.session.commit()
+            DataView.display_data_update()
+
+    def get_tasks(self, e):
+        return Task.find_active_tasks(self.session, e)
+
+    def terminate_task(self, task_id):
+        Task.terminate(self.session, task_id)
+        self.session.commit()
