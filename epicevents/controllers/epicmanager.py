@@ -1,7 +1,7 @@
 import jwt
 from epicevents.views.auth_views import display_logout, display_welcome
 from epicevents.views.error import ErrorView
-from epicevents.views.menu_views import menu_choice
+from epicevents.views.menu_views import menu_choice, menu_update_contract
 from epicevents.views.list_views import DisplayView
 from epicevents.views.data_views import DataView
 from epicevents.views.prompt_views import PromptView
@@ -204,6 +204,27 @@ class EpicManager:
         except KeyboardInterrupt:
             DataView.display_interupt()
 
+    @is_authenticated
+    @is_manager
+    def update_contract(self):
+        contracts = self.epic.dbcontracts.get_active_contracts()
+        refs = [c.ref for c in contracts]
+        ref = PromptView.prompt_contract(refs)
+        choice = menu_update_contract()
+        match choice:
+            case 1:
+                try:
+                    data = PromptView.prompt_data_paiement()
+                    self.epic.dbcontracts.add_paiement(ref, data)
+                except KeyboardInterrupt:
+                    DataView.display_interupt()
+            case 2:
+                ...
+                # modifier les données
+            case 3:
+                ...
+                # changer de commercial
+
     def run(self) -> None:
 
         self.check_logout()
@@ -257,6 +278,8 @@ class EpicManager:
                                     ...  #
                         case '10':
                             self.create_contract()
+                        case '11':
+                            self.update_contract()
                         case 'D':
                             stop_session()
                             running = False

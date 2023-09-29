@@ -11,6 +11,10 @@ class DataView:
         console.print('Opération abandonée')
 
     @classmethod
+    def display_error_contract_amount(cls):
+        console.print('Ce montant est supérieur au restant dû')
+
+    @classmethod
     def display_commercial_with_contracts(cls):
         console.print('Ce commercial gère des contracts actifs')
 

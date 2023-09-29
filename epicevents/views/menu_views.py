@@ -122,3 +122,15 @@ def menu_choice(role):
         result = ask_prompt()
 
     return result
+
+
+def menu_update_contract():
+    menu_text = [
+        'Enregistrer un paiement',
+        'Modifier les données du contrat',
+        'Affecter un nouveau commercial']
+    choice = questionary.select(
+            "Que voulez-vous faire ?",
+            choices=menu_text,
+        ).ask()
+    return menu_text.index(choice) + 1

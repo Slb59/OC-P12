@@ -192,3 +192,23 @@ class PromptView:
             else "Seul des caractères alpha sont autorisés").ask()
         return {'full_name': full_name, 'email': email, 'phone': phone,
                 'company_name': company_name}
+
+    @classmethod
+    def prompt_data_paiement(cls):
+        error_text = "Au moins 3 caractères sont requis, alpha ou numérique"
+        ref = questionary.text(
+            "Référence:",
+            validate=lambda text: True
+            if re.match(r"^[A-Za-z0-9-]+$", text) and len(text) >= 3
+            else error_text).ask()
+        if ref is None:
+            raise KeyboardInterrupt
+        regex_ctrl = r"(?<!-)\b([1-3]?\d{1,5}|100000)\b"
+        amount = questionary.text(
+            "Montant:",
+            validate=lambda text: True
+            if re.match(regex_ctrl, text)
+            else "Le montant doit être positif et inférieur à 100 000").ask()
+        if amount is None:
+            raise KeyboardInterrupt
+        return {'ref': ref, 'amount': amount}

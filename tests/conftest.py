@@ -7,6 +7,7 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy_utils import create_database, drop_database
 from epicevents.models.entities import Base, Task
+from epicevents.controllers.database import EpicDatabase
 
 TEST_DB_NAME = "epictest"
 
@@ -91,3 +92,11 @@ def mockparser():
 @pytest.fixture(scope='function')
 def mocklogin():
     return 'Osynia/osyA!111'
+
+
+@pytest.fixture(scope='function')
+def epictest2():
+    db = EpicDatabase('epictest2', "localhost", "postgres", "postgres", "5432")
+    yield db
+    db.session.rollback()
+    db.session.close()

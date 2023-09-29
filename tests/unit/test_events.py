@@ -105,7 +105,7 @@ class TestEvent:
             )
         event.support_id = support.id
         assert len(support.events) == 2
-    
+
     def test_list_events_no_support(self, db_session):
         self.initdb(db_session)
         self.add_employees(db_session)

@@ -62,41 +62,6 @@ def test_check_employee():
     assert result == e
 
 
-def test_get_contracts_states():
-    db = EpicDatabase('epictest2', "localhost", "postgres", "postgres", "5432")
-    list = ['Créé', 'Signé', 'Soldé', 'Annulé']
-    result = db.get_contracts_states()
-    assert list == result
-    db.session.close()
-
-
-def test_get_contracts():
-    # given
-    db = EpicDatabase('epictest2', "localhost", "postgres", "postgres", "5432")
-    d = Department.find_by_name(db.session, 'commercial department')
-    e = Commercial(username='Yuka', department_id=d.id, role='C')
-    db.session.add(e)
-    e = Commercial.find_by_username(db.session, 'Yuka')
-    c = Client(full_name='c1', commercial_id=e.id)
-    db.session.add(c)
-    c = Client.find_by_name(db.session, 'c1')
-    contract1 = Contract(
-        ref='ref1', client_id=c.id, description='desc', total_amount=10)
-    contract2 = Contract(
-        ref='ref2', client_id=c.id, description='desc', total_amount=10)
-    db.session.add_all([contract1, contract2])
-    # when
-    result = Contract.getall(db.session)
-    assert len(result) == 2
-    result = db.get_contracts(
-        client_name='c1', commercial_name=None, state_value=None)
-    assert len(result) == 2
-    result = db.get_contracts()
-    # then
-    assert len(result) == 2
-    db.session.close()
-
-
 def test_get_events():
     # given
     db = EpicDatabase('epictest2', "localhost", "postgres", "postgres", "5432")

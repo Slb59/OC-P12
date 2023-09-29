@@ -324,6 +324,12 @@ class Contract(Base, DateFields):
         return session.query(cls).order_by(cls.ref).all()
 
     @classmethod
+    def getallactive(cls, session):
+        return session.query(cls)\
+            .filter(or_(cls.state == 'C', cls.state == 'S'))\
+            .order_by(cls.ref).all()
+
+    @classmethod
     def find_by_selection(cls, session, commercial, client, state):
         return session.query(cls)\
             .join(Client, Client.id == cls.client_id)\
@@ -354,6 +360,10 @@ class Paiement(Base):
 
     def __repr__(self):
         return f'{self.date_amount}: {self.ref}/{self.amount}'
+
+    @classmethod
+    def find_by_ref(cls, session, ref):
+        return session.query(cls).filter_by(ref=ref).one()
 
 
 class EventType(Base):

@@ -1,6 +1,6 @@
 from sqlalchemy.exc import IntegrityError
 from epicevents.views.data_views import DataView
-from epicevents.models.entities import Client, Contract
+from epicevents.models.entities import Client, Contract, Paiement
 
 
 class ContractBase:
@@ -28,6 +28,9 @@ class ContractBase:
         return Contract.find_by_selection(
             self.session, commercial_name, client_name, state)
 
+    def get_active_contracts(self):
+        return Contract.getallactive(self.session)
+
     def create(self, client_name, data):
         c = Client.find_by_name(self.session, client_name)
         contract = Contract(
@@ -43,3 +46,19 @@ class ContractBase:
         except IntegrityError:
             self.session.rollback()
             DataView.display_error_unique()
+
+    def add_paiement(self, ref_contract, data):
+        c = Contract.find_by_ref(self.session, ref_contract)
+        if int(data['amount']) > c.outstanding:
+            DataView.display_error_contract_amount()
+        else:
+            p = Paiement(
+                ref=data['ref'], amount=data['amount'], contract_id=c.id)
+
+            try:
+                self.session.add(p)
+                self.session.commit()
+                DataView.display_data_update()
+            except IntegrityError:
+                self.session.rollback()
+                DataView.display_error_unique()
