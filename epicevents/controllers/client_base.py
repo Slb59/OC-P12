@@ -44,3 +44,17 @@ class ClientBase:
         except IntegrityError:
             self.session.rollback()
             DataView.display_error_unique()
+
+    def update(self, client_name, data):
+        c = Client.find_by_name(self.session, client_name)
+        c.full_name = data['full_name']
+        c.email = data['email']
+        c.phone = data['phone']
+        c.company_name = data['company_name']
+        try:
+            self.session.add(c)
+            self.session.commit()
+            DataView.display_data_update()
+        except IntegrityError:
+            self.session.rollback()
+            DataView.display_error_unique()

@@ -234,7 +234,7 @@ class EpicManager:
 
     @is_authenticated
     @is_manager
-    def update_client(self):
+    def update_client_commercial(self):
         clients = self.epic.dbclients.get_clients()
         clients = [c.full_name for c in clients]
         client = ClientView.prompt_client(clients)
@@ -262,6 +262,15 @@ class EpicManager:
     def create_client(self, e):
         data = ClientView.prompt_data_client()
         self.epic.dbclients.create(e.username, data)
+
+    @is_authenticated
+    @is_commercial
+    def update_client(self, e):
+        clients = self.epic.dbclients.get_clients(commercial_name=e.username)
+        clients = [c.full_name for c in clients]
+        client = ClientView.prompt_client(clients)
+        data = ClientView.prompt_data_client()
+        self.epic.dbclients.update(client, data)
 
     def run(self) -> None:
 
@@ -301,7 +310,7 @@ class EpicManager:
                                 case 'M':
                                     self.create_new_employee()
                                 case 'C':
-                                    ...
+                                    self.update_client(e)
                         case '08':
                             match e.role.code:
                                 case 'M':
@@ -319,7 +328,7 @@ class EpicManager:
                         case '11':
                             self.update_contract()
                         case '12':
-                            self.update_client()
+                            self.update_client_commercial()
                         case '13':
                             self.update_event()
                         case 'D':

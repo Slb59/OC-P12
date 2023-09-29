@@ -87,3 +87,22 @@ def test_create_client(epictest2):
     log.debug(c.commercial_id)
     assert c.commercial.username == 'Yuka'
 
+
+def test_update(epictest2):
+    db = epictest2
+    d = Department.find_by_name(db.session, 'commercial department')
+    e1 = Commercial(username='Yuka', department_id=d.id, role='C')
+    db.session.add(e1)
+    e1 = Commercial.find_by_username(db.session, 'Yuka')
+    c = Client(full_name='test', commercial_id=e1.id)
+    db.session.add(c)
+    data = {
+        'full_name': 'client-test', 'email': 'test@test.com',
+        'phone': '0202020202', 'company_name': 'company_name'}
+    db.dbclients.update('test', data)
+    c = Client.find_by_name(db.session, 'client-test')
+    db.session.delete(c)
+    db.session.delete(e1)
+    db.session.commit()
+    assert c.email == 'test@test.com'
+
