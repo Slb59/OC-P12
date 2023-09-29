@@ -1,3 +1,4 @@
+from sqlalchemy.exc import IntegrityError
 from epicevents.views.data_views import DataView
 from epicevents.models.entities import (
     Commercial, Client
@@ -24,4 +25,22 @@ class ClientBase:
         e = Commercial.find_by_username(self.session, cname)
         c.commercial_id = e.id
         self.session.add(c)
+        self.session.commit()
         DataView.display_data_update()
+
+    def create(self, commercial_name, data):
+        # data = {
+        # 'full_name': 'client-test', 'email': 'test@test.com',
+        # 'phone': '0202020202', 'company_name': 'company_name'}
+        e = Commercial.find_by_username(self.session, commercial_name)
+        c = Client(
+            full_name=data['full_name'], email=data['email'],
+            phone=data['phone'], company_name=data['company_name'],
+            commercial_id=e.id)
+        try:
+            self.session.add(c)
+            self.session.commit()
+            DataView.display_data_update()
+        except IntegrityError:
+            self.session.rollback()
+            DataView.display_error_unique()

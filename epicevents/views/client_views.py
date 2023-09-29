@@ -26,23 +26,28 @@ class ClientView:
         full_name = questionary.text(
             "Nom complet:",
             validate=lambda text: True
-            if re.match(r"(?=.*?[a-z])(?=.*?[A-Z])", text)
+            if re.match(r"^[a-zA-Z ]+$", text)
             else "Seul des caractères alpha sont autorisés").ask()
+        if full_name is None:
+            raise KeyboardInterrupt
+        
         regex_email = '^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*'
         regex_email += '@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$'
         email = questionary.text(
             "Email:",
             validate=lambda text: True if re.match(regex_email, text)
             else "Le format de l'email est invalide").ask()
-        regex_phone = "/\\(?([0-9]{3})\\)?([ .-]?)([0-9]{3})\2([0-9]{4})/"
+        
+        regex_phone = "^\\(?([0-9]{3})\\)?([ .-]?)([0-9]{3})\2([0-9]{4})$"
         phone = questionary.text(
             "Phone:",
             validate=lambda text: True if re.match(regex_phone, text)
             else "Ce n'est pas un numéro de téléphone valide").ask()
+        
         company_name = questionary.text(
             "Entreprise:",
             validate=lambda text: True
-            if re.match(r"(?=.*?[a-z])(?=.*?[A-Z])", text)
+            if re.match(r"^[a-zA-Z ]+$", text)
             else "Seul des caractères alpha sont autorisés").ask()
         return {'full_name': full_name, 'email': email, 'phone': phone,
                 'company_name': company_name}

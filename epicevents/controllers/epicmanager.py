@@ -13,8 +13,7 @@ from .databasetools import EpicDatabaseWithData
 from .session import load_session, stop_session, create_session
 from .decorators import (
     is_authenticated,
-    # is_commercial,
-    is_manager,
+    is_commercial, is_manager,
     # is_support
 )
 
@@ -258,6 +257,12 @@ class EpicManager:
         event = EventView.prompt_event(events)
         self.epic.dbevents.update(contract, event, support)
 
+    @is_authenticated
+    @is_commercial
+    def create_client(self, e):
+        data = ClientView.prompt_data_client()
+        self.epic.dbclients.create(e.username, data)
+
     def run(self) -> None:
 
         self.check_logout()
@@ -288,7 +293,7 @@ class EpicManager:
                                 case 'M':
                                     self.list_of_employees()
                                 case 'C':
-                                    ...  # creer un nouveau client
+                                    self.create_client(e)
                                 case 'S':
                                     ...  # cloturer un evenement
                         case '07':
