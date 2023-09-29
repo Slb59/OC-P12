@@ -285,6 +285,17 @@ class EpicManager:
         data = EventView.prompt_data_event()
         self.epic.dbevents.create(contract, type, data)
 
+    @is_authenticated
+    @is_commercial
+    def add_task_create_contract(self, e):
+        managers = self.epic.dbemployees.get_managers()
+        managers = [e.username for e in managers]
+        manager = EmployeeView.prompt_manager(managers)
+        clients = self.epic.dbclients.get_clients(commercial_name=e.username)
+        clients = [c.full_name for c in clients]
+        client = ClientView.prompt_client(clients)
+        self.epic.dbemployees.create_task_add_contract(manager, client)
+
     def run(self) -> None:
 
         self.check_logout()
@@ -335,7 +346,7 @@ class EpicManager:
                                 case 'M':
                                     self.inactivate_employee()
                                 case 'C':
-                                    ...  #
+                                    self.add_task_create_contract(e)
                         case '10':
                             self.create_contract()
                         case '11':

@@ -32,6 +32,13 @@ class EmployeeView:
         ).ask()
 
     @classmethod
+    def prompt_manager(cls, alls):
+        return questionary.select(
+            "Choix du manager:",
+            choices=alls
+        ).ask()
+
+    @classmethod
     def prompt_employee(cls, all_employees):
         return questionary.select(
             "Sélectionnez un employé:",

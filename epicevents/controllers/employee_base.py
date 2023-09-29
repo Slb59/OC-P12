@@ -56,6 +56,9 @@ class EmployeeBase:
         result = [r[1] for r in roles]
         return result
 
+    def get_managers(self):
+        return Manager.getall(self.session)
+
     def get_commercials(self):
         return Commercial.getall(self.session)
 
@@ -119,9 +122,9 @@ class EmployeeBase:
                 e = Commercial.find_by_username(self.session, name)
                 for c in e.clients:
                     if len(c.actif_contracts) > 0:
-                        DataView.display_commercial_with_contracts()             
+                        DataView.display_commercial_with_contracts()
                         check = False
-                        break  
+                        break
             case 'S':
                 e = Support.find_by_username(self.session, name)
                 for event in e.events:
@@ -148,3 +151,12 @@ class EmployeeBase:
     def terminate_task(self, task_id):
         Task.terminate(self.session, task_id)
         self.session.commit()
+
+    def create_task_add_contract(self, manager_name, client_name):
+        e = Manager.find_by_username(self.session, manager_name)
+        t = Task(
+            description='Creer le contrat du client ' + client_name,
+            employee_id=e.id)
+        self.session.add(t)
+        self.session.commit()
+        DataView.display_data_update()
