@@ -2,6 +2,7 @@ import jwt
 from epicevents.views.auth_views import display_logout, display_welcome
 from epicevents.views.error import ErrorView
 from epicevents.views.menu_views import menu_choice, menu_update_contract
+from epicevents.views.contract_views import ContractView
 from epicevents.views.list_views import DisplayView
 from epicevents.views.data_views import DataView
 from epicevents.views.prompt_views import PromptView
@@ -105,7 +106,7 @@ class EpicManager:
             states = self.epic.dbcontracts.get_states()
             state = PromptView.prompt_statut(states)
         # display list
-        DisplayView.display_list_contracts(
+        ContractView.display_list_contracts(
             self.epic.dbcontracts.get_contracts(cname, client, state))
 
     @is_authenticated
@@ -115,11 +116,11 @@ class EpicManager:
         cname = self.choice_commercial()
         client = self.choice_client(cname)
         # select a contract
-        result = PromptView.prompt_confirm_contract()
+        result = ContractView.prompt_confirm_contract()
         if result:
             contracts = self.epic.dbcontracts.get_contracts(cname, client)
             contracts_ref = [c.ref for c in contracts]
-            contract_ref = PromptView.prompt_contract(contracts_ref)
+            contract_ref = ContractView.prompt_contract(contracts_ref)
         # select a support
         result = PromptView.prompt_confirm_support()
         if result:
@@ -199,7 +200,7 @@ class EpicManager:
         enames = [c.full_name for c in clients]
         ename = PromptView.prompt_client(enames)
         try:
-            data = PromptView.prompt_data_contract()
+            data = ContractView.prompt_data_contract()
             self.epic.dbcontracts.create(ename, data)
         except KeyboardInterrupt:
             DataView.display_interupt()
@@ -209,7 +210,7 @@ class EpicManager:
     def update_contract(self):
         contracts = self.epic.dbcontracts.get_active_contracts()
         refs = [c.ref for c in contracts]
-        ref = PromptView.prompt_contract(refs)
+        ref = ContractView.prompt_contract(refs)
         choice = menu_update_contract()
         match choice:
             case 1:
@@ -222,15 +223,23 @@ class EpicManager:
                 state = self.epic.dbcontracts.get_state(ref)
                 if state == 'C':
                     try:
-                        data = PromptView.prompt_data_contract()
+                        data = ContractView.prompt_data_contract()
                         self.epic.dbcontracts.update(ref, data)
                     except KeyboardInterrupt:
                         DataView.display_interupt()
                 else:
                     DataView.display_error_contract_need_c()
-            case 3:
-                ...
-                # changer de commercial
+
+    @is_authenticated
+    @is_manager
+    def update_client(self):
+        clients = self.epic.dbclients.get_clients()
+        clients = [c.full_name for c in clients]
+        client = PromptView.prompt_client(clients)
+        commercials = self.epic.dbemployees.get_commercials()
+        commercials = [c.username for c in commercials]
+        ename = PromptView.prompt_commercial(commercials)
+        self.epic.dbclients.update_commercial(client, ename)
 
     def run(self) -> None:
 
@@ -287,6 +296,8 @@ class EpicManager:
                             self.create_contract()
                         case '11':
                             self.update_contract()
+                        case '12':
+                            self.update_client()
                         case 'D':
                             stop_session()
                             running = False

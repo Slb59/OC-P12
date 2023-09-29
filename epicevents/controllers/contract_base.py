@@ -1,6 +1,7 @@
 from sqlalchemy.exc import IntegrityError
 from epicevents.views.data_views import DataView
-from epicevents.models.entities import Client, Contract, Paiement
+from epicevents.models.entities import (
+    Client, Contract, Paiement)
 
 
 class ContractBase:

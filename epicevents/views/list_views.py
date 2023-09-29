@@ -28,29 +28,6 @@ class DisplayView:
             console.print(table)
 
     @classmethod
-    def display_list_contracts(cls, all_contracts, pager=True):
-        table = Table(title="Liste des contracts", box=box.SQUARE)
-        table.add_column("Référence")
-        table.add_column("Client")
-        table.add_column("Montant")
-        table.add_column("Reste dû")
-        table.add_column("Statut")
-        table.add_column("Nb évènements")
-        table.add_column("Commercial")
-        for c in all_contracts:
-            table.add_row(
-                c.ref, c.client.full_name,
-                str(c.total_amount), str(c.outstanding),
-                c.state.value, str(len(c.events)),
-                c.client.commercial.username
-            )
-        if pager:
-            with console.pager():
-                console.print(table)
-        else:
-            console.print(table)
-
-    @classmethod
     def display_list_events(cls, all_events, pager=True):
         table = Table(title="Liste des évènements", box=box.SQUARE)
         table.add_column("Client")

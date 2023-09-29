@@ -43,18 +43,6 @@ class PromptView:
         ).ask()
 
     @classmethod
-    def prompt_confirm_contract(cls, **kwargs):
-        return questionary.confirm(
-            "Souhaitez-vous sélectionner un contrat ?", **kwargs).ask()
-
-    @classmethod
-    def prompt_contract(cls, all_contracts):
-        return questionary.select(
-            "Choix du contrat:",
-            choices=all_contracts,
-        ).ask()
-
-    @classmethod
     def prompt_confirm_support(cls, **kwargs):
         return questionary.confirm(
             "Souhaitez-vous sélectionner un support ?", **kwargs).ask()
@@ -89,35 +77,6 @@ class PromptView:
     def prompt_confirm_profil(cls, **kwargs):
         return questionary.confirm(
             "Souhaitez-vous modifier vos données ?", **kwargs).ask()
-
-    @classmethod
-    def prompt_data_contract(cls):
-        error_text = "Au moins 3 caractères sont requis, alpha ou numérique"
-        ref = questionary.text(
-            "Référence:",
-            validate=lambda text: True
-            if re.match(r"^[A-Za-z0-9-]+$", text) and len(text) >= 3
-            else error_text).ask()
-        if ref is None:
-            raise KeyboardInterrupt
-        description = questionary.text(
-            "Description:",
-            validate=lambda text: True
-            if re.match(r"^[a-zA-Z0-9 ]+$", text)
-            else "Seul des caractères alpha sont autorisés").ask()
-        if description is None:
-            raise KeyboardInterrupt
-        regex_ctrl = r"(?<!-)\b([1-3]?\d{1,5}|100000)\b"
-        total_amount = questionary.text(
-            "Montant:",
-            validate=lambda text: True
-            if re.match(regex_ctrl, text)
-            else "Le montant doit être positif et inférieur à 100 000").ask()
-        if total_amount is None:
-            raise KeyboardInterrupt
-
-        return {'ref': ref, 'description': description,
-                'total_amount': total_amount}
 
     @classmethod
     def prompt_data_profil(cls):
@@ -192,23 +151,3 @@ class PromptView:
             else "Seul des caractères alpha sont autorisés").ask()
         return {'full_name': full_name, 'email': email, 'phone': phone,
                 'company_name': company_name}
-
-    @classmethod
-    def prompt_data_paiement(cls):
-        error_text = "Au moins 3 caractères sont requis, alpha ou numérique"
-        ref = questionary.text(
-            "Référence:",
-            validate=lambda text: True
-            if re.match(r"^[A-Za-z0-9-]+$", text) and len(text) >= 3
-            else error_text).ask()
-        if ref is None:
-            raise KeyboardInterrupt
-        regex_ctrl = r"(?<!-)\b([1-3]?\d{1,5}|100000)\b"
-        amount = questionary.text(
-            "Montant:",
-            validate=lambda text: True
-            if re.match(regex_ctrl, text)
-            else "Le montant doit être positif et inférieur à 100 000").ask()
-        if amount is None:
-            raise KeyboardInterrupt
-        return {'ref': ref, 'amount': amount}

@@ -24,7 +24,8 @@ def menu_manager() -> Panel:
     menu_text += "    09-Invalider la connexion d'un employé\n"
     menu_text += "    10-Créer un contrat\n"
     menu_text += "    11-Modifier un contrat\n"
-    menu_text += "    12-Affecter un support à un évènement"
+    menu_text += "    12-Affecter un commercial à un client\n"
+    menu_text += "    13-Affecter un support à un évènement"
     p = Panel(
         Align.left(menu_text, vertical='top'),
         box=box.ROUNDED,
@@ -102,7 +103,7 @@ def menu_choice(role):
 
     def check_prompt(result):
         match role:
-            case 'M': max_menu_idx = 12
+            case 'M': max_menu_idx = 13
             case 'C': max_menu_idx = 9
             case 'S': max_menu_idx = 6
         if result in ['D', 'Q']:
@@ -127,8 +128,7 @@ def menu_choice(role):
 def menu_update_contract():
     menu_text = [
         'Enregistrer un paiement',
-        'Modifier les données du contrat',
-        'Affecter un nouveau commercial']
+        'Modifier les données du contrat']
     choice = questionary.select(
             "Que voulez-vous faire ?",
             choices=menu_text,
