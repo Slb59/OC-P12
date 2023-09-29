@@ -93,15 +93,16 @@ class TestEvent:
         self.add_employees(db_session)
         self.add_client_to_yuka(db_session)
         self.add_contract_on_client(db_session)
+        c = Contract.find_by_ref(db_session, '2023091301')
         self.add_events_on_contract(db_session)
         event = Event.find_by_title(
-            db_session, 'conference on contract 2023091301'
+            db_session, c.id, 'conference on contract 2023091301'
             )
         support = Support.find_by_username(db_session, 'Aritomo')
         event.support_id = support.id
         db_session.add(event)
         event = Event.find_by_title(
-            db_session, 'show on contract 2023091301'
+            db_session, c.id, 'show on contract 2023091301'
             )
         event.support_id = support.id
         assert len(support.events) == 2
@@ -111,11 +112,12 @@ class TestEvent:
         self.add_employees(db_session)
         self.add_client_to_yuka(db_session)
         self.add_contract_on_client(db_session)
+        c = Contract.find_by_ref(db_session, '2023091301')
         self.add_events_on_contract(db_session)
         events = Event.getall(db_session)
         assert len(events) == 3
         event = Event.find_by_title(
-            db_session, 'conference on contract 2023091301'
+            db_session, c.id, 'conference on contract 2023091301'
             )
         support = Support.find_by_username(db_session, 'Aritomo')
         event.support_id = support.id

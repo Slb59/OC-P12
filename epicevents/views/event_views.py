@@ -1,4 +1,6 @@
+import re
 import questionary
+from datetime import datetime
 from rich.table import Table
 from rich import box
 from epicevents.views.console import console
@@ -44,8 +46,66 @@ class EventView:
             console.print(table)
 
     @classmethod
+    def prompt_type(cls, all_types):
+        return questionary.select(
+            "Type d'évènement:",
+            choices=all_types,
+        ).ask()
+
+    @classmethod
     def prompt_event(cls, all_events):
         return questionary.select(
             "Choix de l'évènement:",
             choices=all_events,
         ).ask()
+
+    @classmethod
+    def prompt_data_event(cls):
+        title = questionary.text(
+            "Titre:",
+            validate=lambda text: True
+            if re.match(r"^[a-zA-Z ]+$", text)
+            else "Seul des caractères alpha sont autorisés").ask()
+        if title is None:
+            raise KeyboardInterrupt
+
+        description = questionary.text(
+            "Description:",
+            validate=lambda text: True
+            if re.match(r"^[a-zA-Z ]+$", text)
+            else "Seul des caractères alpha sont autorisés").ask()
+
+        location = questionary.text(
+            "Lieu:",
+            validate=lambda text: True
+            if re.match(r"^[a-zA-Z ]+$", text)
+            else "Seul des caractères alpha sont autorisés").ask()
+
+        nb = questionary.text(
+            "Nb participants:",
+            validate=lambda text: True
+            if re.match(r"^[0-9]+$", text)
+            and int(text) > 0 and int(text) <= 5000
+            else "Nombre compris entre 0 et 5000").ask()
+
+        regex_date = r'(\d{2})[/.-](\d{2})[/.-](\d{4})$'
+        fmt_date = '%d/%m/%Y'
+        start = questionary.text(
+            "Nb participants:",
+            validate=lambda text: True
+            if re.match(regex_date, text)
+            else "format dd/mm/yyyy attendu").ask()
+
+        if start:
+            end = questionary.text(
+                "Nb participants:",
+                validate=lambda text: True
+                if re.match(regex_date, text)
+                and datetime.strptime(text, fmt_date) >= start
+                else "format dd/mm/yyyy attendu").ask()
+        else:
+            end = None
+
+        return {'title': title, 'description': description,
+                'location': location, 'attendees': nb,
+                'date_started': start, 'date_ended': end}

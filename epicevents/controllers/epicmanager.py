@@ -272,6 +272,19 @@ class EpicManager:
         data = ClientView.prompt_data_client()
         self.epic.dbclients.update(client, data)
 
+    @is_authenticated
+    @is_commercial
+    def create_event(self, e):
+        contracts = self.epic.dbcontracts.get_contracts(
+            commercial_name=e.username, state_value='S')
+        contracts = [c.ref for c in contracts]
+        contract = ContractView.prompt_contract(contracts)
+        types = self.epic.dbevents.get_types()
+        types = [r.title for r in types]
+        type = EventView.prompt_type(types)
+        data = EventView.prompt_data_event()
+        self.epic.dbevents.create(contract, type, data)
+
     def run(self) -> None:
 
         self.check_logout()
@@ -316,7 +329,7 @@ class EpicManager:
                                 case 'M':
                                     self.update_employee_role()
                                 case 'C':
-                                    ...  # creer un evenement
+                                    self.create_event(e)
                         case '09':
                             match e.role.code:
                                 case 'M':
