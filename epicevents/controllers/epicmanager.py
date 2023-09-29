@@ -219,8 +219,15 @@ class EpicManager:
                 except KeyboardInterrupt:
                     DataView.display_interupt()
             case 2:
-                ...
-                # modifier les données
+                state = self.epic.dbcontracts.get_state(ref)
+                if state == 'C':
+                    try:
+                        data = PromptView.prompt_data_contract()
+                        self.epic.dbcontracts.update(ref, data)
+                    except KeyboardInterrupt:
+                        DataView.display_interupt()
+                else:
+                    DataView.display_error_contract_need_c()
             case 3:
                 ...
                 # changer de commercial

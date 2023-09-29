@@ -27,6 +27,10 @@ class DataView:
         console.print('Impossible: cet enregistrement existe déjà')
 
     @classmethod
+    def display_error_contract_need_c(cls):
+        console.print("Le contract doit être à l'état créé")
+
+    @classmethod
     def display_data_update(cls):
         console.print('Vos modifications ont été enregistrées')
 

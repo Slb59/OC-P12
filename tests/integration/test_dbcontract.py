@@ -1,4 +1,5 @@
 import logging
+from sqlalchemy.exc import NoResultFound
 from epicevents.views.console import console
 from epicevents.models.entities import (
     Department, Commercial, Client, Contract, Paiement)
@@ -23,8 +24,11 @@ def initdb(db):
 
 
 def deletedb(db):
-    c1 = Contract.find_by_ref(db.session, 'ref1')
-    db.session.delete(c1)
+    try:
+        c1 = Contract.find_by_ref(db.session, 'ref1')
+        db.session.delete(c1)
+    except NoResultFound:
+        pass
     c2 = Contract.find_by_ref(db.session, 'ref2')
     db.session.delete(c2)
     c = Client.find_by_name(db.session, 'c1')
@@ -38,6 +42,13 @@ def test_get_states(epictest2):
     result = db.dbcontracts.get_states()
     expected = ['Créé', 'Signé', 'Soldé', 'Annulé']
     assert result == expected
+
+
+def test_get_state(epictest2):
+    db = epictest2
+    initdb(db)
+    result = db.dbcontracts.get_state('ref1')
+    assert result == 'C'
 
 
 def test_get_contracts(epictest2):
@@ -91,5 +102,20 @@ def test_add_paiement(epictest2):
     assert output == 'Ce montant est supérieur au restant dû\n'
     p = Paiement.find_by_ref(db.session, 'testpaiement')
     db.session.delete(p)
+    deletedb(db)
+    db.session.commit()
+
+
+def test_update(epictest2):
+    db = epictest2
+    initdb(db)
+    data = {
+        'ref': 'newref',
+        'description': 'new description',
+        'total_amount': '20000'}
+    db.dbcontracts.update('ref1', data)
+    c = Contract.find_by_ref(db.session, 'newref')
+    assert c.total_amount == 20000
+    db.session.delete(c)
     deletedb(db)
     db.session.commit()

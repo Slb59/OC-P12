@@ -15,6 +15,10 @@ class ContractBase:
         result = [s[1] for s in states]
         return result
 
+    def get_state(self, ref):
+        c = Contract.find_by_ref(self.session, ref)
+        return c.state.code
+
     def get_contracts(
             self, commercial_name=None,
             client_name=None,
@@ -62,3 +66,16 @@ class ContractBase:
             except IntegrityError:
                 self.session.rollback()
                 DataView.display_error_unique()
+
+    def update(self, ref_contract, data):
+        c = Contract.find_by_ref(self.session, ref_contract)
+        c.ref = data['ref']
+        c.description = data['description']
+        c.total_amount = data['total_amount']
+        try:
+            self.session.add(c)
+            self.session.commit()
+            DataView.display_data_update()
+        except IntegrityError:
+            self.session.rollback()
+            DataView.display_error_unique()
