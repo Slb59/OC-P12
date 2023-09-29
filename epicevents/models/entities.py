@@ -419,8 +419,9 @@ class Event(Base):
         return f'{self.title}'
 
     @classmethod
-    def find_by_title(cls, session, title):
-        return session.query(cls).filter_by(title=title).one()
+    def find_by_title(cls, session, contract_id, title):
+        return session.query(cls)\
+            .filter_by(title=title, contract_id=contract_id).one()
 
     @classmethod
     def getall(cls, session):

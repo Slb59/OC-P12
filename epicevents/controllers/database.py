@@ -11,7 +11,7 @@ from sqlalchemy.orm import (
     )
 from epicevents.models.entities import (
     Base, Department,
-    Employee, Event, EventType
+    Employee, EventType
     )
 from epicevents.views.auth_views import (
     display_waiting_databasecreation,
@@ -20,6 +20,7 @@ from epicevents.views.auth_views import (
 from epicevents.controllers.employee_base import EmployeeBase
 from epicevents.controllers.client_base import ClientBase
 from epicevents.controllers.contract_base import ContractBase
+from epicevents.controllers.event_base import EventBase
 
 
 class EpicDatabase:
@@ -52,6 +53,7 @@ class EpicDatabase:
         self.dbemployees = EmployeeBase(self.session)
         self.dbclients = ClientBase(self.session)
         self.dbcontracts = ContractBase(self.session)
+        self.dbevents = EventBase(self.session)
 
     def __str__(self) -> str:
         return f'{self.name} database'
@@ -118,16 +120,3 @@ class EpicDatabase:
             [event_type1, event_type2, event_type3, event_type4]
             )
         self.session.commit()
-
-    def get_events(
-            self,
-            commercial_name=None,
-            client_name=None,
-            contract_ref=None,
-            support_name=None):
-        if support_name == '-- sans support --':
-            support_name = 'None'
-        return Event.find_by_selection(
-            self.session, commercial_name, client_name,
-            contract_ref, support_name
-        )

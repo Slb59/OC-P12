@@ -2,7 +2,9 @@ from epicevents.models.entities import (
     Department, Commercial, Client,
     Contract, Event, EventType)
 from epicevents.views.console import console
-from epicevents.views.list_views import DisplayView
+from epicevents.views.client_views import ClientView
+from epicevents.views.contract_views import ContractView
+from epicevents.views.event_views import EventView
 
 
 def initdb(db_session):
@@ -57,7 +59,7 @@ def test_display_list_clients(db_session):
     initdb(db_session)
     # when
     with console.capture() as capture:
-        DisplayView.display_list_clients(Client.getall(db_session), False)
+        ClientView.display_list_clients(Client.getall(db_session), False)
     # then
     str_output = capture.get()
     assert "Liste des clients" in str_output
@@ -72,7 +74,7 @@ def test_display_list_contracts(db_session):
     add_contracts(db_session)
     # when
     with console.capture() as capture:
-        DisplayView.display_list_contracts(Contract.getall(db_session), False)
+        ContractView.display_list_contracts(Contract.getall(db_session), False)
     # then
     str_output = capture.get()
     assert "Liste des contracts" in str_output
@@ -94,7 +96,7 @@ def test_display_list_events(db_session):
     add_events(db_session)
     # when
     with console.capture() as capture:
-        DisplayView.display_list_events(Event.getall(db_session), False)
+        EventView.display_list_events(Event.getall(db_session), False)
     # then
     str_output = capture.get()
     assert "Liste des évènements" in str_output

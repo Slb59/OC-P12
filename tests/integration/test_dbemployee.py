@@ -1,31 +1,35 @@
-from epicevents.controllers.database import EpicDatabase
+import logging
 from epicevents.models.entities import Employee
 
+log = logging.getLogger()
 
-def test_add_employees():
-    db = EpicDatabase('epictest2', "localhost", "postgres", "postgres", "5432")
-    db.dbemployees.add_employee('Misoka', 'Misoka', 'Manager')
-    db.dbemployees.add_employee('Yuka', 'Yuka', 'Commercial')
-    db.dbemployees.add_employee('Aritomo', 'Aritomo', 'Support')
+
+def test_add_employees(epictest2):
+    db = epictest2
+    db.dbemployees.add_employee('MisokaX', 'Misoka', 'Manager')
+    db.dbemployees.add_employee('YukaX', 'Yuka', 'Commercial')
+    db.dbemployees.add_employee('AritomoX', 'Aritomo', 'Support')
     result = Employee.getall(db.session)
     assert len(result) == 4
     for e in result:
-        db.session.delete(e)
+        if e.username != 'Osynia':
+            db.session.delete(e)
     db.session.commit()
-    db.session.close()
 
 
-def test_get_employees():
-    db = EpicDatabase('epictest2', "localhost", "postgres", "postgres", "5432")
+def test_get_employees(epictest2):
+    db = epictest2
     db.dbemployees.add_employee('Osy', 'Osy', 'Manager')
     result = db.dbemployees.get_employees()
-    assert len(result) == 1
-    db.session.close()
+    log.debug(result)
+    assert len(result) == 2
+    e = Employee.find_by_username(db.session, 'Osy')
+    db.session.delete(e)
+    db.session.commit()
 
 
-def test_get_roles():
-    db = EpicDatabase('epictest2', "localhost", "postgres", "postgres", "5432")
+def test_get_roles(epictest2):
+    db = epictest2
     list = ['Commercial', 'Manager', 'Support']
     result = db.dbemployees.get_roles()
     assert list == result
-    db.session.close()

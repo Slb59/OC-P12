@@ -137,4 +137,3 @@ class TestEvent:
             commercial=None, client=None, contract=None,
             support='None')
         assert len(events) == 2
-        

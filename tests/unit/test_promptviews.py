@@ -3,6 +3,9 @@ from prompt_toolkit.output import DummyOutput
 from .utils import KeyInputs, execute_with_input_pipe
 from .utils import feed_cli_with_input
 from epicevents.views.prompt_views import PromptView
+from epicevents.views.employee_views import EmployeeView
+from epicevents.views.client_views import ClientView
+from epicevents.views.contract_views import ContractView
 
 
 def ask_with_patched_input(q, text):
@@ -42,14 +45,14 @@ def test_confirm_example():
 def test_prompt_confirm_commercial():
     text = "y" + KeyInputs.ENTER + "\r"
     result = ask_with_patched_input(
-        PromptView.prompt_confirm_commercial, text)
+        EmployeeView.prompt_confirm_commercial, text)
     assert result
 
 
 def test_prompt_confirm_client():
     text = "y" + KeyInputs.ENTER + "\r"
     result = ask_with_patched_input(
-        PromptView.prompt_confirm_client, text)
+        ClientView.prompt_confirm_client, text)
     assert result
 
 
@@ -63,28 +66,28 @@ def test_prompt_confirm_statut():
 def test_prompt_confirm_contract():
     text = "y" + KeyInputs.ENTER + "\r"
     result = ask_with_patched_input(
-        PromptView.prompt_confirm_contract, text)
+        ContractView.prompt_confirm_contract, text)
     assert result
 
 
 def test_prompt_confirm_support():
     text = "y" + KeyInputs.ENTER + "\r"
     result = ask_with_patched_input(
-        PromptView.prompt_confirm_support, text)
+        EmployeeView.prompt_confirm_support, text)
     assert result
 
 
 def test_prompt_confirm_task():
     text = "y" + KeyInputs.ENTER + "\r"
     result = ask_with_patched_input(
-        PromptView.prompt_confirm_task, text)
+        EmployeeView.prompt_confirm_task, text)
     assert result
 
 
 def test_prompt_confirm_profil():
     text = "y" + KeyInputs.ENTER + "\r"
     result = ask_with_patched_input(
-        PromptView.prompt_confirm_profil, text)
+        EmployeeView.prompt_confirm_profil, text)
     assert result
 
 
@@ -92,5 +95,5 @@ def test_prompt_client():
     text = KeyInputs.DOWN + KeyInputs.ENTER + KeyInputs.ENTER + "\r"
     choice = ['Alphonse', 'Dominique', 'Robert']
     result = ask_with_patched_select(
-        PromptView.prompt_client, text, choice)
+        ClientView.prompt_client, text, choice)
     assert result == "Dominique"

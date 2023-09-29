@@ -19,7 +19,8 @@ def expected_manager():
     expected += "│     09-Invalider la connexion d'un employé     │\n"
     expected += "│     10-Créer un contrat                        │\n"
     expected += "│     11-Modifier un contrat                     │\n"
-    expected += "│     12-Affecter un support à un évènement      │\n"
+    expected += "│     12-Affecter un commercial à un client      │\n"
+    expected += "│     13-Affecter un support à un évènement      │\n"
     expected += "╰────────────────────────────────────────────────╯\n"
     return expected
 
