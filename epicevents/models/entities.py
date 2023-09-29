@@ -429,7 +429,7 @@ class Event(Base):
 
     @classmethod
     def find_by_selection(cls, session,
-                          commercial, client, contract, support):
+                          commercial, client, contract, support, state_code):
         EmployeeC = aliased(Employee)
         EmployeeS = aliased(Employee)
 
@@ -438,6 +438,7 @@ class Event(Base):
                 .join(Contract, Contract.id == cls.contract_id)\
                 .join(Client, Client.id == Contract.id)\
                 .join(EmployeeC, EmployeeC.id == Client.commercial_id)\
+                .filter(or_(state_code is None, cls.state == state_code))\
                 .filter(cls.support_id.is_(None))\
                 .filter(or_(client is None, Client.full_name == client))\
                 .filter(or_(
@@ -451,6 +452,7 @@ class Event(Base):
                 .join(Client, Client.id == Contract.id)\
                 .join(EmployeeC, EmployeeC.id == Client.commercial_id)\
                 .outerjoin(EmployeeS, EmployeeS.id == cls.support_id)\
+                .filter(or_(state_code is None, cls.state == state_code))\
                 .filter(or_(client is None, Client.full_name == client))\
                 .filter(or_(
                     commercial is None, EmployeeC.username == commercial))\

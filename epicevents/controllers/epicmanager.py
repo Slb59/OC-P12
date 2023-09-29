@@ -13,9 +13,7 @@ from .databasetools import EpicDatabaseWithData
 from .session import load_session, stop_session, create_session
 from .decorators import (
     is_authenticated,
-    is_commercial, is_manager,
-    # is_support
-)
+    is_commercial, is_manager, is_support)
 
 
 class EpicManager:
@@ -246,16 +244,20 @@ class EpicManager:
     @is_authenticated
     @is_manager
     def update_event(self):
-        supports = self.epic.dbemployees.get_supports()
-        supports = [s.username for s in supports]
-        support = EmployeeView.prompt_support(supports)
-        contracts = self.epic.dbcontracts.get_active_contracts()
-        contracts = [c.ref for c in contracts]
-        contract = ContractView.prompt_contract(contracts)
-        events = self.epic.dbevents.get_events(contract_ref=contract)
-        events = [e.title for e in events]
-        event = EventView.prompt_event(events)
-        self.epic.dbevents.update(contract, event, support)
+        try:
+            supports = self.epic.dbemployees.get_supports()
+            supports = [s.username for s in supports]
+            support = EmployeeView.prompt_support(supports)
+            contracts = self.epic.dbcontracts.get_active_contracts()
+            contracts = [c.ref for c in contracts]
+            contract = ContractView.prompt_contract(contracts)
+            events = self.epic.dbevents.get_events(
+                contract_ref=contract, state_code='U')
+            events = [e.title for e in events]
+            event = EventView.prompt_event(events)
+            self.epic.dbevents.update(contract, event, support)
+        except KeyboardInterrupt:
+            DataView.display_interupt()
 
     @is_authenticated
     @is_commercial
@@ -296,6 +298,25 @@ class EpicManager:
         client = ClientView.prompt_client(clients)
         self.epic.dbemployees.create_task_add_contract(manager, client)
 
+    @is_authenticated
+    @is_support
+    def terminate_event(self, e):
+        try:
+            events = self.epic.dbevents.get_events(
+                support_name=e.username, state_code='U')
+            events = [f'{e.contract.ref}|{e.title}' for e in events]
+            if events:
+                try:
+                    event = EventView.prompt_event(events)
+                    rapport = EventView.prompt_rapport()
+                    self.epic.dbevents.terminate(event, rapport)
+                except KeyboardInterrupt:
+                    DataView.display_interupt()
+            else:
+                EventView.display_no_event()
+        except KeyboardInterrupt:
+            DataView.display_interupt()
+
     def run(self) -> None:
 
         self.check_logout()
@@ -328,7 +349,7 @@ class EpicManager:
                                 case 'C':
                                     self.create_client(e)
                                 case 'S':
-                                    ...  # cloturer un evenement
+                                    self.terminate_event(e)
                         case '07':
                             match e.role.code:
                                 case 'M':

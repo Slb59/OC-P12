@@ -46,6 +46,10 @@ class EventView:
             console.print(table)
 
     @classmethod
+    def display_no_event(cls):
+        console.print("Il n'y a pas d'évènement pour ces critères")
+
+    @classmethod
     def prompt_type(cls, all_types):
         return questionary.select(
             "Type d'évènement:",
@@ -54,10 +58,12 @@ class EventView:
 
     @classmethod
     def prompt_event(cls, all_events):
-        return questionary.select(
+        result = questionary.select(
             "Choix de l'évènement:",
             choices=all_events,
         ).ask()
+        if result is None:
+            raise KeyboardInterrupt
 
     @classmethod
     def prompt_data_event(cls):
@@ -109,3 +115,12 @@ class EventView:
         return {'title': title, 'description': description,
                 'location': location, 'attendees': nb,
                 'date_started': start, 'date_ended': end}
+
+    @classmethod
+    def prompt_rapport(cls):
+        rapport = questionary.text(
+            "Votre rapport:",
+            validate=lambda text: True
+            if re.match(r"^[a-zA-Z ']+$", text)
+            else "Seul des caractères alpha sont autorisés").ask()
+        return rapport

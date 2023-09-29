@@ -131,11 +131,11 @@ class TestEvent:
         events = Event.find_by_selection(
             session=db_session,
             commercial=None, client=None, contract=None,
-            support='Aritomo')
+            support='Aritomo', state_code=None)
         log.debug(events)
         assert len(events) == 1
         events = Event.find_by_selection(
             session=db_session,
             commercial=None, client=None, contract=None,
-            support='None')
+            support='None', state_code=None)
         assert len(events) == 2

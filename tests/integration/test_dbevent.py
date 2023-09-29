@@ -63,11 +63,19 @@ def test_get_events(epictest2):
     assert len(result) == 2
     log.debug(result)
     assert len(result) == 2
-    result = db.dbevents.get_events(None, None, None, None)
+    result = db.dbevents.get_events()
     # then
     assert len(result) == 2
+
+
+def test_get_events_no_support(epictest2):
+    # given
+    db = epictest2
+    initdb(db)
+    # when
     sname = '-- sans support --'
-    result = db.dbevents.get_events(None, None, None, sname)
+    result = db.dbevents.get_events(support_name=sname)
+    # then
     assert len(result) == 1
 
 
@@ -92,3 +100,18 @@ def test_get_types(epictest2):
     result = [r.title for r in result]
     expected = ['conference', 'forum', 'show', 'seminar']
     assert expected == result
+
+
+def test_create(epictest2):
+    db = epictest2
+    initdb(db)
+    data = {
+        'title': 'new title', 'description': 'description',
+        'location': 'location', 'attendees': '10',
+        'date_started': '2023-09-29', 'date_ended': '2023-09-30'}
+    db.dbevents.create('ref1', 'seminar', data)
+    c = Contract.find_by_ref(db.session, 'ref1')
+    e = Event.find_by_title(db.session, c.id, 'new title')
+    assert e.description == 'description'
+    db.session.delete(e)
+    deletedb(db)
