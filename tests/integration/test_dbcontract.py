@@ -61,6 +61,16 @@ def test_get_contracts(epictest2):
     assert len(result) == 2
 
 
+def test_get_contracts_state(epictest2):
+    db = epictest2
+    initdb(db)
+    c = Contract.find_by_ref(db.session, 'ref1')
+    c.state = 'X'
+    db.session.add(c)
+    result = db.dbcontracts.get_contracts(state_value='Annulé')
+    assert len(result) == 1
+
+
 def test_get_active_contracts(epictest2):
     db = epictest2
     initdb(db)
@@ -81,6 +91,19 @@ def test_create(epictest2):
     db.session.delete(c)
     deletedb(db)
     db.session.commit()
+
+
+def test_create_error(epictest2):
+    db = epictest2
+    initdb(db)
+    data = {
+        'ref': 'ref1',
+        'description': 'testcreate',
+        'total_amount': '10000'}
+    with console.capture() as capture:
+        db.dbcontracts.create('c1', data)
+    out = capture.get()
+    assert out == 'Impossible: cet enregistrement existe déjà\n'
 
 
 def test_add_paiement(epictest2):
@@ -106,6 +129,23 @@ def test_add_paiement(epictest2):
     db.session.commit()
 
 
+def test_add_paiement_error(epictest2):
+    db = epictest2
+    initdb(db)
+    data = {
+        'ref': 'testpaiement',
+        'amount': '1000'}
+    db.dbcontracts.add_paiement('ref1', data)
+    with console.capture() as capture:
+        db.dbcontracts.add_paiement('ref1', data)
+    out = capture.get()
+    assert out == 'Impossible: cet enregistrement existe déjà\n'
+    p = Paiement.find_by_ref(db.session, 'testpaiement')
+    db.session.delete(p)
+    deletedb(db)
+    db.session.commit()
+
+
 def test_update(epictest2):
     db = epictest2
     initdb(db)
@@ -119,3 +159,16 @@ def test_update(epictest2):
     db.session.delete(c)
     deletedb(db)
     db.session.commit()
+
+
+def test_update_error(epictest2):
+    db = epictest2
+    initdb(db)
+    data = {
+        'ref': 'ref2',
+        'description': 'new description',
+        'total_amount': '20000'}
+    with console.capture() as capture:
+        db.dbcontracts.update('ref1', data)
+    out = capture.get()
+    assert out == 'Impossible: cet enregistrement existe déjà\n'

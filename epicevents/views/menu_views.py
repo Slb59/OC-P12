@@ -125,12 +125,16 @@ def menu_choice(role):
     return result
 
 
-def menu_update_contract():
+def menu_update_contract(state):
     menu_text = [
-        'Enregistrer un paiement',
-        'Modifier les données du contrat']
+        'Enregistrer un paiement']
+    if state == 'C':
+        menu_text.append('Modifier les données du contrat')
+        menu_text.append('Annuler le contrat')
     choice = questionary.select(
             "Que voulez-vous faire ?",
             choices=menu_text,
         ).ask()
+    if choice is None:
+        raise KeyboardInterrupt
     return menu_text.index(choice) + 1

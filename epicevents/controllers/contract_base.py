@@ -80,3 +80,10 @@ class ContractBase:
         except IntegrityError:
             self.session.rollback()
             DataView.display_error_unique()
+
+    def cancel(self, ref_contract):
+        c = Contract.find_by_ref(self.session, ref_contract)
+        c.state = 'X'
+        self.session.add(c)
+        self.session.commit()
+        DataView.display_data_update()

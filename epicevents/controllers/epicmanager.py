@@ -211,24 +211,26 @@ class EpicManager:
         contracts = self.epic.dbcontracts.get_active_contracts()
         refs = [c.ref for c in contracts]
         ref = ContractView.prompt_contract(refs)
-        choice = menu_update_contract()
-        match choice:
-            case 1:
-                try:
-                    data = PromptView.prompt_data_paiement()
-                    self.epic.dbcontracts.add_paiement(ref, data)
-                except KeyboardInterrupt:
-                    DataView.display_interupt()
-            case 2:
-                state = self.epic.dbcontracts.get_state(ref)
-                if state == 'C':
+        state = self.epic.dbcontracts.get_state(ref)
+        try:
+            choice = menu_update_contract(state)
+            match choice:
+                case 1:
+                    try:
+                        data = PromptView.prompt_data_paiement()
+                        self.epic.dbcontracts.add_paiement(ref, data)
+                    except KeyboardInterrupt:
+                        DataView.display_interupt()
+                case 2:
                     try:
                         data = ContractView.prompt_data_contract()
                         self.epic.dbcontracts.update(ref, data)
                     except KeyboardInterrupt:
                         DataView.display_interupt()
-                else:
-                    DataView.display_error_contract_need_c()
+                case 3:
+                    self.epic.dbcontracts.cancel(ref)
+        except KeyboardInterrupt:
+            DataView.display_interupt()
 
     @is_authenticated
     @is_manager
