@@ -26,9 +26,9 @@ class EventBase:
             contract_ref, support_name, state_code
         )
 
-    def update(self, contract_ref, event, support):
+    def update(self, contract_ref, event_title, support):
         c = Contract.find_by_ref(self.session, contract_ref)
-        e = Event.find_by_title(self.session, c.id, event)
+        e = Event.find_by_title(self.session, c.id, event_title)
         s = Support.find_by_username(self.session, support)
         e.support_id = s.id
         self.session.add(e)
@@ -48,12 +48,21 @@ class EventBase:
         self.session.commit()
         DataView.display_data_update()
 
-    def terminate(self, event_ref, rapport):
+    def terminate(self, event_ref, report_text):
         (contract_ref, event_title) = event_ref.split('|')
         c = Contract.find_by_ref(self.session, contract_ref)
         e = Event.find_by_title(self.session, c.id, event_title)
-        e.rapport = rapport
+        e.report = report_text
         e.state = 'C'
+        self.session.add(e)
+        self.session.commit()
+        DataView.display_data_update()
+
+    def cancel(self, event_ref):
+        (contract_ref, event_title) = event_ref.split('|')
+        c = Contract.find_by_ref(self.session, contract_ref)
+        e = Event.find_by_title(self.session, c.id, event_title)
+        e.state = 'X'
         self.session.add(e)
         self.session.commit()
         DataView.display_data_update()

@@ -319,6 +319,24 @@ class EpicManager:
         except KeyboardInterrupt:
             DataView.display_interupt()
 
+    @is_authenticated
+    @is_support
+    def cancel_event(self, e):
+        try:
+            events = self.epic.dbevents.get_events(
+                support_name=e.username, state_code='U')
+            events = [f'{e.contract.ref}|{e.title}' for e in events]
+            if events:
+                try:
+                    event = EventView.prompt_event(events)
+                    self.epic.dbevents.cancel(event)
+                except KeyboardInterrupt:
+                    DataView.display_interupt()
+            else:
+                EventView.display_no_event()
+        except KeyboardInterrupt:
+            DataView.display_interupt()
+
     def run(self) -> None:
 
         self.check_logout()
@@ -358,6 +376,8 @@ class EpicManager:
                                     self.create_new_employee()
                                 case 'C':
                                     self.update_client(e)
+                                case 'S':
+                                    self.cancel_event(e)
                         case '08':
                             match e.role.code:
                                 case 'M':

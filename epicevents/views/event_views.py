@@ -64,6 +64,7 @@ class EventView:
         ).ask()
         if result is None:
             raise KeyboardInterrupt
+        return result
 
     @classmethod
     def prompt_data_event(cls):

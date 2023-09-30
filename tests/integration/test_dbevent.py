@@ -115,3 +115,26 @@ def test_create(epictest2):
     assert e.description == 'description'
     db.session.delete(e)
     deletedb(db)
+
+
+def test_terminate(epictest2):
+    db = epictest2
+    initdb(db)
+    report = 'Texte du rapport'
+    db.dbevents.terminate('ref1|title 1', report)
+    c = Contract.find_by_ref(db.session, 'ref1')
+    e = Event.find_by_title(db.session, c.id, 'title 1')
+    assert e.report == report
+    assert e.state == 'C'
+    deletedb(db)
+
+
+def test_cancel(epictest2):
+    db = epictest2
+    initdb(db)
+    db.dbevents.cancel('ref1|title 1')
+    c = Contract.find_by_ref(db.session, 'ref1')
+    e = Event.find_by_title(db.session, c.id, 'title 1')
+    assert e.state == 'X'
+    deletedb(db)
+

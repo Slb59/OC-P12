@@ -49,6 +49,7 @@ def menu_commercial() -> Panel:
 
 def menu_support() -> Panel:
     menu_text = "    06-Clôturer un évènement\n"
+    menu_text += "    07-Annuler un évènement\n"
     p = Panel(
         Align.left(menu_text, vertical='top'),
         box=box.ROUNDED,
@@ -105,7 +106,7 @@ def menu_choice(role):
         match role:
             case 'M': max_menu_idx = 13
             case 'C': max_menu_idx = 9
-            case 'S': max_menu_idx = 6
+            case 'S': max_menu_idx = 7
         if result in ['D', 'Q']:
             return True
         elif int(result) <= max_menu_idx:

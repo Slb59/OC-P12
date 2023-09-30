@@ -39,6 +39,7 @@ def expected_commercial():
 def expected_support():
     expected = "╭─ Menu support ───────────────────────╮\n"
     expected += "│     06-Clôturer un évènement         │\n"
+    expected += "│     07-Annuler un évènement          │\n"
     expected += "│                                      │\n"
     expected += "╰──────────────────────────────────────╯\n"
     return expected
