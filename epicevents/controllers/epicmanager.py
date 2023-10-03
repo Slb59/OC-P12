@@ -53,7 +53,6 @@ class EpicManager:
             ErrorView.display_error_login()
 
     @sentry_activate
-    @is_authenticated
     def check_session(self):
         token = load_session()
         user_info = jwt.decode(

@@ -10,7 +10,7 @@ class ErrorView:
     @classmethod
     def display_token_expired(cls):
         s = 'ERROR : Token expiré ! veuillez vous reconnecter.\n'
-        s += 'commande: python epicevent.py --login username/password'
+        s += 'commande: python epicevent.py login'
         error_console.print(s)
 
     @classmethod

@@ -48,6 +48,29 @@ def list():
     app.refresh_session()
 
 
-if __name__ == '__main__':
+@cli_employee.command()
+def create():
+    """ create a new employee """
     app = EpicManager()
-    cli_employee(app)
+    app.create_new_employee()
+    app.refresh_session()
+
+
+@cli_employee.command()
+def update_role():
+    """ modify the role of an employee """
+    app = EpicManager()
+    app.update_employee_role()
+    app.refresh_session()
+
+
+@cli_employee.command()
+def inactivate():
+    """ inactivate an employee """
+    app = EpicManager()
+    app.inactivate_employee()
+    app.refresh_session()
+
+
+if __name__ == '__main__':
+    cli_employee()

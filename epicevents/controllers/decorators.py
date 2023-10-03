@@ -34,8 +34,8 @@ def is_authenticated(f):
 
 def is_commercial(f):
     def decorator(*args, **kwargs):
-        e = args[1]
-        if e.role.value == 'Commercial':
+        role = read_role()
+        if role == 'Commercial':
             return f(*args, **kwargs)
         else:
             return ErrorView.display_not_commercial()
@@ -44,8 +44,8 @@ def is_commercial(f):
 
 def is_support(f):
     def decorator(*args, **kwargs):
-        e = args[1]
-        if e.role.value == 'Support':
+        role = read_role()
+        if role == 'Support':
             return f(*args, **kwargs)
         else:
             return ErrorView.display_not_support()
