@@ -2,6 +2,7 @@ import questionary
 from prompt_toolkit.output import DummyOutput
 from .utils import KeyInputs, execute_with_input_pipe
 from .utils import feed_cli_with_input
+from epicevents.views.auth_views import prompt_login
 from epicevents.views.prompt_views import PromptView
 from epicevents.views.employee_views import EmployeeView
 from epicevents.views.client_views import ClientView
@@ -40,6 +41,13 @@ def test_confirm_example():
     text = "n" + KeyInputs.ENTER + "\r"
     result_py = ask_with_patched_input(ask_pystyle, text)
     assert not result_py
+
+
+def test_prompt_login():
+    values = ('Identifiant', 'monPass!111')
+    text = values[0] + KeyInputs.ENTER + values[1] + KeyInputs.ENTER + "\r"
+    result = ask_with_patched_input(prompt_login, text)
+    assert result == values
 
 
 def test_prompt_confirm_commercial():

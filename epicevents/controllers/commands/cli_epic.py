@@ -3,12 +3,10 @@ from epicevents.controllers.epicmanager import EpicManager
 
 
 @click.command()
-@click.option('--id', prompt='Identifiant', help='Votre identifiant')
-@click.option('--password', prompt='Mot de passe', help='Votre mot de passe')
-def login(id, password):
+def login():
     """ login to the database """
     app = EpicManager()
-    app.check_login(id, password)
+    app.login()
 
 
 @click.command()

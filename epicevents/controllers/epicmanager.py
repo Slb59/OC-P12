@@ -1,5 +1,6 @@
 import jwt
-from epicevents.views.auth_views import display_logout, display_welcome
+from epicevents.views.auth_views import (
+    display_logout, display_welcome, prompt_login)
 from epicevents.views.error import ErrorView
 from epicevents.views.menu_views import menu_choice, menu_update_contract
 from epicevents.views.contract_views import ContractView
@@ -44,8 +45,9 @@ class EpicManager:
         return True
 
     @sentry_activate
-    def check_login(self, username, password) -> bool:
+    def login(self) -> bool:
         stop_session()
+        (username, password) = prompt_login()
         e = self.epic.check_connection(username, password)
         if e:
             create_session(e, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
@@ -55,12 +57,13 @@ class EpicManager:
     @sentry_activate
     def check_session(self):
         token = load_session()
-        user_info = jwt.decode(
-                        token, self.env.SECRET_KEY, algorithms=['HS256'])
-        username = user_info['username']
-        e = self.epic.check_employee(username)
-        if e:
-            return e
+        if token:
+            user_info = jwt.decode(
+                            token, self.env.SECRET_KEY, algorithms=['HS256'])
+            username = user_info['username']
+            e = self.epic.check_employee(username)
+            if e:
+                return e
 
     def refresh_session(self):
         create_session(self.user, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
