@@ -1,7 +1,20 @@
 import jwt
+import sentry_sdk
+from sentry_sdk import capture_exception
 from epicevents.views.error import ErrorView
 from .session import load_session, read_role
 from .config import Environ
+
+
+def sentry_activate(f):
+    def decorator(*args, **kwargs):
+        with sentry_sdk.start_transaction(name="epicevent"):
+            try:
+                return f(*args, **kwargs)
+            except Exception as e:
+                ErrorView.dsiplay_error_exception(e)
+                capture_exception(e)
+    return decorator
 
 
 def is_authenticated(f):

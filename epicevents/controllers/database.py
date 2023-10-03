@@ -1,6 +1,8 @@
+# import sentry_sdk
 from sentry_sdk import capture_exception
 from argon2.exceptions import VerifyMismatchError
 from sqlalchemy import create_engine
+# from sqlalchemy.sql import text
 from sqlalchemy.engine import URL
 from sqlalchemy_utils.functions import (
     database_exists,
@@ -50,6 +52,7 @@ class EpicDatabase:
 
         self.name = database
         self.engine = create_engine(self.url)
+
         self.session = scoped_session(sessionmaker(bind=self.engine))
         self.dbemployees = EmployeeBase(self.session)
         self.dbclients = ClientBase(self.session)

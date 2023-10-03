@@ -16,7 +16,6 @@ class EmployeeBase:
         self.session = session
 
     def add_employee(self, username, password, role):
-        # hashed_password = password
 
         hashed_password = self.ph.hash(password)
 

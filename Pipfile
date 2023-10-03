@@ -19,8 +19,8 @@ argon2-cffi = "*"
 getchlib = "*"
 pytest-mock = "*"
 freezegun = "*"
-sentry-sdk = "*"
 click = "*"
+sentry-sdk = {extras = ["sqlalchemy"], version = "*"}
 
 [dev-packages]
 

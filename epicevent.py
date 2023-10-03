@@ -1,6 +1,7 @@
 import argparse
 import click
 import sentry_sdk
+from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from epicevents.controllers.epicmanager import EpicManager
 
 
@@ -35,6 +36,9 @@ if __name__ == '__main__':
     dsn += ".ingest.sentry.io/4505946331086848"
     sentry_sdk.init(
         dsn=dsn,
+        integrations=[
+            SqlalchemyIntegration(),
+        ],
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
         traces_sample_rate=1.0,

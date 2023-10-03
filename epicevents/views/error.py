@@ -29,3 +29,8 @@ class ErrorView:
     @classmethod
     def display_not_support(cls):
         error_console.print('ERROR : Accès refusé, rôle support requis.')
+
+    @classmethod
+    def dsiplay_error_exception(cls, text):
+        error_console.print('Une erreur est survenu dans le traitement')
+        error_console.print(text)
