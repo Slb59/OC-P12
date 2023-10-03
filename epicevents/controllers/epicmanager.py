@@ -19,9 +19,7 @@ from .decorators import (
 
 class EpicManager:
 
-    def __init__(self, args) -> None:
-
-        self.args = args
+    def __init__(self) -> None:
 
         # load .env file
         db = Config()
@@ -33,27 +31,26 @@ class EpicManager:
     def __str__(self) -> str:
         return "CRM EPIC EVENTS"
 
+    @is_authenticated
     def check_logout(self) -> bool:
         """
         Stop the current session
         Returns:
             bool: always return True
         """
-        if self.args.logout:
-            stop_session()
-            display_logout()
+        stop_session()
+        display_logout()
         return True
 
     @sentry_activate
-    def check_login(self) -> bool:
-        if self.args.login:
-            stop_session()
-            (username, password) = self.args.login.split('/')
-            e = self.epic.check_connection(username, password)
-            if e:
-                create_session(e, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
-            else:
-                ErrorView.display_error_login()
+    def check_login(self, username, password) -> bool:
+        stop_session()
+        print(username + '/' + password)
+        e = self.epic.check_connection(username, password)
+        if e:
+            create_session(e, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
+        else:
+            ErrorView.display_error_login()
 
     @sentry_activate
     @is_authenticated
@@ -167,6 +164,7 @@ class EpicManager:
         if result:
             profil = EmployeeView.prompt_data_profil()
             self.epic.dbemployees.update_profil(e, profil)
+            DataView.display_data_update()
 
     @sentry_activate
     @is_authenticated
@@ -363,8 +361,8 @@ class EpicManager:
 
     def run(self) -> None:
 
-        self.check_logout()
-        self.check_login()
+        # self.check_logout()
+        # self.check_login()
         e = self.check_session()
         if e:
             running = True
@@ -428,8 +426,6 @@ class EpicManager:
                         case 'Q':
                             running = False
                             create_session(
-                                e, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
-                    create_session(
                                 e, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
 
             except KeyboardInterrupt:

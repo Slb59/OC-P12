@@ -44,7 +44,8 @@ class EpicDatabase:
         print(f'checking {self.url} ...')
         try:
             if database_exists(self.url):
-                display_database_connection(database)
+                # display_database_connection(database)
+                pass
             else:
                 display_waiting_databasecreation(self.database_creation)
         except Exception:
@@ -85,27 +86,22 @@ class EpicDatabase:
             Employee: an instance of Employee
         """
         e = Employee.find_by_username(self.session, username)
-        try:
-            if self.dbemployees.ph.verify(e.password, password):
-                return e
-            else:
-                return None
-        except VerifyMismatchError as e:
-            capture_exception(e)
-            return None
+        if e:
+            try:
+                if self.dbemployees.ph.verify(e.password, password):
+                    display_database_connection(self.name)
+                    return e
+            except VerifyMismatchError as e:
+                capture_exception(e)
 
     def check_employee(self, username) -> Employee:
         """
-        Check the username/password is in database employee
-
+        Check the username is in database employee
         Args:
             username (str): the username
-            password (str): the password is encrypted
-
         Returns:
             Employee: an instance of Employee
         """
-        print(f'-----> check employee {username}')
         return Employee.find_by_username(self.session, username)
 
     def first_initdb(self):
