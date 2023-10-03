@@ -4,6 +4,7 @@ from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from epicevents.controllers.commands import cli_epic
 from epicevents.controllers.commands.cli_employee import cli_employee
 from epicevents.controllers.commands.cli_client import cli_client
+from epicevents.controllers.commands.cli_contract import cli_contract
 
 
 def sentry_activate():
@@ -34,6 +35,7 @@ main.add_command(cli_epic.logout)
 main.add_command(cli_epic.dashboard)
 main.add_command(cli_employee)
 main.add_command(cli_client)
+main.add_command(cli_contract)
 
 
 if __name__ == '__main__':
