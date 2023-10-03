@@ -1,5 +1,6 @@
 import argparse
-# import sentry_sdk
+import click
+import sentry_sdk
 from epicevents.controllers.epicmanager import EpicManager
 
 
@@ -24,17 +25,24 @@ def create_argparser():
     return args
 
 
+@click.command
+def hello():
+    click.echo('Hello')
+
+
 if __name__ == '__main__':
-    # sentry_sdk.init(
-    #     dsn="https://8d035592443a8c8d8bcef25a1b7fe5df@o4505946318635008.ingest.sentry.io/4505946331086848",
-    #     # Set traces_sample_rate to 1.0 to capture 100%
-    #     # of transactions for performance monitoring.
-    #     traces_sample_rate=1.0,
-    #     # Set profiles_sample_rate to 1.0 to profile 100%
-    #     # of sampled transactions.
-    #     # We recommend adjusting this value in production.
-    #     profiles_sample_rate=1.0,
-    # )
+    dsn = "https://8d035592443a8c8d8bcef25a1b7fe5df@o4505946318635008"
+    dsn += ".ingest.sentry.io/4505946331086848"
+    sentry_sdk.init(
+        dsn=dsn,
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        traces_sample_rate=1.0,
+        # Set profiles_sample_rate to 1.0 to profile 100%
+        # of sampled transactions.
+        # We recommend adjusting this value in production.
+        profiles_sample_rate=1.0,
+    )
     args = create_argparser()
     app = EpicManager(args)
     app.run()

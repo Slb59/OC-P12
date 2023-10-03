@@ -1,3 +1,4 @@
+from sentry_sdk import capture_exception
 from argon2.exceptions import VerifyMismatchError
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
@@ -86,7 +87,8 @@ class EpicDatabase:
                 return e
             else:
                 return None
-        except VerifyMismatchError:
+        except VerifyMismatchError as e:
+            capture_exception(e)
             return None
 
     def check_employee(self, username) -> Employee:

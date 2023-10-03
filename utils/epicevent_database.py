@@ -1,7 +1,6 @@
 from sqlalchemy.engine import URL
 from sqlalchemy_utils.functions import (
-    database_exists,
-    create_database, drop_database,
+    database_exists
 )
 from epicevents.controllers.config import Config
 
