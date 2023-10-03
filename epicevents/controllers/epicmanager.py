@@ -298,13 +298,16 @@ class EpicManager:
     def create_event(self):
         contracts = self.epic.dbcontracts.get_contracts(
             commercial_name=self.user.username, state_value='S')
-        contracts = [c.ref for c in contracts]
-        contract = ContractView.prompt_contract(contracts)
-        types = self.epic.dbevents.get_types()
-        types = [r.title for r in types]
-        type = EventView.prompt_type(types)
-        data = EventView.prompt_data_event()
-        self.epic.dbevents.create(contract, type, data)
+        if contracts:
+            contracts = [c.ref for c in contracts]
+            contract = ContractView.prompt_contract(contracts)
+            types = self.epic.dbevents.get_types()
+            types = [r.title for r in types]
+            type = EventView.prompt_type(types)
+            data = EventView.prompt_data_event()
+            self.epic.dbevents.create(contract, type, data)
+        else:
+            DataView.display_nocontracts()
 
     @sentry_activate
     @is_authenticated

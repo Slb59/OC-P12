@@ -7,6 +7,10 @@ from epicevents.views.console import console
 class DataView:
 
     @classmethod
+    def display_nocontracts(cls):
+        console.print('Aucun contrat trouvé')
+
+    @classmethod
     def display_interupt(cls):
         console.print('Opération abandonée')
 
