@@ -1,37 +1,11 @@
-import argparse
 import click
 import sentry_sdk
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
-from epicevents.controllers.epicmanager import EpicManager
+from epicevents.controllers.commands import cli_epic
+from epicevents.controllers.commands.cli_employee import cli_employee
 
 
-def create_argparser():
-    parser = argparse.ArgumentParser(
-        prog="EpicEvent",
-        description="Gestionnaire d'évènements",
-        epilog="------ CRM EpicEvent ------"
-    )
-
-    parser.add_argument(
-        "--login", type=str,
-        help="login username/password"
-    )
-
-    parser.add_argument(
-        "--logout", action="store_true",
-        help="logout"
-    )
-
-    args = parser.parse_args()
-    return args
-
-
-@click.command
-def hello():
-    click.echo('Hello')
-
-
-if __name__ == '__main__':
+def sentry_activate():
     dsn = "https://8d035592443a8c8d8bcef25a1b7fe5df@o4505946318635008"
     dsn += ".ingest.sentry.io/4505946331086848"
     sentry_sdk.init(
@@ -47,6 +21,19 @@ if __name__ == '__main__':
         # We recommend adjusting this value in production.
         profiles_sample_rate=1.0,
     )
-    args = create_argparser()
-    app = EpicManager(args)
-    app.run()
+
+
+@click.group(help="------ CRM EpicEvent ------")
+def main():
+    pass
+
+
+main.add_command(cli_epic.login)
+main.add_command(cli_epic.logout)
+main.add_command(cli_epic.dashboard)
+main.add_command(cli_employee)
+
+
+if __name__ == '__main__':
+    sentry_activate()
+    main()

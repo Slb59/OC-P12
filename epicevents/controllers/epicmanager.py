@@ -27,6 +27,7 @@ class EpicManager:
 
         # create database
         self.epic = EpicDatabaseWithData(**db.db_config)
+        self.user = self.check_session()
 
     def __str__(self) -> str:
         return "CRM EPIC EVENTS"
@@ -45,7 +46,6 @@ class EpicManager:
     @sentry_activate
     def check_login(self, username, password) -> bool:
         stop_session()
-        print(username + '/' + password)
         e = self.epic.check_connection(username, password)
         if e:
             create_session(e, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
@@ -62,9 +62,9 @@ class EpicManager:
         e = self.epic.check_employee(username)
         if e:
             return e
-        else:
-            ErrorView.display_error_login()
-            return None
+
+    def refresh_session(self):
+        create_session(self.user, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
 
     def choice_commercial(self) -> str:
         # select a commercial
@@ -136,34 +136,34 @@ class EpicManager:
 
     @sentry_activate
     @is_authenticated
-    def list_of_task(self, e):
-        tasks = self.epic.dbemployees.get_tasks(e)
+    def list_of_task(self):
+        tasks = self.epic.dbemployees.get_tasks(self.user)
         EmployeeView.display_list_tasks(tasks)
 
     @sentry_activate
     @is_authenticated
-    def terminate_a_task(self, e):
+    def terminate_a_task(self):
         result = EmployeeView.prompt_confirm_task()
         if result:
             all_tasks_id = []
-            for t in self.epic.dbemployees.get_tasks(e):
+            for t in self.epic.dbemployees.get_tasks(self.user):
                 all_tasks_id.append(str(t.id))
             task = EmployeeView.prompt_task(all_tasks_id)
             self.epic.dbemployees.terminate_task(task)
 
     @sentry_activate
     @is_authenticated
-    def show_profil(self, e):
-        tasks = self.epic.dbemployees.get_tasks(e)
-        DataView.display_profil(e, len(tasks))
+    def show_profil(self):
+        tasks = self.epic.dbemployees.get_tasks(self.user)
+        DataView.display_profil(self.user, len(tasks))
 
     @sentry_activate
     @is_authenticated
-    def update_profil(self, e):
+    def update_profil(self):
         result = EmployeeView.prompt_confirm_profil()
         if result:
             profil = EmployeeView.prompt_data_profil()
-            self.epic.dbemployees.update_profil(e, profil)
+            self.epic.dbemployees.update_profil(self.user, profil)
             DataView.display_data_update()
 
     @sentry_activate
@@ -278,16 +278,16 @@ class EpicManager:
     @sentry_activate
     @is_authenticated
     @is_commercial
-    def create_client(self, e):
+    def create_client(self):
         data = ClientView.prompt_data_client()
-        self.epic.dbclients.create(e.username, data)
+        self.epic.dbclients.create(self.user.username, data)
 
     @sentry_activate
     @is_authenticated
     @is_commercial
-    def update_client(self, e):
+    def update_client(self):
         clients = self.epic.dbclients.get_clients(
-            commercial_name=e.username)
+            commercial_name=self.user.username)
         clients = [c.full_name for c in clients]
         client = ClientView.prompt_client(clients)
         data = ClientView.prompt_data_client()
@@ -296,9 +296,9 @@ class EpicManager:
     @sentry_activate
     @is_authenticated
     @is_commercial
-    def create_event(self, e):
+    def create_event(self):
         contracts = self.epic.dbcontracts.get_contracts(
-            commercial_name=e.username, state_value='S')
+            commercial_name=self.user.username, state_value='S')
         contracts = [c.ref for c in contracts]
         contract = ContractView.prompt_contract(contracts)
         types = self.epic.dbevents.get_types()
@@ -310,12 +310,12 @@ class EpicManager:
     @sentry_activate
     @is_authenticated
     @is_commercial
-    def add_task_create_contract(self, e):
+    def add_task_create_contract(self):
         managers = self.epic.dbemployees.get_managers()
         managers = [e.username for e in managers]
         manager = EmployeeView.prompt_manager(managers)
         clients = self.epic.dbclients.get_clients(
-            commercial_name=e.username)
+            commercial_name=self.user.username)
         clients = [c.full_name for c in clients]
         client = ClientView.prompt_client(clients)
         self.epic.dbemployees.create_task_add_contract(manager, client)
@@ -323,10 +323,10 @@ class EpicManager:
     @sentry_activate
     @is_authenticated
     @is_support
-    def terminate_event(self, e):
+    def terminate_event(self):
         try:
             events = self.epic.dbevents.get_events(
-                support_name=e.username, state_code='U')
+                support_name=self.user.username, state_code='U')
             events = [f'{e.contract.ref}|{e.title}' for e in events]
             if events:
                 try:
@@ -343,10 +343,10 @@ class EpicManager:
     @sentry_activate
     @is_authenticated
     @is_support
-    def cancel_event(self, e):
+    def cancel_event(self):
         try:
             events = self.epic.dbevents.get_events(
-                support_name=e.username, state_code='U')
+                support_name=self.user.username, state_code='U')
             events = [f'{e.contract.ref}|{e.title}' for e in events]
             if events:
                 try:
@@ -361,23 +361,20 @@ class EpicManager:
 
     def run(self) -> None:
 
-        # self.check_logout()
-        # self.check_login()
-        e = self.check_session()
-        if e:
+        if self.user:
             running = True
-            display_welcome(e.username)
-            self.list_of_task(e)
+            display_welcome(self.user.username)
+            self.list_of_task()
             try:
                 while running:
-                    result = menu_choice(e.role.code)
+                    result = menu_choice(self.user.role.code)
                     match result:
                         case '01':
-                            self.show_profil(e)
-                            self.update_profil(e)
+                            self.show_profil()
+                            self.update_profil()
                         case '02':
-                            self.list_of_task(e)
-                            self.terminate_a_task(e)
+                            self.list_of_task()
+                            self.terminate_a_task()
                         case '03':
                             self.list_of_clients()
                         case '04':
@@ -385,33 +382,33 @@ class EpicManager:
                         case '05':
                             self.list_of_events()
                         case '06':
-                            match e.role.code:
+                            match self.user.role.code:
                                 case 'M':
                                     self.list_of_employees()
                                 case 'C':
-                                    self.create_client(e)
+                                    self.create_client()
                                 case 'S':
-                                    self.terminate_event(e)
+                                    self.terminate_event()
                         case '07':
-                            match e.role.code:
+                            match self.user.role.code:
                                 case 'M':
                                     self.create_new_employee()
                                 case 'C':
-                                    self.update_client(e)
+                                    self.update_client()
                                 case 'S':
-                                    self.cancel_event(e)
+                                    self.cancel_event()
                         case '08':
-                            match e.role.code:
+                            match self.user.role.code:
                                 case 'M':
                                     self.update_employee_role()
                                 case 'C':
-                                    self.create_event(e)
+                                    self.create_event()
                         case '09':
-                            match e.role.code:
+                            match self.user.role.code:
                                 case 'M':
                                     self.inactivate_employee()
                                 case 'C':
-                                    self.add_task_create_contract(e)
+                                    self.add_task_create_contract()
                         case '10':
                             self.create_contract()
                         case '11':
@@ -425,8 +422,7 @@ class EpicManager:
                             running = False
                         case 'Q':
                             running = False
-                            create_session(
-                                e, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
+                            self.refresh_session()
 
             except KeyboardInterrupt:
                 pass
