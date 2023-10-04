@@ -15,10 +15,10 @@ from epicevents.models.entities import (
     Employee, EventType
     )
 from epicevents.views.auth_views import AuthView
-from epicevents.controllers.employee_base import EmployeeBase
-from epicevents.controllers.client_base import ClientBase
-from epicevents.controllers.contract_base import ContractBase
-from epicevents.controllers.event_base import EventBase
+from epicevents.controllers.cruds.employee_base import EmployeeBase
+from epicevents.controllers.cruds.client_base import ClientBase
+from epicevents.controllers.cruds.contract_base import ContractBase
+from epicevents.controllers.cruds.event_base import EventBase
 
 
 class EpicDatabase:
