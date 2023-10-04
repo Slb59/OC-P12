@@ -13,8 +13,8 @@ from epicevents.models.entities import (
 
 class EpicDatabaseWithData(EpicDatabase):
 
-    def first_initdb(self):
-        super().first_initdb()
+    def first_initdb(self, username, password):
+        super().first_initdb(username, password)
         self.create_a_test_database()
 
     def add_some_contracts(self):
@@ -39,9 +39,9 @@ class EpicDatabaseWithData(EpicDatabase):
                     pass
 
     def add_some_clients(self):
-        self.add_employee('Yuka', 'yuka!111', 'Commercial')
+        self.dbemployees.add_employee('Yuka', 'yuka!111', 'Commercial')
         e1 = Commercial.find_by_username(self.session, 'Yuka')
-        self.add_employee('Esumi', 'esumi!111', 'Commercial')
+        self.dbemployees.add_employee('Esumi', 'esumi!111', 'Commercial')
         e2 = Commercial.find_by_username(self.session, 'Esumi')
         company_names = ['League Computing',
                          'Valley Dressing',
@@ -60,8 +60,8 @@ class EpicDatabaseWithData(EpicDatabase):
         self.session.commit()
 
     def add_some_events(self):
-        self.add_employee('Aritomo', 'ari!111', 'Support')
-        self.add_employee('Michio', 'michi!111', 'Support')
+        self.dbemployees.add_employee('Aritomo', 'ari!111', 'Support')
+        self.dbemployees.add_employee('Michio', 'michi!111', 'Support')
         contracts = Contract.getall(self.session)
         locations = [
             'France',
@@ -84,7 +84,7 @@ class EpicDatabaseWithData(EpicDatabase):
                 types = EventType.getall(self.session)
                 ch_type = random.choice(types)
                 state = random.choice(Event.EVENT_STATES)[0]
-                somewhere = random.choice(locations)        
+                somewhere = random.choice(locations)
                 e = Event(
                     title=title, description=description,
                     attendees=nb, location=somewhere,

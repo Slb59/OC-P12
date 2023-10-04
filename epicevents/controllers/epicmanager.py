@@ -1,6 +1,5 @@
 import jwt
-from epicevents.views.auth_views import (
-    display_logout, display_welcome, prompt_login)
+from epicevents.views.auth_views import AuthView
 from epicevents.views.error import ErrorView
 from epicevents.views.menu_views import menu_choice, menu_update_contract
 from epicevents.views.contract_views import ContractView
@@ -9,8 +8,8 @@ from epicevents.views.client_views import ClientView
 from epicevents.views.event_views import EventView
 from epicevents.views.data_views import DataView
 from epicevents.views.prompt_views import PromptView
-from .config import Config, Environ
-from .databasetools import EpicDatabaseWithData
+from .config import Config, Environ, create_config
+from .databasetools import EpicDatabase, EpicDatabaseWithData
 from .session import load_session, stop_session, create_session
 from .decorators import (
     is_authenticated,
@@ -27,7 +26,7 @@ class EpicManager:
         self.env = Environ()
 
         # create database
-        self.epic = EpicDatabaseWithData(**db.db_config)
+        self.epic = EpicDatabase(**db.db_config)
         self.user = self.check_session()
 
     def __str__(self) -> str:
@@ -41,13 +40,13 @@ class EpicManager:
             bool: always return True
         """
         stop_session()
-        display_logout()
+        AuthView.display_logout()
         return True
 
     @sentry_activate
     def login(self) -> bool:
         stop_session()
-        (username, password) = prompt_login()
+        (username, password) = AuthView.prompt_login()
         e = self.epic.check_connection(username, password)
         if e:
             create_session(e, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
@@ -67,6 +66,19 @@ class EpicManager:
 
     def refresh_session(self):
         create_session(self.user, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
+
+    @classmethod
+    def initbase(cls):
+        stop_session()
+        values = AuthView.prompt_baseinit()
+        create_config(*values)
+        db = Config()
+        result = AuthView.prompt_confirm_testdata()
+        if result:
+            EpicDatabaseWithData(**db.db_config)
+        else:
+            EpicDatabase(**db.db_config)
+        AuthView.display_database_connection(values[0])
 
     def choice_commercial(self) -> str:
         # select a commercial
@@ -368,7 +380,7 @@ class EpicManager:
 
         if self.user:
             running = True
-            display_welcome(self.user.username)
+            AuthView.display_welcome(self.user.username)
             self.list_of_task()
             try:
                 while running:

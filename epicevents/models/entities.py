@@ -29,7 +29,9 @@ class DateFields():
 class Department(Base):
     __tablename__ = 'departments'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(
+        Integer,
+        primary_key=True)
     name = Column(String, nullable=False, unique=True)
     employees = relationship('Employee', back_populates='department')
 
@@ -59,7 +61,9 @@ class Employee(Base):
         ('S', 'Support')
     )
 
-    id = Column(Integer, primary_key=True)
+    id = Column(
+        Integer,
+        primary_key=True)
     username = Column(String, nullable=False, unique=True)
     email = Column(String)
     password = Column(String)
@@ -209,7 +213,9 @@ class Task(Base):
         ('D', 'Done')
     )
 
-    id = Column(Integer, primary_key=True)
+    id = Column(
+        Integer,
+        primary_key=True)
     description = Column(String)
     started_time = Column(TIMESTAMP, nullable=False, default=datetime.now())
     ended_time = Column(TIMESTAMP)
@@ -350,6 +356,7 @@ class Contract(Base, DateFields):
 
 class Paiement(Base):
     __tablename__ = 'paiements'
+
     id = Column(Integer, primary_key=True)
     ref = Column(String, nullable=False, unique=True)
     date_amount = Column(TIMESTAMP, nullable=False, default=datetime.now())
@@ -368,6 +375,7 @@ class Paiement(Base):
 
 class EventType(Base):
     __tablename__ = 'eventstype'
+
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False, unique=True)
 

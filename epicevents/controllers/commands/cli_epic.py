@@ -21,3 +21,9 @@ def dashboard():
     """ access to menu """
     app = EpicManager()
     app.run()
+
+
+@click.command()
+def initbase():
+    """ init the database """
+    EpicManager.initbase()

@@ -3,6 +3,22 @@ import dotenv
 from configparser import ConfigParser
 
 
+def create_config(basename, username, password, port):
+    data = [
+        '[postgresql]',
+        f'DATABASE = {basename}',
+        'HOST = localhost',
+        f'USER = {username}',
+        f'PASSWORD = {password}',
+        f'PORT = {port}'
+    ]
+    
+    file = open("database.ini", "w")
+    for line in data:
+        file.write(line + "\n")
+    file.close()
+
+
 class FileNotExists(Exception):
     def __init__(
             self,

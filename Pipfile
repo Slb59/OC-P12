@@ -21,6 +21,7 @@ pytest-mock = "*"
 freezegun = "*"
 click = "*"
 sentry-sdk = {extras = ["sqlalchemy"], version = "*"}
+sqlacodegen = "*"
 
 [dev-packages]
 

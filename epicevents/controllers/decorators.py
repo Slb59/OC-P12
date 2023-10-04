@@ -1,7 +1,6 @@
 import jwt
 import sentry_sdk
 from sentry_sdk import capture_exception
-# from epicevents.controllers.epicmanager import EpicManager
 from epicevents.views.error import ErrorView
 from .session import load_session, read_role
 from .config import Environ

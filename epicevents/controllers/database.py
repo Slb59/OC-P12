@@ -1,8 +1,6 @@
-# import sentry_sdk
 from sentry_sdk import capture_exception
 from argon2.exceptions import VerifyMismatchError
 from sqlalchemy import create_engine
-# from sqlalchemy.sql import text
 from sqlalchemy.engine import URL
 from sqlalchemy_utils.functions import (
     database_exists,
@@ -16,10 +14,7 @@ from epicevents.models.entities import (
     Base, Department,
     Employee, EventType
     )
-from epicevents.views.auth_views import (
-    display_waiting_databasecreation,
-    display_database_connection
-)
+from epicevents.views.auth_views import AuthView
 from epicevents.controllers.employee_base import EmployeeBase
 from epicevents.controllers.client_base import ClientBase
 from epicevents.controllers.contract_base import ContractBase
@@ -44,12 +39,16 @@ class EpicDatabase:
         print(f'checking {self.url} ...')
         try:
             if database_exists(self.url):
-                # display_database_connection(database)
-                pass
+                AuthView.display_database_connection(database)
             else:
-                display_waiting_databasecreation(self.database_creation)
+                data_manager = AuthView.prompt_manager()
+                AuthView.display_waiting_databasecreation(
+                    self.database_creation(*data_manager))
         except Exception:
-            display_waiting_databasecreation(self.database_creation)
+            data_manager = AuthView.prompt_manager()
+            # self.database_creation(*data_manager)
+            AuthView.display_waiting_databasecreation(
+                self.database_creation, data_manager)
 
         self.name = database
         self.engine = create_engine(self.url)
@@ -63,7 +62,7 @@ class EpicDatabase:
     def __str__(self) -> str:
         return f'{self.name} database'
 
-    def database_creation(self):
+    def database_creation(self, username, password):
         create_database(self.url)
         # init database structure
         engine = create_engine(self.url)
@@ -71,7 +70,7 @@ class EpicDatabase:
         self.session = scoped_session(sessionmaker(bind=engine))
         self.dbemployees = EmployeeBase(self.session)
         # add initial data
-        self.first_initdb()
+        self.first_initdb(username, password)
         self.session.remove()
 
     def check_connection(self, username, password) -> Employee:
@@ -89,7 +88,7 @@ class EpicDatabase:
         if e:
             try:
                 if self.dbemployees.ph.verify(e.password, password):
-                    display_database_connection(self.name)
+                    AuthView.display_database_connection(self.name)
                     return e
             except VerifyMismatchError as e:
                 capture_exception(e)
@@ -104,14 +103,14 @@ class EpicDatabase:
         """
         return Employee.find_by_username(self.session, username)
 
-    def first_initdb(self):
+    def first_initdb(self, username, password):
         # add departments
         management_dpt = Department(name='management department')
         support_dpt = Department(name='support department')
         commercial_dpt = Department(name='commercial department')
         self.session.add_all([management_dpt, support_dpt, commercial_dpt])
         # add a superuser
-        self.dbemployees.add_employee('Osynia', 'osyA!111', 'Manager')
+        self.dbemployees.add_employee(username, password, 'Manager')
         # add types of events
         event_type1 = EventType(title='conference')
         event_type2 = EventType(title='forum')

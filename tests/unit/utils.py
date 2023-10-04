@@ -32,12 +32,12 @@ def execute_with_input_pipe(func):
 # from prompt_toolkit.application import AppSession, create_app_session
 # from prompt_toolkit.output import DummyOutput
 
-# input = create_pipe_input()  
+# input = create_pipe_input()
 # # Create an alternative input device, similar to StringIO.
 # input.send_text("hello\n")
 
 # with create_app_session(input=input, output=DummyOutput()):
-#     #  run your application here. It will by default 
+#     #  run your application here. It will by default
 # take the input/output objects from the AppSession.
 
 def feed_cli_with_input(_type, message, texts, sleep_time=1, **kwargs):
@@ -75,3 +75,18 @@ def feed_cli_with_input(_type, message, texts, sleep_time=1, **kwargs):
         return result, application
 
     return execute_with_input_pipe(_create_input)
+
+
+def ask_with_patched_input(q, text):
+    def run(inp):
+        inp.send_text(text)
+        return q(input=inp, output=DummyOutput())
+    return execute_with_input_pipe(run)
+
+
+def ask_with_patched_select(q, text, choice):
+    def run(inp):
+        inp.send_text(text)
+        result = q(choice, input=inp, output=DummyOutput())
+        return result
+    return execute_with_input_pipe(run)

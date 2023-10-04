@@ -34,6 +34,7 @@ def main():
 main.add_command(cli_epic.login)
 main.add_command(cli_epic.logout)
 main.add_command(cli_epic.dashboard)
+main.add_command(cli_epic.initbase)
 main.add_command(cli_employee)
 main.add_command(cli_client)
 main.add_command(cli_contract)
