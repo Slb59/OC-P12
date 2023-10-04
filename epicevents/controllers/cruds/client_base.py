@@ -29,14 +29,20 @@ class ClientBase:
         DataView.display_data_update()
 
     def create(self, commercial_name, data):
-        # data = {
-        # 'full_name': 'client-test', 'email': 'test@test.com',
-        # 'phone': '0202020202', 'company_name': 'company_name'}
+        """_summary_
+
+        Args:
+            commercial_name (_type_): _description_
+            data (_type_): must be a dictionary
+            exemple : {
+            'full_name': 'client-test', 'email': 'test@test.com',
+            'phone': '0202020202', 'company_name': 'company_name'}
+        """
         e = Commercial.find_by_username(self.session, commercial_name)
         c = Client(
             full_name=data['full_name'], email=data['email'],
             phone=data['phone'], company_name=data['company_name'],
-            commercial_id=e.id)
+            commercial_id=e.id)        
         try:
             self.session.add(c)
             self.session.commit()

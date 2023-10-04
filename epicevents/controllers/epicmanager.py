@@ -1,4 +1,5 @@
 import jwt
+import random
 from epicevents.views.auth_views import AuthView
 from epicevents.views.error import ErrorView
 from epicevents.views.menu_views import menu_choice, menu_update_contract
@@ -207,7 +208,17 @@ class EpicManager:
         ename = EmployeeView.prompt_employee(enames)
         roles = self.epic.dbemployees.get_roles()
         role = EmployeeView.prompt_role(roles)
-        self.epic.dbemployees.update_employee(ename, role)
+        self.epic.dbemployees.update_employee(ename, role=role)
+
+    @sentry_activate
+    @is_authenticated
+    @is_manager
+    def update_employee_password(self):
+        employees = self.epic.dbemployees.get_employees()
+        enames = [e.username for e in employees]
+        ename = EmployeeView.prompt_employee(enames)
+        password = EmployeeView.prompt_password()
+        self.epic.dbemployees.update_employee(ename, password=password)
 
     @sentry_activate
     @is_authenticated
@@ -295,6 +306,10 @@ class EpicManager:
     def create_client(self):
         data = ClientView.prompt_data_client()
         self.epic.dbclients.create(self.user.username, data)
+        managers = self.epic.dbemployees.get_managers()
+        e = random.choice(managers)
+        self.epic.dbemployees.create_task_add_contract(
+            e.username, data['full_name'])
 
     @sentry_activate
     @is_authenticated

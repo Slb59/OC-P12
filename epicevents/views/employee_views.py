@@ -97,6 +97,27 @@ class EmployeeView:
         return {'username': username, 'password': password, 'email': email}
 
     @classmethod
+    def prompt_password(cls, **kwargs):
+        regex_password = r"(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])"
+        regex_password += "(?=.*?[#?!@$%^&*-]).{8,}"
+        password = questionary.password(
+            "Mot de passe:",
+            validate=lambda text: True
+            if re.match(regex_password, text)
+            else "Le format du mot de passe est invalide",
+            **kwargs).ask()
+        if password is None:
+            raise KeyboardInterrupt
+        result = questionary.password(
+            "Confirmez le mot de passe:",
+            validate=lambda text: True if text == password
+            else "Les mots de passe ne correspondent pas",
+            **kwargs).ask()
+        if result is None:
+            raise KeyboardInterrupt
+        return password
+
+    @classmethod
     def prompt_role(cls, all_roles):
         role = questionary.select(
             "Role:",

@@ -72,6 +72,15 @@ def update_role():
 
 
 @cli_employee.command()
+def update_password():
+    """ modify the password of an employee """
+    app = EpicManager()
+    if app.user:
+        app.update_employee_password()
+        app.refresh_session()
+
+
+@cli_employee.command()
 def inactivate():
     """ inactivate an employee """
     app = EpicManager()

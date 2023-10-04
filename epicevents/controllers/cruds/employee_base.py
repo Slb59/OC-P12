@@ -101,9 +101,12 @@ class EmployeeBase:
             self.session.rollback()
             DataView.display_error_unique()
 
-    def update_employee(self, name, role):
+    def update_employee(self, name, role=None, password=None):
         e = Employee.find_by_username(self.session, name)
-        e.role = self.get_rolecode(role)
+        if role:
+            e.role = self.get_rolecode(role)
+        if password:
+            e.password = self.ph.hash(password)
         self.session.add(e)
         self.session.commit()
         DataView.display_data_update()
