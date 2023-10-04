@@ -118,7 +118,10 @@ class EpicManager:
         result = PromptView.prompt_confirm_statut()
         if result:
             states = self.epic.dbcontracts.get_states()
-            state = PromptView.prompt_statut(states)
+            try:
+                state = PromptView.prompt_select("Choix du statut:", states)
+            except KeyboardInterrupt:
+                state = None
         # display list
         ContractView.display_list_contracts(
             self.epic.dbcontracts.get_contracts(cname, client, state))
@@ -163,9 +166,13 @@ class EpicManager:
             all_tasks_id = []
             for t in self.epic.dbemployees.get_tasks(self.user):
                 all_tasks_id.append(str(t.id))
-            task = EmployeeView.prompt_task(all_tasks_id)
-            self.epic.dbemployees.terminate_task(task)
-            DataView.display_data_update()
+            try:
+                task = PromptView.prompt_select(
+                    "N° de la tâche à terminer:", all_tasks_id)
+                self.epic.dbemployees.terminate_task(task)
+                DataView.display_data_update()
+            except KeyboardInterrupt:
+                DataView.display_interupt()
 
     @sentry_activate
     @is_authenticated
@@ -306,7 +313,7 @@ class EpicManager:
             events = self.epic.dbevents.get_events(
                 contract_ref=contract, state_code='U')
             events = [e.title for e in events]
-            event = EventView.prompt_event(events)
+            event = PromptView.prompt_select("Choix de l'évènement:", events)
             self.epic.dbevents.update(contract, event, support)
         except KeyboardInterrupt:
             DataView.display_interupt()
@@ -344,9 +351,18 @@ class EpicManager:
             contract = ContractView.prompt_contract(contracts)
             types = self.epic.dbevents.get_types()
             types = [r.title for r in types]
-            type = EventView.prompt_type(types)
-            data = EventView.prompt_data_event()
-            self.epic.dbevents.create(contract, type, data)
+            try:
+                type = PromptView.prompt_select("Type d'évènement:", types)
+                data = EventView.prompt_data_event()
+                self.epic.dbevents.create(contract, type, data)
+                DataView.display_workflow()
+                e_title = data['title']
+                text = f"Affecter un support pour l'évènement {e_title}"
+                managers = self.epic.dbemployees.get_managers()
+                manager = random.choice(managers)
+                self.epic.dbemployees.create_task(manager.username, text)
+            except KeyboardInterrupt:
+                DataView.display_interupt()
         else:
             DataView.display_nocontracts()
 
@@ -374,7 +390,8 @@ class EpicManager:
             events = [f'{e.contract.ref}|{e.title}' for e in events]
             if events:
                 try:
-                    event = EventView.prompt_event(events)
+                    event = PromptView.prompt_select(
+                        "Choix de l'évènement:", events)
                     rapport = EventView.prompt_rapport()
                     self.epic.dbevents.terminate(event, rapport)
                 except KeyboardInterrupt:
@@ -394,7 +411,8 @@ class EpicManager:
             events = [f'{e.contract.ref}|{e.title}' for e in events]
             if events:
                 try:
-                    event = EventView.prompt_event(events)
+                    event = PromptView.prompt_select(
+                        "Choix de l'évènement:", events)
                     self.epic.dbevents.cancel(event)
                 except KeyboardInterrupt:
                     DataView.display_interupt()

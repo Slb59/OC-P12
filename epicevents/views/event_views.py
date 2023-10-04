@@ -50,23 +50,6 @@ class EventView:
         console.print("Il n'y a pas d'évènement pour ces critères")
 
     @classmethod
-    def prompt_type(cls, all_types, **kwargs):
-        return questionary.select(
-            "Type d'évènement:",
-            choices=all_types, **kwargs
-        ).ask()
-
-    @classmethod
-    def prompt_event(cls, all_events):
-        result = questionary.select(
-            "Choix de l'évènement:",
-            choices=all_events,
-        ).ask()
-        if result is None:
-            raise KeyboardInterrupt
-        return result
-
-    @classmethod
     def prompt_data_event(cls):
         title = questionary.text(
             "Titre:",
@@ -98,18 +81,19 @@ class EventView:
         regex_date = r'(\d{2})[/.-](\d{2})[/.-](\d{4})$'
         fmt_date = '%d/%m/%Y'
         start = questionary.text(
-            "Nb participants:",
+            "Date de début:",
             validate=lambda text: True
             if re.match(regex_date, text)
             else "format dd/mm/yyyy attendu").ask()
 
         if start:
             end = questionary.text(
-                "Nb participants:",
+                "Date de fin:",
                 validate=lambda text: True
                 if re.match(regex_date, text)
-                and datetime.strptime(text, fmt_date) >= start
-                else "format dd/mm/yyyy attendu").ask()
+                and datetime.strptime(
+                    text, fmt_date) >= datetime.strptime(start, fmt_date)
+                else "format dd/mm/yyyy attendu et >= date de début").ask()
         else:
             end = None
 

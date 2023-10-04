@@ -90,3 +90,11 @@ def ask_with_patched_select(q, text, choice):
         result = q(choice, input=inp, output=DummyOutput())
         return result
     return execute_with_input_pipe(run)
+
+
+def ask_with_patched_select_with_title(q, text, title, choice):
+    def run(inp):
+        inp.send_text(text)
+        result = q(title, choice, input=inp, output=DummyOutput())
+        return result
+    return execute_with_input_pipe(run)

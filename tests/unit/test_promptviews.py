@@ -2,7 +2,7 @@ import questionary
 from .utils import (
     KeyInputs,
     feed_cli_with_input, ask_with_patched_input,
-    ask_with_patched_select
+    ask_with_patched_select, ask_with_patched_select_with_title
 )
 from epicevents.views.prompt_views import PromptView
 from epicevents.views.employee_views import EmployeeView
@@ -76,3 +76,12 @@ def test_prompt_client():
     result = ask_with_patched_select(
         ClientView.prompt_client, text, choice)
     assert result == "Dominique"
+
+
+def test_prompt_select():
+    text = KeyInputs.DOWN + KeyInputs.ENTER + KeyInputs.ENTER + "\r"
+    choice = ['choix1', 'choix2', 'choix3']
+    title = 'titre de la selection'
+    result = ask_with_patched_select_with_title(
+        PromptView.prompt_select, text, title, choice)
+    assert result == "choix2"

@@ -51,13 +51,6 @@ class EmployeeView:
             "Souhaitez-vous finaliser une tache ?", **kwargs).ask()
 
     @classmethod
-    def prompt_task(cls, all_tasks):
-        return questionary.select(
-            "Identifiant de la tâche à terminer:",
-            choices=all_tasks,
-        ).ask()
-
-    @classmethod
     def prompt_confirm_profil(cls, **kwargs):
         return questionary.confirm(
             "Souhaitez-vous modifier vos données ?", **kwargs).ask()

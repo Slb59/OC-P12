@@ -9,8 +9,10 @@ class PromptView:
             "Souhaitez-vous sélectionner un statut ?", **kwargs).ask()
 
     @classmethod
-    def prompt_statut(cls, all_states):
-        return questionary.select(
-            "Choix du statut:",
-            choices=all_states,
+    def prompt_select(cls, text, choice, **kwargs):
+        result = questionary.select(
+            text, choices=choice, **kwargs
         ).ask()
+        if result is None:
+            raise KeyboardInterrupt
+        return result
