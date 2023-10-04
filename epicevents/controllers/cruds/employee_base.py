@@ -154,10 +154,10 @@ class EmployeeBase:
         Task.terminate(self.session, task_id)
         self.session.commit()
 
-    def create_task_add_contract(self, manager_name, client_name):
-        e = Manager.find_by_username(self.session, manager_name)
+    def create_task(self, employee_name, text):
+        e = Employee.find_by_username(self.session, employee_name)
         t = Task(
-            description='Creer le contrat du client ' + client_name,
+            description=text,
             employee_id=e.id)
         self.session.add(t)
         self.session.commit()

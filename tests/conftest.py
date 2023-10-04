@@ -1,5 +1,6 @@
 import pytest
 import argparse
+from pytest import MonkeyPatch
 from datetime import datetime
 from freezegun import freeze_time
 from contextlib import contextmanager
@@ -8,6 +9,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy_utils import create_database, drop_database
 from epicevents.models.entities import Base, Task
 from epicevents.controllers.database import EpicDatabase
+from epicevents.views.auth_views import AuthView
 
 TEST_DB_NAME = "epictest"
 
@@ -16,8 +18,8 @@ def pytest_addoption(parser):
     parser.addoption(
         '--dburl',
         action='store',
-        default='postgresql://postgres:postgres@localhost:5432/epictest',
-        help='postgresql://postgres:postgres@localhost:5432/epictest'
+        default='postgresql://postgres:postG!111@localhost:5432/epictest',
+        help='postgresql://postgres:postG!111@localhost:5432/epictest'
         )
 
 
@@ -96,7 +98,15 @@ def mocklogin():
 
 @pytest.fixture(scope='function')
 def epictest2():
-    db = EpicDatabase('epictest2', "localhost", "postgres", "postgres", "5432")
-    yield db
-    db.session.rollback()
-    db.session.close()
+
+    def new_prompt_manager(*args, **kwargs):
+        return ('Osynia', 'osyA!111')
+
+    with MonkeyPatch.context() as mp:
+        mp.setattr(AuthView, 'prompt_manager', new_prompt_manager)
+
+        db = EpicDatabase(
+            'epictest2', "localhost", "postgres", "postG!111", "5432")
+        yield db
+        db.session.rollback()
+        db.session.close()

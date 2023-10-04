@@ -50,10 +50,10 @@ class EventView:
         console.print("Il n'y a pas d'évènement pour ces critères")
 
     @classmethod
-    def prompt_type(cls, all_types):
+    def prompt_type(cls, all_types, **kwargs):
         return questionary.select(
             "Type d'évènement:",
-            choices=all_types,
+            choices=all_types, **kwargs
         ).ask()
 
     @classmethod

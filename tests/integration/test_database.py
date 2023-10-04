@@ -1,5 +1,7 @@
+from pytest import MonkeyPatch
 from sqlalchemy_utils import drop_database
 from epicevents.controllers.database import EpicDatabase
+from epicevents.views.auth_views import AuthView
 from epicevents.models.entities import (
     Manager, Department, Commercial, Client)
 
@@ -25,10 +27,17 @@ def test_init_database(epictest2):
 
 
 def test_database_creation():
-    db = EpicDatabase("epictest2", "localhost", "postgres", "postgres", "5432")
-    drop_database(db.url)
-    db = EpicDatabase("epictest2", "localhost", "postgres", "postgres", "5432")
-    assert str(db) == 'epictest2 database'
+    def new_prompt_manager(*args, **kwargs):
+        return ('Osynia', 'osyA!111')
+
+    with MonkeyPatch.context() as mp:
+        mp.setattr(AuthView, 'prompt_manager', new_prompt_manager)
+        db = EpicDatabase(
+            "epictest2", "localhost", "postgres", "postG!111", "5432")
+        drop_database(db.url)
+        db = EpicDatabase(
+            "epictest2", "localhost", "postgres", "postG!111", "5432")
+        assert str(db) == 'epictest2 database'
 
 
 def test_check_connection(epictest2):

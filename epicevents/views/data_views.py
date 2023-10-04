@@ -7,6 +7,10 @@ from epicevents.views.console import console
 class DataView:
 
     @classmethod
+    def display_workflow(cls):
+        console.print('Mise à jour du workflow')
+
+    @classmethod
     def display_nocontracts(cls):
         console.print('Aucun contrat trouvé')
 

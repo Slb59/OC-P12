@@ -6,19 +6,19 @@ import logging
 # from rich.console import Console
 # from epicevents.views.console import console
 from epicevents.controllers.epicmanager import EpicManager
+from epicevents.controllers.session import create_session
 
 log = logging.getLogger()
 
 
-def test_init_epicmanager(mockparser):
-    app = EpicManager(mockparser)
+def test_init_epicmanager():
+    app = EpicManager()
     assert str(app) == "CRM EPIC EVENTS"
 
 
-def test_check_logout(mockparser):
+def test_check_logout():
     # given
-    mockparser.logout = True
-    app = EpicManager(mockparser)
+    app = EpicManager()
     # when
     app.check_logout()
     # then
@@ -27,19 +27,19 @@ def test_check_logout(mockparser):
     assert e_info.type == FileNotFoundError
 
 
-def test_list_of_employees(mockparser, mocklogin, capsys):
-    mockparser.login = mocklogin
-    app = EpicManager(mockparser)
-    app.check_login()
+def test_list_of_employees(capsys):
+    app = EpicManager()
+    e = app.epic.check_connection('Osynia', 'osyA!111')
+    create_session(e, app.env.TOKEN_DELTA, app.env.SECRET_KEY)
     app.list_of_employees()
     str_output = capsys.readouterr().out
     assert 'Osynia' in str_output
 
 
-def test_create_new_employee(mockparser, mocklogin, capsys):
-    mockparser.login = mocklogin
-    app = EpicManager(mockparser)
-    app.check_login()
+def test_create_new_employee(mocklogin, capsys):
+    app = EpicManager()
+    e = app.epic.check_connection('Osynia', 'osyA!111')
+    create_session(e, app.env.TOKEN_DELTA, app.env.SECRET_KEY)
     # with mock.patch.object(__builtins__, 'input', lambda: 'some_input'):
     #     app.create_new_employee()
     assert False

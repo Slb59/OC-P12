@@ -131,6 +131,7 @@ def menu_update_contract(state):
         'Enregistrer un paiement']
     if state == 'C':
         menu_text.append('Modifier les données du contrat')
+        menu_text.append('signé le contrat')
         menu_text.append('Annuler le contrat')
     choice = questionary.select(
             "Que voulez-vous faire ?",

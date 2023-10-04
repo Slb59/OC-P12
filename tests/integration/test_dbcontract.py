@@ -37,6 +37,13 @@ def deletedb(db):
     db.session.delete(e)
 
 
+def test_get(epictest2):
+    db = epictest2
+    initdb(db)
+    result = db.dbcontracts.get('ref1')
+    assert result.ref == 'ref1'
+
+
 def test_get_states(epictest2):
     db = epictest2
     result = db.dbcontracts.get_states()
@@ -172,3 +179,23 @@ def test_update_error(epictest2):
         db.dbcontracts.update('ref1', data)
     out = capture.get()
     assert out == 'Impossible: cet enregistrement existe déjà\n'
+
+
+def test_cancel(epictest2):
+    db = epictest2
+    initdb(db)
+    db.dbcontracts.cancel('ref1')
+    c = Contract.find_by_ref(db.session, 'ref1')
+    assert c.state == 'X'
+    deletedb(db)
+    db.session.commit()
+
+
+def test_signed(epictest2):
+    db = epictest2
+    initdb(db)
+    db.dbcontracts.signed('ref1')
+    c = Contract.find_by_ref(db.session, 'ref1')
+    assert c.state == 'S'
+    deletedb(db)
+    db.session.commit()

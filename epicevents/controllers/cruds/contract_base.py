@@ -11,6 +11,9 @@ class ContractBase:
     def __init__(self, session) -> None:
         self.session = session
 
+    def get(self, ref):
+        return Contract.find_by_ref(self.session, ref)
+
     def get_states(self):
         states = Contract.CONTRACT_STATES
         result = [s[1] for s in states]
@@ -84,6 +87,13 @@ class ContractBase:
     def cancel(self, ref_contract):
         c = Contract.find_by_ref(self.session, ref_contract)
         c.state = 'X'
+        self.session.add(c)
+        self.session.commit()
+        DataView.display_data_update()
+
+    def signed(self, ref_contract):
+        c = Contract.find_by_ref(self.session, ref_contract)
+        c.state = 'S'
         self.session.add(c)
         self.session.commit()
         DataView.display_data_update()

@@ -7,7 +7,6 @@ from .utils import (
 from epicevents.views.prompt_views import PromptView
 from epicevents.views.employee_views import EmployeeView
 from epicevents.views.client_views import ClientView
-from epicevents.views.contract_views import ContractView
 
 
 def test_confirm_enter_default_yes():
@@ -47,13 +46,6 @@ def test_prompt_confirm_statut():
     text = "y" + KeyInputs.ENTER + "\r"
     result = ask_with_patched_input(
         PromptView.prompt_confirm_statut, text)
-    assert result
-
-
-def test_prompt_confirm_contract():
-    text = "y" + KeyInputs.ENTER + "\r"
-    result = ask_with_patched_input(
-        ContractView.prompt_confirm_contract, text)
     assert result
 
 

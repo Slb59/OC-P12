@@ -165,6 +165,7 @@ class EpicManager:
                 all_tasks_id.append(str(t.id))
             task = EmployeeView.prompt_task(all_tasks_id)
             self.epic.dbemployees.terminate_task(task)
+            DataView.display_data_update()
 
     @sentry_activate
     @is_authenticated
@@ -239,6 +240,9 @@ class EpicManager:
         try:
             data = ContractView.prompt_data_contract()
             self.epic.dbcontracts.create(ename, data)
+            contract_ref = data['ref']
+            text = f'Contrat {contract_ref} en attente de signature'
+            self.epic.dbemployees.create_task(self.user.username, text)
         except KeyboardInterrupt:
             DataView.display_interupt()
 
@@ -266,6 +270,13 @@ class EpicManager:
                     except KeyboardInterrupt:
                         DataView.display_interupt()
                 case 3:
+                    self.epic.dbcontracts.signed(ref)
+                    text = f'Creer les évènements du contrat {ref}'
+                    contract = self.epic.dbcontracts.get(ref)
+                    DataView.display_workflow()
+                    self.epic.dbemployees.create_task(
+                        contract.client.commercial.username, text)
+                case 4:
                     self.epic.dbcontracts.cancel(ref)
         except KeyboardInterrupt:
             DataView.display_interupt()
@@ -308,8 +319,8 @@ class EpicManager:
         self.epic.dbclients.create(self.user.username, data)
         managers = self.epic.dbemployees.get_managers()
         e = random.choice(managers)
-        self.epic.dbemployees.create_task_add_contract(
-            e.username, data['full_name'])
+        text = 'Creer le contrat du client ' + data['full_name']
+        self.epic.dbemployees.create_task(e.username, text)
 
     @sentry_activate
     @is_authenticated
@@ -350,7 +361,8 @@ class EpicManager:
             commercial_name=self.user.username)
         clients = [c.full_name for c in clients]
         client = ClientView.prompt_client(clients)
-        self.epic.dbemployees.create_task_add_contract(manager, client)
+        text = 'Creer le contrat du client ' + client
+        self.epic.dbemployees.create_task(manager, text)
 
     @sentry_activate
     @is_authenticated

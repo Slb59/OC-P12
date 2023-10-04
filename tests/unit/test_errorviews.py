@@ -15,7 +15,7 @@ def test_display_token_expired():
         ErrorView.display_token_expired()
     str_output = capture.get()
     s = 'ERROR : Token expiré ! veuillez vous reconnecter.\n'
-    s += 'commande: python epicevent.py --login username/password\n'
+    s += 'commande: python epicevent.py login\n'
     assert str_output == s
 
 

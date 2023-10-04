@@ -43,10 +43,9 @@ class EpicDatabase:
             else:
                 data_manager = AuthView.prompt_manager()
                 AuthView.display_waiting_databasecreation(
-                    self.database_creation(*data_manager))
+                    self.database_creation, data_manager)
         except Exception:
             data_manager = AuthView.prompt_manager()
-            # self.database_creation(*data_manager)
             AuthView.display_waiting_databasecreation(
                 self.database_creation, data_manager)
 
