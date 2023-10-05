@@ -4,6 +4,7 @@ from datetime import datetime
 from rich.table import Table
 from rich import box
 from epicevents.views.console import console
+from .regexformat import regexformat
 
 
 class EventView:
@@ -50,12 +51,13 @@ class EventView:
         console.print("Il n'y a pas d'évènement pour ces critères")
 
     @classmethod
-    def prompt_data_event(cls):
+    def prompt_data_event(cls, **kwargs):
         title = questionary.text(
             "Titre:",
             validate=lambda text: True
-            if re.match(r"^[a-zA-Z ]+$", text)
-            else "Seul des caractères alpha sont autorisés").ask()
+            if re.match(r"^[a-zA-Z ']+$", text)
+            else "Seul des caractères alpha sont autorisés",
+            **kwargs).ask()
         if title is None:
             raise KeyboardInterrupt
 
@@ -63,37 +65,40 @@ class EventView:
             "Description:",
             validate=lambda text: True
             if re.match(r"^[a-zA-Z ]+$", text)
-            else "Seul des caractères alpha sont autorisés").ask()
+            else "Seul des caractères alpha sont autorisés",
+            **kwargs).ask()
 
         location = questionary.text(
             "Lieu:",
             validate=lambda text: True
             if re.match(r"^[a-zA-Z ]+$", text)
-            else "Seul des caractères alpha sont autorisés").ask()
+            else "Seul des caractères alpha sont autorisés",
+            **kwargs).ask()
 
         nb = questionary.text(
             "Nb participants:",
             validate=lambda text: True
             if re.match(r"^[0-9]+$", text)
             and int(text) > 0 and int(text) <= 5000
-            else "Nombre compris entre 0 et 5000").ask()
+            else "Nombre compris entre 0 et 5000",
+            **kwargs).ask()
 
-        regex_date = r'(\d{2})[/.-](\d{2})[/.-](\d{4})$'
         fmt_date = '%d/%m/%Y'
         start = questionary.text(
             "Date de début:",
             validate=lambda text: True
-            if re.match(regex_date, text)
-            else "format dd/mm/yyyy attendu").ask()
+            if re.match(regexformat['date'][0], text)
+            else regexformat['date'][1], **kwargs).ask()
 
         if start:
             end = questionary.text(
                 "Date de fin:",
                 validate=lambda text: True
-                if re.match(regex_date, text)
+                if re.match(regexformat['date'][0], text)
                 and datetime.strptime(
                     text, fmt_date) >= datetime.strptime(start, fmt_date)
-                else "format dd/mm/yyyy attendu et >= date de début").ask()
+                else regexformat['date'][1] + " et >= date de début",
+                **kwargs).ask()
         else:
             end = None
 
@@ -102,10 +107,34 @@ class EventView:
                 'date_started': start, 'date_ended': end}
 
     @classmethod
-    def prompt_rapport(cls):
+    def select_event(cls):
+        return "Choix de l'évènement:"
+
+    @classmethod
+    def select_type_event(cls):
+        return "Type d'évènement:"
+
+    @classmethod
+    def workflow_affect(cls, event_title):
+        return f"Vous avez été affecté à l'évènement {event_title}"
+
+    @classmethod
+    def workflow_ask_affect(cls, event_title):
+        return f"Affecter un support pour l'évènement {event_title}"
+
+    @classmethod
+    def no_event(cls):
+        return "Il n'y a pas d'évènement sélectionnable"
+
+    @classmethod
+    def no_support(cls):
+        return "-- sans support --"
+
+    @classmethod
+    def prompt_rapport(cls, **kwargs):
         rapport = questionary.text(
             "Votre rapport:",
             validate=lambda text: True
-            if re.match(r"^[a-zA-Z ']+$", text)
-            else "Seul des caractères alpha sont autorisés").ask()
+            if re.match(regexformat['alpha'][0], text)
+            else regexformat['alpha'][1], **kwargs).ask()
         return rapport

@@ -1,7 +1,6 @@
 from epicevents.views.contract_views import ContractView
 from .utils import (
-    KeyInputs, ask_with_patched_input,
-    ask_with_patched_select)
+    KeyInputs, ask_with_patched_input)
 
 
 def test_prompt_confirm_contract():
@@ -9,14 +8,6 @@ def test_prompt_confirm_contract():
     result = ask_with_patched_input(
         ContractView.prompt_confirm_contract, text)
     assert result
-
-
-def test_prompt_contract():
-    text = KeyInputs.DOWN + KeyInputs.ENTER + KeyInputs.ENTER + "\r"
-    choice = ['ref1', 'ref2', 'ref3']
-    result = ask_with_patched_select(
-        ContractView.prompt_contract, text, choice)
-    assert result == "ref2"
 
 
 def test_prompt_data_contract():

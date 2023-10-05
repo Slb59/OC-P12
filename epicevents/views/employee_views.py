@@ -25,11 +25,12 @@ class EmployeeView:
             "Souhaitez-vous sélectionner un support ?", **kwargs).ask()
 
     @classmethod
-    def prompt_support(cls, all_supports):
-        return questionary.select(
-            "Choix du support:",
-            choices=all_supports
-        ).ask()
+    def select_task(cls):
+        return "N° de la tâche à terminer:"
+
+    @classmethod
+    def select_support(cls):
+        return "Choix du support:"
 
     @classmethod
     def prompt_manager(cls, alls):

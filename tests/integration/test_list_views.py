@@ -1,5 +1,5 @@
 from epicevents.models.entities import (
-    Department, Commercial, Client,
+    Department, Commercial, Client, Support,
     Contract, Event, EventType)
 from epicevents.views.console import console
 from epicevents.views.client_views import ClientView
@@ -54,6 +54,24 @@ def add_events(db_session):
         db_session.add(e)
 
 
+def add_events_with_support(db_session):
+    c = Contract.find_by_ref(db_session, 'Ref1')
+    t = EventType.find_by_title(db_session, 'conference')
+    d = Department.find_by_name(db_session, 'commercial department')
+    e = Support(username='Aritomo', department_id=d.id, role='S')
+    db_session.add(e)
+    e = Support.find_by_username(db_session, 'Aritomo')
+    e = Event(
+        title='Event for Aritomo',
+        contract_id=c.id,
+        date_started='2023-09-14 15:00:00.000000',
+        date_ended='2023-09-24 18:00:00.000000',
+        type_id=t.id,
+        support_id=e.id
+    )
+    db_session.add(e)
+
+
 def test_display_list_clients(db_session):
     # given
     initdb(db_session)
@@ -103,3 +121,8 @@ def test_display_list_events(db_session):
     assert "Event1" in str_output
     assert "Event2" in str_output
     assert "Event3" in str_output
+    add_events_with_support(db_session)
+    with console.capture() as capture:
+        EventView.display_list_events(Event.getall(db_session), False)
+    str_output = capture.get()
+    assert "Aritomo" in str_output

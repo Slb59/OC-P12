@@ -42,7 +42,7 @@ class ClientBase:
         c = Client(
             full_name=data['full_name'], email=data['email'],
             phone=data['phone'], company_name=data['company_name'],
-            commercial_id=e.id)        
+            commercial_id=e.id)
         try:
             self.session.add(c)
             self.session.commit()

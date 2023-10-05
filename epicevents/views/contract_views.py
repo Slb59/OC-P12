@@ -3,9 +3,14 @@ import re
 from rich.table import Table
 from rich import box
 from epicevents.views.console import console
+from .regexformat import regexformat
 
 
 class ContractView:
+
+    @classmethod
+    def select_statut(cls):
+        return "Choix du statut:"
 
     @classmethod
     def display_list_contracts(cls, all_contracts, pager=True):
@@ -36,36 +41,31 @@ class ContractView:
             "Souhaitez-vous sélectionner un contrat ?", **kwargs).ask()
 
     @classmethod
-    def prompt_contract(cls, all_contracts, **kwargs):
-        return questionary.select(
-            "Choix du contrat:",
-            choices=all_contracts,
-            **kwargs
-        ).ask()
+    def select_contract(cls):
+        return "Choix du contrat:"
 
     @classmethod
     def prompt_data_contract(cls, **kwargs):
-        error_text = "Au moins 3 caractères sont requis, alpha ou numérique"
+        error_text = regexformat['3cn'][1]
         ref = questionary.text(
             "Référence:",
             validate=lambda text: True
-            if re.match(r"^[A-Za-z0-9-]+$", text) and len(text) >= 3
+            if re.match(regexformat['3cn'][0], text) and len(text) >= 3
             else error_text, **kwargs).ask()
         if ref is None:
             raise KeyboardInterrupt
         description = questionary.text(
             "Description:",
             validate=lambda text: True
-            if re.match(r"^[a-zA-Z0-9 ]+$", text)
-            else "Seul des caractères alpha sont autorisés", **kwargs).ask()
+            if re.match(regexformat['alphanum'][0], text)
+            else regexformat['alphanum'][1], **kwargs).ask()
         if description is None:
             raise KeyboardInterrupt
-        regex_ctrl = r"(?<!-)\b([1-3]?\d{1,5}|100000)\b"
         total_amount = questionary.text(
             "Montant:",
             validate=lambda text: True
-            if re.match(regex_ctrl, text)
-            else "Le montant doit être positif et inférieur à 100 000",
+            if re.match(regexformat['numposmax'][0], text)
+            else regexformat['numposmax'][1],
             **kwargs).ask()
         if total_amount is None:
             raise KeyboardInterrupt
@@ -75,20 +75,18 @@ class ContractView:
 
     @classmethod
     def prompt_data_paiement(cls, **kwargs):
-        error_text = "Au moins 3 caractères sont requis, alpha ou numérique"
         ref = questionary.text(
             "Référence:",
             validate=lambda text: True
-            if re.match(r"^[A-Za-z0-9-]+$", text) and len(text) >= 3
-            else error_text, **kwargs).ask()
+            if re.match(regexformat['3cn'][0], text) and len(text) >= 3
+            else regexformat['3cn'][1], **kwargs).ask()
         if ref is None:
             raise KeyboardInterrupt
-        regex_ctrl = r"(?<!-)\b([1-3]?\d{1,5}|100000)\b"
         amount = questionary.text(
             "Montant:",
             validate=lambda text: True
-            if re.match(regex_ctrl, text)
-            else "Le montant doit être positif et inférieur à 100 000",
+            if re.match(regexformat['numposmax'][0], text)
+            else regexformat['numposmax'][1],
             **kwargs).ask()
         if amount is None:
             raise KeyboardInterrupt

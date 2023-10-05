@@ -424,7 +424,15 @@ class Event(Base):
     support = relationship('Support', back_populates='events')
 
     def __repr__(self):
-        return f'{self.title}'
+        strout = f'titre: {self.title}\n'
+        strout += f'description: {self.description}\n'
+        strout += f'location: {self.location}\n'
+        strout += f'attendees: {self.attendees}\n'
+        strout += f'state: {self.state}\n'
+        strout += f'contract_id: {self.contract_id}\n'
+        strout += f'type_id: {self.type_id}\n'
+        strout += f'support_id: {self.support_id}'
+        return strout
 
     @classmethod
     def find_by_title(cls, session, contract_id, title):
@@ -444,7 +452,7 @@ class Event(Base):
         if support == 'None':
             return session.query(cls)\
                 .join(Contract, Contract.id == cls.contract_id)\
-                .join(Client, Client.id == Contract.id)\
+                .join(Client, Client.id == Contract.client_id)\
                 .join(EmployeeC, EmployeeC.id == Client.commercial_id)\
                 .filter(or_(state_code is None, cls.state == state_code))\
                 .filter(cls.support_id.is_(None))\
@@ -457,7 +465,7 @@ class Event(Base):
         else:
             return session.query(cls)\
                 .join(Contract, Contract.id == cls.contract_id)\
-                .join(Client, Client.id == Contract.id)\
+                .join(Client, Client.id == Contract.client_id)\
                 .join(EmployeeC, EmployeeC.id == Client.commercial_id)\
                 .outerjoin(EmployeeS, EmployeeS.id == cls.support_id)\
                 .filter(or_(state_code is None, cls.state == state_code))\

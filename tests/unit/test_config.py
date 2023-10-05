@@ -6,8 +6,8 @@ from epicevents.controllers.config import (
 
 
 def test_init_config():
-    s = "{'database': 'epic', 'host': 'localhost', "
-    s += "'user': 'postgres', 'password': 'postgres', 'port': '5432'}"
+    s = "{'database': 'epicT', 'host': 'localhost', "
+    s += "'user': 'postgres', 'password': 'postG!111', 'port': '5432'}"
     config = Config()
     print(config)
     assert str(config) == s
