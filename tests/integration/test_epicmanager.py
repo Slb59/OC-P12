@@ -1,12 +1,12 @@
-# import io
 import pytest
 import logging
-# import mock
-# import capsys
-# from rich.console import Console
-# from epicevents.views.console import console
+
+from pytest import MonkeyPatch
 from epicevents.controllers.epicmanager import EpicManager
 from epicevents.controllers.session import create_session
+from epicevents.views.auth_views import AuthView
+from epicevents.views.console import error_console
+
 
 log = logging.getLogger()
 
@@ -43,3 +43,18 @@ def test_create_new_employee(mocklogin, capsys):
     # with mock.patch.object(__builtins__, 'input', lambda: 'some_input'):
     #     app.create_new_employee()
     assert False
+
+
+def test_login_fail():
+
+    def new_prompt_login(*args, **kwargs):
+        return ('Inconnu', 'incA?222')
+
+    expected = "ERROR : Utilisateur ou mot de passe inconnu"
+    with MonkeyPatch.context() as mp:
+        mp.setattr(AuthView, 'prompt_manager', new_prompt_login)
+        app = EpicManager()
+        with error_console.capture() as capture:
+            app.login()
+        str_output = capture.get()
+        assert expected in str_output

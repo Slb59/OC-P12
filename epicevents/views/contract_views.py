@@ -41,6 +41,11 @@ class ContractView:
             "Souhaitez-vous sélectionner un contrat ?", **kwargs).ask()
 
     @classmethod
+    def prompt_confirm_close_contract(cls, **kwargs):
+        return questionary.confirm(
+            "Demander une cloture du contrat ?", **kwargs).ask()
+
+    @classmethod
     def select_contract(cls):
         return "Choix du contrat:"
 
@@ -91,3 +96,7 @@ class ContractView:
         if amount is None:
             raise KeyboardInterrupt
         return {'ref': ref, 'amount': amount}
+
+    @classmethod
+    def workflow_contract_is_over(cls, contract_ref):
+        return f"Evénements terminés, solder le contrat {contract_ref}"

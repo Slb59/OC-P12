@@ -413,6 +413,18 @@ class EpicManager:
                         EventView.select_event(), events)
                     rapport = EventView.prompt_rapport()
                     self.epic.dbevents.terminate(event, rapport)
+                    (contract_ref, none) = event.split('|')
+                    # workflow
+                    result = ContractView.prompt_confirm_close_contract()
+                    if result:
+                        managers = self.epic.dbemployees.get_managers()
+                        manager = random.choice(managers)
+                        DataView.display_workflow()
+                        self.epic.dbemployees.create_task(
+                            manager.username,
+                            ContractView.workflow_contract_is_over(
+                                contract_ref)
+                        )
                 except KeyboardInterrupt:
                     DataView.display_interupt()
             else:

@@ -33,3 +33,26 @@ def test_prompt_data_paiement():
     result = ask_with_patched_input(
         ContractView.prompt_data_paiement, text)
     assert result == values
+
+
+def test_select_statut():
+    expected = "Choix du statut:"
+    assert ContractView.select_statut() == expected
+
+
+def test_confirm_close_contract():
+    text = "y" + KeyInputs.ENTER + "\r"
+    result = ask_with_patched_input(
+        ContractView.prompt_confirm_close_contract, text)
+    assert result
+
+
+def test_select_contract():
+    expected = "Choix du contrat:"
+    assert ContractView.select_contract() == expected
+
+
+def test_workflow_contract_is_over():
+    expected = "Evénements terminés, solder le contrat contract_ref"
+    assert ContractView.workflow_contract_is_over("contract_ref") == expected
+ 
