@@ -100,6 +100,27 @@ class EpicDatabaseWithData(EpicDatabase):
                     support = random.choice(empls)
                     e.support_id = support.id
                 self.session.add(e)
+        # create a specifique event on aritomo
+        contract = contracts[0]
+        nbj_start = randint(1, 300)
+        nbh_end = randint(1, 240)
+        date_start = datetime.now(tz=timezone.utc)\
+            + timedelta(days=nbj_start)
+        date_end = date_start\
+            + timedelta(hours=nbh_end)
+        types = EventType.getall(self.session)
+        ch_type = random.choice(types)
+        aritomo = Support.find_by_username(self.session, 'Aritomo')
+        e = Event(
+            title='Aritomo event', description='Aritomo event',
+            attendees=10, location='somewhere',
+            date_started=date_start,
+            date_ended=date_end,
+            contract_id=contract.id,
+            type_id=ch_type.id,
+            support_id=aritomo.id
+            )
+        self.session.add(e)
         self.session.commit()
 
     def add_some_tasks(self):

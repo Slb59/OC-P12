@@ -35,3 +35,11 @@ class MockFunction:
     @classmethod
     def mock_prompt_manager(cls, *args, **kwargs):
         return ('Osynia', 'osyA!111')
+
+    @classmethod
+    def mock_role_manager(cls, *args, **kwargs):
+        return 'Manager'
+
+    @classmethod
+    def mock_employee_support(cls, *args, **kwargs):
+        return "Aritomo"

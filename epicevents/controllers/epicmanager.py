@@ -223,7 +223,8 @@ class EpicManager:
         ename = EmployeeView.prompt_employee(enames)
         roles = self.epic.dbemployees.get_roles()
         role = EmployeeView.prompt_role(roles)
-        self.epic.dbemployees.update_employee(ename, role=role)
+        self.epic.dbemployees.update_employee(
+            ename, role=role, manager=self.user)
 
     @sentry_activate
     @is_authenticated

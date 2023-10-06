@@ -1,6 +1,7 @@
 from argon2 import PasswordHasher
 from sqlalchemy.exc import IntegrityError
 from epicevents.views.data_views import DataView
+from epicevents.views.event_views import EventView
 from epicevents.models.entities import (
     Department, Manager, Commercial, Support,
     Employee, Task
@@ -101,9 +102,18 @@ class EmployeeBase:
             self.session.rollback()
             DataView.display_error_unique()
 
-    def update_employee(self, name, role=None, password=None):
+    def update_employee(self, name, role=None, password=None, manager=None):
         e = Employee.find_by_username(self.session, name)
         if role:
+            match e.role.code:
+                case 'S':
+                    e_support = Support.find_by_username(self.session, name)
+                    for event in e_support.events:
+                        event.support_id = None
+                        self.session.add(event)
+                        self.create_task(
+                            manager.username,
+                            EventView.workflow_ask_affect(event.title))
             e.role = self.get_rolecode(role)
         if password:
             e.password = self.ph.hash(password)
