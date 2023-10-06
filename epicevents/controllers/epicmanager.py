@@ -24,7 +24,7 @@ class EpicManager:
     def __init__(self) -> None:
 
         # load .env file
-        db = Config()
+        db = self.get_config()
         self.env = Environ()
 
         # create database
@@ -33,6 +33,9 @@ class EpicManager:
 
     def __str__(self) -> str:
         return "CRM EPIC EVENTS"
+
+    def get_config(self):
+        return Config()
 
     @is_authenticated
     def check_logout(self) -> bool:

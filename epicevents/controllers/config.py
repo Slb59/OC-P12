@@ -12,7 +12,7 @@ def create_config(basename, username, password, port):
         f'PASSWORD = {password}',
         f'PORT = {port}'
     ]
-    
+
     file = open("database.ini", "w")
     for line in data:
         file.write(line + "\n")
