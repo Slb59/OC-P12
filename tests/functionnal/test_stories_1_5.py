@@ -1,10 +1,9 @@
 import epicevent
 from pytest import MonkeyPatch
 
-
 from epicevents.controllers.epicmanager import EpicManager
 from epicevents.views.auth_views import AuthView
-from .mock_functions import MockFunction
+from ..mock_functions import MockFunction
 
 
 def test_story_1(runner):

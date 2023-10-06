@@ -61,6 +61,10 @@ class EpicDatabase:
     def __str__(self) -> str:
         return f'{self.name} database'
 
+    def database_disconnect(self):
+        self.session.close()
+        self.engine.dispose()
+
     def database_creation(self, username, password):
         create_database(self.url)
         # init database structure

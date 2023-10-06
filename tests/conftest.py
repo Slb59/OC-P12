@@ -1,6 +1,8 @@
 import pytest
 import argparse
 
+import epicevent
+
 from pytest import MonkeyPatch
 from datetime import datetime
 from freezegun import freeze_time
@@ -11,8 +13,10 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy_utils import create_database, drop_database
 
+from .mock_functions import MockFunction
 from epicevents.models.entities import Base, Task
 from epicevents.controllers.database import EpicDatabase
+from epicevents.controllers.epicmanager import EpicManager
 from epicevents.views.auth_views import AuthView
 
 TEST_DB_NAME = "epictest"
@@ -114,6 +118,32 @@ def epictest2():
         yield db
         db.session.rollback()
         db.session.close()
+
+
+@pytest.fixture(scope='function')
+def epicstories(runner):
+
+    with MonkeyPatch.context() as mp:
+        mp.setattr(
+            AuthView, 'prompt_manager', MockFunction.mock_prompt_manager)
+        mp.setattr(
+            AuthView, 'prompt_baseinit', MockFunction.mock_prompt_baseinit)
+        mp.setattr(
+            AuthView, 'prompt_manager', MockFunction.mock_prompt_manager)
+        mp.setattr(
+            AuthView,
+            'prompt_confirm_testdata', MockFunction.mock_prompt_confirm_yes)
+        mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
+        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_prompt_login)
+
+        runner.invoke(epicevent.main, ['initbase'])
+        runner.invoke(epicevent.main, ['login'])
+
+        yield mp
+
+        runner.invoke(epicevent.main, ['logout'])
+        db_url = "postgresql://postgres:postG!111@localhost:5432/epicStories"
+        drop_database(db_url)
 
 
 @pytest.fixture(scope="function")

@@ -1,7 +1,7 @@
 import epicevent
 from pytest import MonkeyPatch
 
-from .mock_functions import MockFunction
+from ..mock_functions import MockFunction
 from epicevents.controllers.epicmanager import EpicManager
 from epicevents.views.auth_views import AuthView
 from epicevents.views.employee_views import EmployeeView

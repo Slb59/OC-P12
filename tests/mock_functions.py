@@ -21,3 +21,17 @@ class MockFunction:
     @classmethod
     def mock_prompt_commercial(cls, *args, **kwargs):
         return 'Yuka'
+
+    @classmethod
+    def mock_prompt_data_employee(cls, *args, **kwargs):
+        return {
+            'username': 'NewUser', 'password': 'newU!111',
+            'email': 'nuser@epic.co', 'role': 'Commercial'}
+
+    @classmethod
+    def mock_prompt_baseinit(cls, *args, **kwargs):
+        return ('epicStories', 'postgres', 'postG!111', '5432')
+
+    @classmethod
+    def mock_prompt_manager(cls, *args, **kwargs):
+        return ('Osynia', 'osyA!111')

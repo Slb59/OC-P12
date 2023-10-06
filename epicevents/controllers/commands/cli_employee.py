@@ -60,6 +60,7 @@ def create():
     if app.user:
         app.create_new_employee()
         app.refresh_session()
+        app.epic.database_disconnect()
 
 
 @cli_employee.command()

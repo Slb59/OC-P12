@@ -76,8 +76,8 @@ class EpicManager:
     def initbase(cls):
         stop_session()
         values = AuthView.prompt_baseinit()
-        create_config(*values)
-        db = Config()
+        file = create_config(*values)
+        db = Config(file)
         result = AuthView.prompt_confirm_testdata()
         if result:
             EpicDatabaseWithData(**db.db_config)
