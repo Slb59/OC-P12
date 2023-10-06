@@ -1,5 +1,5 @@
 import questionary
-from .utils import (
+from ..utils import (
     KeyInputs,
     feed_cli_with_input, ask_with_patched_input,
     ask_with_patched_select, ask_with_patched_select_with_title

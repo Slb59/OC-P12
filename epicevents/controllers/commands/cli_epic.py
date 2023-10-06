@@ -3,10 +3,10 @@ from epicevents.controllers.epicmanager import EpicManager
 
 
 @click.command()
-def login():
+def login(**kwargs):
     """ login to the database """
     app = EpicManager()
-    app.login()
+    app.login(**kwargs)
 
 
 @click.command()

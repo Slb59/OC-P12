@@ -1,5 +1,5 @@
 from epicevents.views.auth_views import AuthView
-from .utils import (KeyInputs, ask_with_patched_input)
+from ..utils import (KeyInputs, ask_with_patched_input)
 
 
 def test_prompt_login():

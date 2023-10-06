@@ -46,9 +46,9 @@ class EpicManager:
         return True
 
     @sentry_activate
-    def login(self) -> bool:
+    def login(self, **kwargs) -> bool:
         stop_session()
-        (username, password) = AuthView.prompt_login()
+        (username, password) = AuthView.prompt_login(**kwargs)
         e = self.epic.check_connection(username, password)
         if e:
             create_session(e, self.env.TOKEN_DELTA, self.env.SECRET_KEY)

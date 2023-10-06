@@ -1,6 +1,6 @@
 from epicevents.views.console import console
 from epicevents.views.event_views import EventView
-from .utils import (
+from ..utils import (
     KeyInputs, ask_with_patched_input)
 
 

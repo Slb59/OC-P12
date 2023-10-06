@@ -1,12 +1,16 @@
 import pytest
 import argparse
+
 from pytest import MonkeyPatch
 from datetime import datetime
 from freezegun import freeze_time
 from contextlib import contextmanager
+from click.testing import CliRunner
+
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy_utils import create_database, drop_database
+
 from epicevents.models.entities import Base, Task
 from epicevents.controllers.database import EpicDatabase
 from epicevents.views.auth_views import AuthView
@@ -110,3 +114,9 @@ def epictest2():
         yield db
         db.session.rollback()
         db.session.close()
+
+
+@pytest.fixture(scope="function")
+def runner(request):
+    runner = CliRunner()
+    return runner
