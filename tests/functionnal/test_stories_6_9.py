@@ -102,3 +102,14 @@ def test_story_8_noselection(runner):
 
     assert not result.exception
     assert "Liste des évènements" in result.output
+
+
+def test_story_9(runner):
+    with MonkeyPatch.context() as mp:
+        mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
+        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_prompt_login)
+        runner.invoke(epicevent.main, ['login'])
+        result = runner.invoke(epicevent.main, ['employee', 'tasks'])
+        runner.invoke(epicevent.main, ['logout'])
+    assert not result.exception
+    assert "Mes tâches à réaliser" in result.output
