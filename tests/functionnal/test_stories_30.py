@@ -32,5 +32,3 @@ def test_story_30(runner, epicstories_yuka):
     expected = "YukaCliNew  │ yukaclinew@epic.co   │ 222-2222-2222 │ "
     expected += "NewCompagny Yuka            │ Yuka"
     assert expected in result.output
-
-

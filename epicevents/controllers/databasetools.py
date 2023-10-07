@@ -38,7 +38,7 @@ class EpicDatabaseWithData(EpicDatabase):
                 except UniqueViolation:
                     pass
         # create a special contract on client0
-        client = Client.find_by_name(self.session, 'Client n°0')
+        client = Client.find_by_name(self.session, 'YukaCli')
         new_contract = Contract(
             ref="contrat1",
             description="contrat1",
@@ -120,21 +120,17 @@ class EpicDatabaseWithData(EpicDatabase):
                     e.support_id = support.id
                 self.session.add(e)
         # create a specifique event on aritomo
-        contract = contracts[0]
+        contract = Contract.find_by_ref(self.session, 'contrat1')
         nbj_start = randint(1, 300)
         nbh_end = randint(1, 240)
-        date_start = datetime.now(tz=timezone.utc)\
-            + timedelta(days=nbj_start)
-        date_end = date_start\
-            + timedelta(hours=nbh_end)
         types = EventType.getall(self.session)
         ch_type = random.choice(types)
         aritomo = Support.find_by_username(self.session, 'Aritomo')
         e = Event(
             title='Aritomo event', description='Aritomo event',
             attendees=10, location='somewhere',
-            date_started=date_start,
-            date_ended=date_end,
+            date_started="2023-10-07 15:00:00.000000",
+            date_ended="2023-10-07 17:00:00.000000",
             contract_id=contract.id,
             type_id=ch_type.id,
             support_id=aritomo.id
