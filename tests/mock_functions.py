@@ -41,5 +41,21 @@ class MockFunction:
         return 'Manager'
 
     @classmethod
+    def mock_role_commercial(cls, *args, **kwargs):
+        return 'Commercial'
+
+    @classmethod
     def mock_employee_support(cls, *args, **kwargs):
         return "Aritomo"
+
+    @classmethod
+    def mock_yuka(cls, *args, **kwargs):
+        return "Yuka"
+
+    @classmethod
+    def mock_morihei(cls, *args, **kwargs):
+        return "Morihei"
+
+    @classmethod
+    def mock_osynia(cls, *args, **kwargs):
+        return "Osynia"

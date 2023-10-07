@@ -243,7 +243,7 @@ class EpicManager:
         employees = self.epic.dbemployees.get_employees()
         enames = [e.username for e in employees]
         ename = EmployeeView.prompt_employee(enames)
-        self.epic.dbemployees.inactivate(ename)
+        self.epic.dbemployees.inactivate(ename, self.user)
 
     @sentry_activate
     @is_authenticated

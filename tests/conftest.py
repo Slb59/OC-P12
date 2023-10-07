@@ -1,5 +1,6 @@
 import pytest
 import argparse
+import time
 
 import epicevent
 
@@ -144,6 +145,7 @@ def epicstories(runner):
         runner.invoke(epicevent.main, ['logout'])
         db_url = "postgresql://postgres:postG!111@localhost:5432/epicStories"
         drop_database(db_url)
+        time.sleep(10)
 
 
 @pytest.fixture(scope="function")

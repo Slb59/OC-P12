@@ -39,9 +39,10 @@ class EpicDatabaseWithData(EpicDatabase):
                     pass
 
     def add_some_clients(self):
+        self.dbemployees.add_employee('Morihei', 'moriH!111', 'Commercial')
         self.dbemployees.add_employee('Yuka', 'yuka!111', 'Commercial')
         e1 = Commercial.find_by_username(self.session, 'Yuka')
-        self.dbemployees.add_employee('Esumi', 'esuM!111', 'Commercial')
+        self.dbemployees.add_employee('Esumi', 'esuM!111', 'Commercial')        
         e2 = Commercial.find_by_username(self.session, 'Esumi')
         company_names = ['League Computing',
                          'Valley Dressing',

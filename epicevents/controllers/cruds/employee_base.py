@@ -102,54 +102,61 @@ class EmployeeBase:
             self.session.rollback()
             DataView.display_error_unique()
 
+    def check_support_update_or_delete(
+            self, support_name, manager_name) -> bool:
+        e_support = Support.find_by_username(self.session, support_name)
+        for event in e_support.events:
+            event.support_id = None
+            self.session.add(event)
+            self.create_task(
+                manager_name,
+                EventView.workflow_ask_affect(event.title))
+        return True
+
+    def check_commercial_update_or_delete(self, commercial_name) -> bool:
+        e_commercial = Commercial.find_by_username(
+            self.session, commercial_name)
+        for c in e_commercial.clients:
+            if len(c.actif_contracts) > 0:
+                DataView.display_commercial_with_contracts()
+                return False
+        return True
+
+    def check_manager_update_or_delete(self) -> bool:
+        e = Manager.getall(self.session)
+        print(e)
+        if len(e) == 1:
+            DataView.display_need_one_manager()
+            return False
+        return True
+
+    def check_role(self, employee, manager) -> bool:
+        match employee.role.code:
+            case 'S':
+                return self.check_support_update_or_delete(
+                    employee.username, manager.username)
+            case 'C':
+                return self.check_commercial_update_or_delete(
+                    employee.username)
+            case 'M':
+                return self.check_manager_update_or_delete()
+
     def update_employee(self, name, role=None, password=None, manager=None):
         e = Employee.find_by_username(self.session, name)
         if role:
-            match e.role.code:
-                case 'S':
-                    e_support = Support.find_by_username(self.session, name)
-                    for event in e_support.events:
-                        event.support_id = None
-                        self.session.add(event)
-                        self.create_task(
-                            manager.username,
-                            EventView.workflow_ask_affect(event.title))
-            e.role = self.get_rolecode(role)
+            if self.check_role(e, manager):
+                e.role = self.get_rolecode(role)
+
         if password:
             e.password = self.ph.hash(password)
+
         self.session.add(e)
         self.session.commit()
         DataView.display_data_update()
 
-    def inactivate(self, name):
+    def inactivate(self, name, manager):
         e = Employee.find_by_username(self.session, name)
-        check = True
-        match e.role:
-            case 'M':
-                e = Manager.getall(self.session)
-                if len(e) == 1:
-                    DataView.display_need_one_manager()
-                    check = False
-            case 'C':
-                e = Commercial.find_by_username(self.session, name)
-                for c in e.clients:
-                    if len(c.actif_contracts) > 0:
-                        DataView.display_commercial_with_contracts()
-                        check = False
-                        break
-            case 'S':
-                e = Support.find_by_username(self.session, name)
-                for event in e.events:
-                    event.support_id = None
-                    self.session.add(event)
-                    description = "Ajouter un support à l'évènement "
-                    description += event.title + " du contrat "
-                    description += event.contract.ref
-                    manager = Manager.getone(self.session)
-                    t = Task(description=description, employee_id=manager.id)
-                    self.session.add(t)
-                check = True
-        if check:
+        if self.check_role(e, manager):
             e.email = ''
             e.state = 'I'
             e.username = '<<' + e.username + '>>'
