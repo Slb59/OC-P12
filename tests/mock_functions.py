@@ -78,9 +78,21 @@ class MockFunction:
         return 'contrat1'
 
     @classmethod
+    def mock_choice1(cls, *args, **kwargs):
+        return 1
+
+    @classmethod
     def mock_choice3(cls, *args, **kwargs):
         return 3
 
     @classmethod
     def mock_event_contract1(cls, *args, **kwargs):
         return 'contrat1 event'
+
+    @classmethod
+    def mock_data_paiement_1000(cls, *args, **kwargs):
+        return {'ref': 'paiement', 'amount': '1000'}
+
+    @classmethod
+    def mock_data_paiement_3000(cls, *args, **kwargs):
+        return {'ref': 'paiement', 'amount': '3000'}

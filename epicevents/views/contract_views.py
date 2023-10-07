@@ -52,12 +52,12 @@ class ContractView:
 
     @classmethod
     def prompt_select_statut(cls, values):
-        PromptView.prompt_select(
+        return PromptView.prompt_select(
                     cls.select_statut(), values)
 
     @classmethod
     def prompt_select_contract(cls, values):
-        PromptView.prompt_select(
+        return PromptView.prompt_select(
                 ContractView.select_contract(), values)
 
     @classmethod

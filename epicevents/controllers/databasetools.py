@@ -43,7 +43,7 @@ class EpicDatabaseWithData(EpicDatabase):
             ref="contrat1",
             description="contrat1",
             client_id=client.id,
-            total_amount=randint(500, 30000),
+            total_amount=3000,
             state='S'
         )
         self.session.add(new_contract)

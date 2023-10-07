@@ -62,7 +62,9 @@ class ContractBase:
         else:
             p = Paiement(
                 ref=data['ref'], amount=data['amount'], contract_id=c.id)
-
+            if int(data['amount']) == c.outstanding:
+                c.state = 'B'
+                self.session.add(c)
             try:
                 self.session.add(p)
                 self.session.commit()

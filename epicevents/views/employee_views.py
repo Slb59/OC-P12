@@ -49,11 +49,11 @@ class EmployeeView:
 
     @classmethod
     def prompt_select_support(cls, values):
-        PromptView.prompt_select(cls.select_support(), values)
+        return PromptView.prompt_select(cls.select_support(), values)
 
     @classmethod
     def prompt_select_task(cls, values):
-        PromptView.prompt_select(cls.select_task(), values)
+        return PromptView.prompt_select(cls.select_task(), values)
 
     @classmethod
     def prompt_confirm_task(cls, **kwargs):

@@ -270,7 +270,7 @@ class EpicManager:
             match choice:
                 case 1:
                     try:
-                        data = PromptView.prompt_data_paiement()
+                        data = ContractView.prompt_data_paiement()
                         self.epic.dbcontracts.add_paiement(ref, data)
                     except KeyboardInterrupt:
                         DataView.display_interupt()

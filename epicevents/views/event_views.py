@@ -113,11 +113,11 @@ class EventView:
 
     @classmethod
     def prompt_select_event(cls, values):
-        PromptView.prompt_select(cls.select_event(), values)
+        return PromptView.prompt_select(cls.select_event(), values)
 
     @classmethod
     def prompt_select_type(cls, values):
-        PromptView.prompt_select(cls.select_type_event(), values)
+        return PromptView.prompt_select(cls.select_type_event(), values)
 
     @classmethod
     def select_type_event(cls):
