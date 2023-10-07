@@ -96,3 +96,7 @@ class MockFunction:
     @classmethod
     def mock_data_paiement_3000(cls, *args, **kwargs):
         return {'ref': 'paiement', 'amount': '3000'}
+
+    @classmethod
+    def mock_data_paiement_4000(cls, *args, **kwargs):
+        return {'ref': 'paiement', 'amount': '4000'}

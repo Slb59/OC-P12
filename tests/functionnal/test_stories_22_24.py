@@ -86,3 +86,25 @@ def test_story_23(runner, epicstories):
     expected = "contrat1                    │ Client n°0  "
     expected += "│ 3000    │ 0        │ Soldé"
     assert expected in result.output
+
+
+def test_story_24(runner, epicstories):
+
+    epicstories.setattr(
+        ContractView,
+        'prompt_select_contract', MockFunction.mock_contract1)
+
+    epicstories.setattr(
+        MenuView,
+        'menu_update_contract', MockFunction.mock_choice1)
+
+    epicstories.setattr(
+        ContractView,
+        'prompt_data_paiement', MockFunction.mock_data_paiement_4000)
+
+    result = runner.invoke(epicevent.main, ['contract', 'update'])
+
+    assert not result.exception
+    assert "Ce montant est supérieur au restant dû" in result.output
+
+    
