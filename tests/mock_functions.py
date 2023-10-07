@@ -45,7 +45,7 @@ class MockFunction:
         return 'Commercial'
 
     @classmethod
-    def mock_employee_support(cls, *args, **kwargs):
+    def mock_aritomo(cls, *args, **kwargs):
         return "Aritomo"
 
     @classmethod
@@ -74,5 +74,13 @@ class MockFunction:
         return 'contrat0'
 
     @classmethod
+    def mock_contract1(cls, *args, **kwargs):
+        return 'contrat1'
+
+    @classmethod
     def mock_choice3(cls, *args, **kwargs):
         return 3
+
+    @classmethod
+    def mock_event_contract1(cls, *args, **kwargs):
+        return 'contrat1 event'

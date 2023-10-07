@@ -37,6 +37,17 @@ class EpicDatabaseWithData(EpicDatabase):
                     self.session.commit()
                 except UniqueViolation:
                     pass
+        # create a special contract on client0
+        client = Client.find_by_name(self.session, 'Client n°0')
+        new_contract = Contract(
+            ref="contrat1",
+            description="contrat1",
+            client_id=client.id,
+            total_amount=randint(500, 30000),
+            state='S'
+        )
+        self.session.add(new_contract)
+        self.session.commit()
 
     def add_some_clients(self):
         self.dbemployees.add_employee('Morihei', 'moriH!111', 'Commercial')
@@ -121,6 +132,18 @@ class EpicDatabaseWithData(EpicDatabase):
             type_id=ch_type.id,
             support_id=aritomo.id
             )
+        self.session.add(e)
+        self.session.commit()
+        # create a specifique event on contrat 1
+        contract = Contract.find_by_ref(self.session, 'contrat1')
+        e = Event(
+            title='contrat1 event', description='contrat1 event',
+            attendees=10, location='somewhere',
+            date_started=date_start,
+            date_ended=date_end,
+            contract_id=contract.id,
+            type_id=ch_type.id,
+        )
         self.session.add(e)
         self.session.commit()
 

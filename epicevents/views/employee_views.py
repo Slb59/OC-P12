@@ -3,6 +3,7 @@ import re
 from rich.table import Table
 from rich import box
 from epicevents.views.console import console
+from epicevents.views.prompt_views import PromptView
 
 
 class EmployeeView:
@@ -45,6 +46,14 @@ class EmployeeView:
             "Sélectionnez un employé:",
             choices=all_employees
         ).ask()
+
+    @classmethod
+    def prompt_select_support(cls, values):
+        PromptView.prompt_select(cls.select_support(), values)
+
+    @classmethod
+    def prompt_select_task(cls, values):
+        PromptView.prompt_select(cls.select_task(), values)
 
     @classmethod
     def prompt_confirm_task(cls, **kwargs):

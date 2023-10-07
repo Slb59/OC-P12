@@ -3,6 +3,7 @@ import re
 from rich.table import Table
 from rich import box
 from epicevents.views.console import console
+from epicevents.views.prompt_views import PromptView
 from .regexformat import regexformat
 
 
@@ -48,6 +49,16 @@ class ContractView:
     @classmethod
     def select_contract(cls):
         return "Choix du contrat:"
+
+    @classmethod
+    def prompt_select_statut(cls, values):
+        PromptView.prompt_select(
+                    cls.select_statut(), values)
+
+    @classmethod
+    def prompt_select_contract(cls, values):
+        PromptView.prompt_select(
+                ContractView.select_contract(), values)
 
     @classmethod
     def prompt_data_contract(cls, **kwargs):

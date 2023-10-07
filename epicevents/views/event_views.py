@@ -4,6 +4,7 @@ from datetime import datetime
 from rich.table import Table
 from rich import box
 from epicevents.views.console import console
+from epicevents.views.prompt_views import PromptView
 from .regexformat import regexformat
 
 
@@ -109,6 +110,14 @@ class EventView:
     @classmethod
     def select_event(cls):
         return "Choix de l'évènement:"
+
+    @classmethod
+    def prompt_select_event(cls, values):
+        PromptView.prompt_select(cls.select_event(), values)
+
+    @classmethod
+    def prompt_select_type(cls, values):
+        PromptView.prompt_select(cls.select_type_event(), values)
 
     @classmethod
     def select_type_event(cls):

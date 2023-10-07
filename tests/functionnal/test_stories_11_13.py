@@ -11,7 +11,7 @@ def test_story_11(runner, epicstories):
         'prompt_role', MockFunction.mock_role_manager)
     epicstories.setattr(
         EmployeeView,
-        'prompt_employee', MockFunction.mock_employee_support)
+        'prompt_employee', MockFunction.mock_aritomo)
 
     result = runner.invoke(epicevent.main, ['employee', 'update-role'])
     result2 = runner.invoke(epicevent.main, ['employee', 'list'])

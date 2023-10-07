@@ -54,8 +54,8 @@ def test_story_18_signacontract(runner, epicstories):
     runner.invoke(epicevent.main, ['contract', 'create'])
 
     epicstories.setattr(
-        PromptView,
-        'prompt_select', MockFunction.mock_contract0)
+        ContractView,
+        'prompt_select_contract', MockFunction.mock_contract0)
 
     epicstories.setattr(MenuView,
                         'menu_update_contract', MockFunction.mock_choice3)

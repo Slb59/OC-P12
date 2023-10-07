@@ -8,7 +8,7 @@ def test_story_14(runner, epicstories):
 
     epicstories.setattr(
         EmployeeView,
-        'prompt_employee', MockFunction.mock_employee_support)
+        'prompt_employee', MockFunction.mock_aritomo)
 
     result = runner.invoke(epicevent.main, ['employee', 'inactivate'])
     result2 = runner.invoke(epicevent.main, ['employee', 'list'])
