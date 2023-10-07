@@ -59,3 +59,20 @@ class MockFunction:
     @classmethod
     def mock_osynia(cls, *args, **kwargs):
         return "Osynia"
+
+    @classmethod
+    def mock_client0(cls, *args, **kwargs):
+        return "Client n°0"
+
+    @classmethod
+    def mock_prompt_data_contract(cls, *args, **kwargs):
+        return {'ref': 'contrat0', 'description': 'contrat0',
+                'total_amount': '10000'}
+
+    @classmethod
+    def mock_contract0(cls, *args, **kwargs):
+        return 'contrat0'
+
+    @classmethod
+    def mock_choice3(cls, *args, **kwargs):
+        return 3

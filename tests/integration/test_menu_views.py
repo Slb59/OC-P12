@@ -1,8 +1,6 @@
 import io
 from rich.console import Console
-from epicevents.views.menu_views import (
-    menu_manager, menu_commercial, menu_support,
-    menu_role, menu_accueil, menu_quit)
+from epicevents.views.menu_views import MenuView
 
 
 def render(panel, width=50) -> str:
@@ -47,31 +45,31 @@ def expected_support():
 
 def test_menu_manager():
     expected = expected_manager()
-    p = menu_manager()
+    p = MenuView.menu_manager()
     assert p.title == 'Menu manager'
     assert expected == render(p)
 
 
 def test_menu_commercial():
     expected = expected_commercial()
-    p = menu_commercial()
+    p = MenuView.menu_commercial()
     assert p.title == "Menu commercial"
     assert expected == render(p, 60)
 
 
 def test_menu_support():
     expected = expected_support()
-    p = menu_support()
+    p = MenuView.menu_support()
     assert p.title == "Menu support"
     assert expected == render(p, 40)
 
 
 def test_menu_role():
-    p = menu_role('M')
+    p = MenuView.menu_role('M')
     assert render(p) == expected_manager()
-    p = menu_role('C')
+    p = MenuView.menu_role('C')
     assert render(p, 60) == expected_commercial()
-    p = menu_role('S')
+    p = MenuView.menu_role('S')
     assert render(p, 40) == expected_support()
 
 
@@ -83,7 +81,7 @@ def test_menu_accueil():
     expected += "│     04-Liste des contrats                      │\n"
     expected += "│     05-Liste des évènements                    │\n"
     expected += "╰────────────────────────────────────────────────╯\n"
-    p = menu_accueil()
+    p = MenuView.menu_accueil()
     assert p.title == 'Accueil'
     assert render(p) == expected
 
@@ -93,6 +91,6 @@ def test_menu_quit():
     expected += "│     D-Me déconnecter                           │\n"
     expected += "│     Q-Quitter l'application                    │\n"
     expected += "╰────────────────────────────────────────────────╯\n"
-    p = menu_quit()
+    p = MenuView.menu_quit()
     assert p.title == 'Quitter'
     assert render(p) == expected

@@ -2,7 +2,7 @@ import jwt
 import random
 from epicevents.views.auth_views import AuthView
 from epicevents.views.error import ErrorView
-from epicevents.views.menu_views import menu_choice, menu_update_contract
+from epicevents.views.menu_views import MenuView
 from epicevents.views.contract_views import ContractView
 from epicevents.views.employee_views import EmployeeView
 from epicevents.views.client_views import ClientView
@@ -267,10 +267,10 @@ class EpicManager:
     def update_contract(self):
         contracts = self.epic.dbcontracts.get_active_contracts()
         refs = [c.ref for c in contracts]
-        ref = ContractView.prompt_contract(refs)
+        ref = PromptView.prompt_select(ContractView.select_contract(), refs)
         state = self.epic.dbcontracts.get_state(ref)
         try:
-            choice = menu_update_contract(state)
+            choice = MenuView.menu_update_contract(state)
             match choice:
                 case 1:
                     try:
@@ -464,7 +464,7 @@ class EpicManager:
             self.list_of_task()
             try:
                 while running:
-                    result = menu_choice(self.user.role.code)
+                    result = MenuView.menu_choice(self.user.role.code)
                     match result:
                         case '01':
                             self.show_profil()
