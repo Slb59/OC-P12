@@ -108,3 +108,9 @@ class MockFunction:
     @classmethod
     def mock_data_paiement_4000(cls, *args, **kwargs):
         return {'ref': 'paiement', 'amount': '4000'}
+
+    @classmethod
+    def mock_data_client(cls, *args, **kwargs):
+        return {'full_name': 'NewClient', 'email': 'ncli@epic.co',
+                'phone': '1112-1222-2154',
+                'company_name': 'company_name'}

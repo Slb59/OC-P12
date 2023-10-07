@@ -106,5 +106,3 @@ def test_story_24(runner, epicstories):
 
     assert not result.exception
     assert "Ce montant est supérieur au restant dû" in result.output
-
-    
