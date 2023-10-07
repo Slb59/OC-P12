@@ -5,9 +5,13 @@ from epicevents.views.event_views import EventView
 from epicevents.views.employee_views import EmployeeView
 from epicevents.views.client_views import ClientView
 from epicevents.views.contract_views import ContractView
+from epicevents.views.auth_views import AuthView
 
 
 def test_story_19(runner, epicstories):
+    epicstories.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_osynia)
+    runner.invoke(epicevent.main, ['login'])
 
     epicstories.setattr(
         EmployeeView,
@@ -29,4 +33,3 @@ def test_story_19(runner, epicstories):
 
     assert not result.exception
     assert "Vos modifications ont été enregistrées" in result.output
-

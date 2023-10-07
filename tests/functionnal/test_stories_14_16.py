@@ -2,9 +2,13 @@ import epicevent
 
 from ..mock_functions import MockFunction
 from epicevents.views.employee_views import EmployeeView
+from epicevents.views.auth_views import AuthView
 
 
 def test_story_14(runner, epicstories):
+    epicstories.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_osynia)
+    runner.invoke(epicevent.main, ['login'])
 
     epicstories.setattr(
         EmployeeView,
@@ -21,6 +25,9 @@ def test_story_14(runner, epicstories):
 
 
 def test_story_15_with_clients(runner, epicstories):
+    epicstories.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_osynia)
+    runner.invoke(epicevent.main, ['login'])
 
     epicstories.setattr(
         EmployeeView,
@@ -35,6 +42,9 @@ def test_story_15_with_clients(runner, epicstories):
 
 
 def test_story_15_without_clients(runner, epicstories):
+    epicstories.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_osynia)
+    runner.invoke(epicevent.main, ['login'])
 
     epicstories.setattr(EmployeeView,
                         'prompt_employee', MockFunction.mock_morihei)
@@ -48,6 +58,9 @@ def test_story_15_without_clients(runner, epicstories):
 
 
 def test_story_16_fail(runner, epicstories):
+    epicstories.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_osynia)
+    runner.invoke(epicevent.main, ['login'])
 
     epicstories.setattr(
         EmployeeView,
@@ -62,6 +75,10 @@ def test_story_16_fail(runner, epicstories):
 
 
 def test_story_16(runner, epicstories):
+
+    epicstories.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_osynia)
+    runner.invoke(epicevent.main, ['login'])
 
     epicstories.setattr(
         EmployeeView,

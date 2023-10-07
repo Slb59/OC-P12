@@ -6,9 +6,14 @@ from epicevents.views.client_views import ClientView
 from epicevents.views.contract_views import ContractView
 from epicevents.views.prompt_views import PromptView
 from epicevents.views.menu_views import MenuView
+from epicevents.views.auth_views import AuthView
 
 
 def test_story_17(runner, epicstories):
+
+    epicstories.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_osynia)
+    runner.invoke(epicevent.main, ['login'])
 
     epicstories.setattr(
         ClientView,
@@ -42,6 +47,10 @@ def test_story_17(runner, epicstories):
 
 
 def test_story_18_signacontract(runner, epicstories):
+
+    epicstories.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_osynia)
+    runner.invoke(epicevent.main, ['login'])
 
     epicstories.setattr(
         ClientView,

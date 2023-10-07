@@ -5,9 +5,13 @@ from epicevents.views.employee_views import EmployeeView
 from epicevents.views.auth_views import AuthView
 
 
-def test_story_29(runner, epicstories_yuka):
+def test_story_29(runner, epicstories):
 
-    epicstories_yuka.setattr(
+    epicstories.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_yuka)
+    runner.invoke(epicevent.main, ['login'])
+
+    epicstories.setattr(
         ClientView,
         'prompt_data_client', MockFunction.mock_data_client)
 
@@ -15,7 +19,7 @@ def test_story_29(runner, epicstories_yuka):
     assert not result.exception
     assert "Vos modifications ont été enregistrées" in result.output
 
-    epicstories_yuka.setattr(
+    epicstories.setattr(
             EmployeeView,
             'prompt_confirm_commercial',
             MockFunction.mock_prompt_confirm_no)
@@ -23,8 +27,8 @@ def test_story_29(runner, epicstories_yuka):
     result = runner.invoke(epicevent.main, ['client', 'list'])
     assert "NewClient" in result.output
 
-    epicstories_yuka.setattr(AuthView, 'prompt_login',
-                             MockFunction.mock_login_osynia)
+    epicstories.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
     result = runner.invoke(epicevent.main, ['employee', 'tasks'])
     assert "Creer le contrat du client NewClient" in result.output

@@ -7,7 +7,7 @@ from epicevents.views.client_views import ClientView
 from epicevents.views.auth_views import AuthView
 
 
-def test_story_31(runner, epicstories_yuka):
+def test_story_31(runner, epicstories):
 
     def mock_type_select(*args, **kwargs):
         return 'conference'
@@ -18,33 +18,37 @@ def test_story_31(runner, epicstories_yuka):
             'location': 'France', 'attendees': '10',
             'date_started': '01/10/2023', 'date_ended': '30/10/2023'}
 
-    epicstories_yuka.setattr(
+    epicstories.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_yuka)
+    runner.invoke(epicevent.main, ['login'])
+
+    epicstories.setattr(
         ContractView,
         'prompt_select_contract', MockFunction.mock_contract1)
 
-    epicstories_yuka.setattr(
+    epicstories.setattr(
         EventView,
         'prompt_select_type', mock_type_select)
 
-    epicstories_yuka.setattr(
+    epicstories.setattr(
         EventView, 'prompt_data_event', mock_data_event)
 
     result = runner.invoke(epicevent.main, ['event', 'create'])
     assert not result.exception
     assert "Vos modifications ont été enregistrées" in result.output
 
-    epicstories_yuka.setattr(
+    epicstories.setattr(
         EmployeeView, 'prompt_confirm_commercial',
         MockFunction.mock_prompt_confirm_no)
-    epicstories_yuka.setattr(
+    epicstories.setattr(
             ClientView,
             'prompt_confirm_client',
             MockFunction.mock_prompt_confirm_no)
-    epicstories_yuka.setattr(
+    epicstories.setattr(
             ContractView,
             'prompt_confirm_contract',
             MockFunction.mock_prompt_confirm_no)
-    epicstories_yuka.setattr(
+    epicstories.setattr(
             EmployeeView,
             'prompt_confirm_support',
             MockFunction.mock_prompt_confirm_no)
@@ -57,8 +61,8 @@ def test_story_31(runner, epicstories_yuka):
     expected += "A venir │ Yuka"
     assert expected in result.output
 
-    epicstories_yuka.setattr(AuthView, 'prompt_login',
-                             MockFunction.mock_login_osynia)
+    epicstories.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
     result = runner.invoke(epicevent.main, ['employee', 'tasks'])
     expected = "Affecter un support pour l'évènement EVYukaContrat"

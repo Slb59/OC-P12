@@ -1,7 +1,13 @@
 import epicevent
+from ..mock_functions import MockFunction
+from epicevents.views.auth_views import AuthView
 
 
 def test_story_26(runner, epicstories):
+
+    epicstories.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_osynia)
+    runner.invoke(epicevent.main, ['login'])
 
     result = runner.invoke(epicevent.main, ['client', 'create'])
 
@@ -18,7 +24,11 @@ def test_story_26(runner, epicstories):
     assert "ERROR : Accès refusé, rôle commercial requis." in result.output
 
 
-def test_story_27(runner, epicstories_yuka):
+def test_story_27(runner, epicstories):
+
+    epicstories.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_yuka)
+    runner.invoke(epicevent.main, ['login'])
 
     result = runner.invoke(epicevent.main, ['employee', 'create'])
     assert not result.exception
@@ -45,7 +55,11 @@ def test_story_27(runner, epicstories_yuka):
     assert "ERROR : Accès refusé, rôle manager requis." in result.output
 
 
-def test_story_28(runner, epicstories_aritomo):
+def test_story_28(runner, epicstories):
+
+    epicstories.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_aritomo)
+    runner.invoke(epicevent.main, ['login'])
 
     result = runner.invoke(epicevent.main, ['employee', 'create'])
     assert not result.exception

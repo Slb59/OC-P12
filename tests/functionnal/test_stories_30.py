@@ -2,9 +2,10 @@ import epicevent
 from ..mock_functions import MockFunction
 from epicevents.views.client_views import ClientView
 from epicevents.views.employee_views import EmployeeView
+from epicevents.views.auth_views import AuthView
 
 
-def test_story_30(runner, epicstories_yuka):
+def test_story_30(runner, epicstories):
 
     def newdata():
         return {
@@ -12,14 +13,18 @@ def test_story_30(runner, epicstories_yuka):
             'phone': '222-2222-2222',
             'company_name': 'NewCompagny Yuka'}
 
-    epicstories_yuka.setattr(
+    epicstories.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_yuka)
+    runner.invoke(epicevent.main, ['login'])
+
+    epicstories.setattr(
         ClientView,
         'prompt_data_client', newdata)
 
-    epicstories_yuka.setattr(
+    epicstories.setattr(
        ClientView, 'prompt_client', MockFunction.mock_clientyuka)
 
-    epicstories_yuka.setattr(
+    epicstories.setattr(
             EmployeeView,
             'prompt_confirm_commercial',
             MockFunction.mock_prompt_confirm_no)

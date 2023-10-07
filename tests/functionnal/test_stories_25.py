@@ -2,9 +2,14 @@ import epicevent
 
 from ..mock_functions import MockFunction
 from epicevents.views.employee_views import EmployeeView
+from epicevents.views.auth_views import AuthView
 
 
 def test_story_25(runner, epicstories):
+
+    epicstories.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_osynia)
+    runner.invoke(epicevent.main, ['login'])
 
     epicstories.setattr(
         EmployeeView,
