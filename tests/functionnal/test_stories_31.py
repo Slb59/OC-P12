@@ -7,7 +7,8 @@ from epicevents.views.client_views import ClientView
 from epicevents.views.auth_views import AuthView
 
 
-def test_story_31(runner, epicstories):
+def test_story_31(epicstories):
+    (mp, runner) = epicstories
 
     def mock_type_select(*args, **kwargs):
         return 'conference'
@@ -18,37 +19,37 @@ def test_story_31(runner, epicstories):
             'location': 'France', 'attendees': '10',
             'date_started': '01/10/2023', 'date_ended': '30/10/2023'}
 
-    epicstories.setattr(
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_yuka)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         ContractView,
         'prompt_select_contract', MockFunction.mock_contract1)
 
-    epicstories.setattr(
+    mp.setattr(
         EventView,
         'prompt_select_type', mock_type_select)
 
-    epicstories.setattr(
+    mp.setattr(
         EventView, 'prompt_data_event', mock_data_event)
 
     result = runner.invoke(epicevent.main, ['event', 'create'])
     assert not result.exception
     assert "Vos modifications ont été enregistrées" in result.output
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView, 'prompt_confirm_commercial',
         MockFunction.mock_prompt_confirm_no)
-    epicstories.setattr(
+    mp.setattr(
             ClientView,
             'prompt_confirm_client',
             MockFunction.mock_prompt_confirm_no)
-    epicstories.setattr(
+    mp.setattr(
             ContractView,
             'prompt_confirm_contract',
             MockFunction.mock_prompt_confirm_no)
-    epicstories.setattr(
+    mp.setattr(
             EmployeeView,
             'prompt_confirm_support',
             MockFunction.mock_prompt_confirm_no)
@@ -61,7 +62,7 @@ def test_story_31(runner, epicstories):
     expected += "A venir │ Yuka"
     assert expected in result.output
 
-    epicstories.setattr(
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
     result = runner.invoke(epicevent.main, ['employee', 'tasks'])

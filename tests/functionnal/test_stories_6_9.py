@@ -8,13 +8,14 @@ from epicevents.views.prompt_views import PromptView
 from epicevents.views.contract_views import ContractView
 
 
-def test_story_6_no_selection(runner, epicstories):
+def test_story_6_no_selection(epicstories):
+    (mp, runner) = epicstories
 
-    epicstories.setattr(
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView, 'prompt_confirm_commercial',
         MockFunction.mock_prompt_confirm_no)
 
@@ -24,16 +25,17 @@ def test_story_6_no_selection(runner, epicstories):
     assert "Liste des clients" in result.output
 
 
-def test_story_6_with_commercial(runner, epicstories):
+def test_story_6_with_commercial(epicstories):
 
-    epicstories.setattr(
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView, 'prompt_confirm_commercial',
         MockFunction.mock_prompt_confirm_yes)
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView, 'prompt_commercial',
         MockFunction.mock_prompt_commercial)
 
@@ -44,18 +46,20 @@ def test_story_6_with_commercial(runner, epicstories):
     assert "Esumi" not in result.output
 
 
-def test_story_7_noselection(runner, epicstories):
-    epicstories.setattr(
+def test_story_7_noselection(epicstories):
+
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView, 'prompt_confirm_commercial',
         MockFunction.mock_prompt_confirm_no)
-    epicstories.setattr(
+    mp.setattr(
         ClientView, 'prompt_confirm_client',
         MockFunction.mock_prompt_confirm_no)
-    epicstories.setattr(
+    mp.setattr(
         PromptView, 'prompt_confirm_statut',
         MockFunction.mock_prompt_confirm_no)
 
@@ -65,21 +69,22 @@ def test_story_7_noselection(runner, epicstories):
     assert "Liste des contracts" in result.output
 
 
-def test_story_8_noselection(runner, epicstories):
-    epicstories.setattr(
+def test_story_8_noselection(epicstories):
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView, 'prompt_confirm_commercial',
         MockFunction.mock_prompt_confirm_no)
-    epicstories.setattr(
+    mp.setattr(
         ClientView, 'prompt_confirm_client',
         MockFunction.mock_prompt_confirm_no)
-    epicstories.setattr(
+    mp.setattr(
         ContractView, 'prompt_confirm_contract',
         MockFunction.mock_prompt_confirm_no)
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView, 'prompt_confirm_support',
         MockFunction.mock_prompt_confirm_no)
 
@@ -89,8 +94,9 @@ def test_story_8_noselection(runner, epicstories):
     assert "Liste des évènements" in result.output
 
 
-def test_story_9(runner, epicstories):
-    epicstories.setattr(
+def test_story_9(epicstories):
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 

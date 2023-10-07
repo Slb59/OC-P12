@@ -9,17 +9,17 @@ from epicevents.views.menu_views import MenuView
 from epicevents.views.auth_views import AuthView
 
 
-def test_story_17(runner, epicstories):
-
-    epicstories.setattr(
+def test_story_17(epicstories):
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         ClientView,
         'prompt_client', MockFunction.mock_client0)
 
-    epicstories.setattr(
+    mp.setattr(
         ContractView,
         'prompt_data_contract', MockFunction.mock_prompt_data_contract)
 
@@ -28,61 +28,62 @@ def test_story_17(runner, epicstories):
     assert not result.exception
     assert "Vos modifications ont été enregistrées" in result.output
 
-    epicstories.setattr(
+    mp.setattr(
             EmployeeView,
             'prompt_confirm_commercial',
             MockFunction.mock_prompt_confirm_no)
-    epicstories.setattr(
+    mp.setattr(
             ClientView,
             'prompt_confirm_client',
             MockFunction.mock_prompt_confirm_yes)
-    epicstories.setattr(PromptView, 'prompt_confirm_statut',
-                        MockFunction.mock_prompt_confirm_no)
+    mp.setattr(
+        PromptView, 'prompt_confirm_statut',
+        MockFunction.mock_prompt_confirm_no)
 
     result = runner.invoke(epicevent.main, ['contract', 'list'])
     assert not result.exception
-    expected = "contrat0                    │ Client n°0 │ 10000   │ 10000    "
+    expected = "contrat0 │ Client n°0 │ 10000   │ 10000    "
     expected += "│ Créé"
-    assert expected in result.output
+    assert expected.replace(' ', '') in result.output.replace(' ', '')
 
 
-def test_story_18_signacontract(runner, epicstories):
-
-    epicstories.setattr(
+def test_story_18_signacontract(epicstories):
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         ClientView,
         'prompt_client', MockFunction.mock_client0)
 
-    epicstories.setattr(
+    mp.setattr(
         ContractView,
         'prompt_data_contract', MockFunction.mock_prompt_data_contract)
 
     runner.invoke(epicevent.main, ['contract', 'create'])
 
-    epicstories.setattr(
+    mp.setattr(
         ContractView,
         'prompt_select_contract', MockFunction.mock_contract0)
 
-    epicstories.setattr(MenuView,
-                        'menu_update_contract', MockFunction.mock_choice3)
+    mp.setattr(MenuView, 'menu_update_contract', MockFunction.mock_choice3)
 
     result = runner.invoke(epicevent.main, ['contract', 'update'])
 
     assert "Vos modifications ont été enregistrées" in result.output
 
-    epicstories.setattr(
+    mp.setattr(
             EmployeeView,
             'prompt_confirm_commercial',
             MockFunction.mock_prompt_confirm_no)
-    epicstories.setattr(
+    mp.setattr(
             ClientView,
             'prompt_confirm_client',
             MockFunction.mock_prompt_confirm_yes)
-    epicstories.setattr(PromptView, 'prompt_confirm_statut',
-                        MockFunction.mock_prompt_confirm_no)
+    mp.setattr(
+        PromptView, 'prompt_confirm_statut',
+        MockFunction.mock_prompt_confirm_no)
 
     result = runner.invoke(epicevent.main, ['contract', 'list'])
 

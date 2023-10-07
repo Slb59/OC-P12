@@ -3,9 +3,9 @@ from ..mock_functions import MockFunction
 from epicevents.views.auth_views import AuthView
 
 
-def test_story_20(runner, epicstories):
-
-    epicstories.setattr(
+def test_story_20(epicstories):
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
@@ -15,9 +15,9 @@ def test_story_20(runner, epicstories):
     assert "Esumi       │       │ Commercial │ Actif" in result.output
 
 
-def test_story_21(runner, epicstories):
-
-    epicstories.setattr(
+def test_story_21(epicstories):
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 

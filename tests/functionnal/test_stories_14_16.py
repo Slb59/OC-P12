@@ -5,12 +5,13 @@ from epicevents.views.employee_views import EmployeeView
 from epicevents.views.auth_views import AuthView
 
 
-def test_story_14(runner, epicstories):
-    epicstories.setattr(
+def test_story_14(epicstories):
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_employee', MockFunction.mock_aritomo)
 
@@ -24,12 +25,13 @@ def test_story_14(runner, epicstories):
     assert "Affecter un support pour l'évènement Aritomo" in result3.output
 
 
-def test_story_15_with_clients(runner, epicstories):
-    epicstories.setattr(
+def test_story_15_with_clients(epicstories):
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_employee', MockFunction.mock_yuka)
 
@@ -41,13 +43,13 @@ def test_story_15_with_clients(runner, epicstories):
     assert "Yuka        │       │ Commercial" in result2.output
 
 
-def test_story_15_without_clients(runner, epicstories):
-    epicstories.setattr(
+def test_story_15_without_clients(epicstories):
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(EmployeeView,
-                        'prompt_employee', MockFunction.mock_morihei)
+    mp.setattr(EmployeeView, 'prompt_employee', MockFunction.mock_morihei)
 
     result = runner.invoke(epicevent.main, ['employee', 'inactivate'])
     result2 = runner.invoke(epicevent.main, ['employee', 'list'])
@@ -57,12 +59,13 @@ def test_story_15_without_clients(runner, epicstories):
     assert "<<Morihei>> │       │ Commercial │ Inactif" in result2.output
 
 
-def test_story_16_fail(runner, epicstories):
-    epicstories.setattr(
+def test_story_16_fail(epicstories):
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_employee', MockFunction.mock_osynia)
 
@@ -74,22 +77,22 @@ def test_story_16_fail(runner, epicstories):
     assert "Osynia      │       │ Manager" in result2.output
 
 
-def test_story_16(runner, epicstories):
-
-    epicstories.setattr(
+def test_story_16(epicstories):
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_role', MockFunction.mock_role_manager)
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_employee', MockFunction.mock_morihei)
     result = runner.invoke(epicevent.main, ['employee', 'update-role'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_employee', MockFunction.mock_morihei)
 

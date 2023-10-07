@@ -5,13 +5,13 @@ from epicevents.views.employee_views import EmployeeView
 from epicevents.views.auth_views import AuthView
 
 
-def test_story_10(runner, epicstories):
-
-    epicstories.setattr(
+def test_story_10(epicstories):
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_data_employee', MockFunction.mock_prompt_data_employee)
 

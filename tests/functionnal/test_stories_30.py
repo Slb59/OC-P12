@@ -5,7 +5,8 @@ from epicevents.views.employee_views import EmployeeView
 from epicevents.views.auth_views import AuthView
 
 
-def test_story_30(runner, epicstories):
+def test_story_30(epicstories):
+    (mp, runner) = epicstories
 
     def newdata():
         return {
@@ -13,18 +14,18 @@ def test_story_30(runner, epicstories):
             'phone': '222-2222-2222',
             'company_name': 'NewCompagny Yuka'}
 
-    epicstories.setattr(
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_yuka)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         ClientView,
         'prompt_data_client', newdata)
 
-    epicstories.setattr(
+    mp.setattr(
        ClientView, 'prompt_client', MockFunction.mock_clientyuka)
 
-    epicstories.setattr(
+    mp.setattr(
             EmployeeView,
             'prompt_confirm_commercial',
             MockFunction.mock_prompt_confirm_no)

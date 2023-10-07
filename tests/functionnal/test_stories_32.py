@@ -7,7 +7,8 @@ from epicevents.views.client_views import ClientView
 from epicevents.views.auth_views import AuthView
 
 
-def test_story_32(runner, epicstories):
+def test_story_32(epicstories):
+    (mp, runner) = epicstories
 
     def mock_select_event(*args, **kwargs):
         return 'contrat1|Aritomo event'
@@ -15,19 +16,19 @@ def test_story_32(runner, epicstories):
     def mock_prompt_rapport(*args, **kwargs):
         return 'Evenement termine avec success'
 
-    epicstories.setattr(
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_aritomo)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         EventView,
         'prompt_select_event', mock_select_event)
 
-    epicstories.setattr(
+    mp.setattr(
         EventView,
         'prompt_rapport', mock_prompt_rapport)
 
-    epicstories.setattr(
+    mp.setattr(
         ContractView, 'prompt_confirm_close_contract',
         MockFunction.mock_prompt_confirm_no)
 
@@ -35,23 +36,23 @@ def test_story_32(runner, epicstories):
     assert not result.exception
     assert "Vos modifications ont été enregistrées" in result.output
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView, 'prompt_confirm_commercial',
         MockFunction.mock_prompt_confirm_yes)
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView, 'prompt_commercial', MockFunction.mock_yuka)
-    epicstories.setattr(
+    mp.setattr(
             ClientView,
             'prompt_confirm_client',
             MockFunction.mock_prompt_confirm_no)
-    epicstories.setattr(
+    mp.setattr(
             ContractView,
             'prompt_confirm_contract',
             MockFunction.mock_prompt_confirm_yes)
-    epicstories.setattr(
+    mp.setattr(
             ContractView, 'prompt_select_contract',
             MockFunction.mock_contract1)
-    epicstories.setattr(
+    mp.setattr(
             EmployeeView,
             'prompt_confirm_support',
             MockFunction.mock_prompt_confirm_no)

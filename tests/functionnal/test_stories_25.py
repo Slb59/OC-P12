@@ -5,17 +5,17 @@ from epicevents.views.employee_views import EmployeeView
 from epicevents.views.auth_views import AuthView
 
 
-def test_story_25(runner, epicstories):
-
-    epicstories.setattr(
+def test_story_25(epicstories):
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_confirm_task', MockFunction.mock_prompt_confirm_yes)
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_select_task', MockFunction.mock_choice1
     )

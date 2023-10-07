@@ -5,15 +5,17 @@ from epicevents.views.employee_views import EmployeeView
 from epicevents.views.auth_views import AuthView
 
 
-def test_story_11(runner, epicstories):
-    epicstories.setattr(
+def test_story_11(epicstories):
+    (mp, runner) = epicstories
+
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_role', MockFunction.mock_role_manager)
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_employee', MockFunction.mock_aritomo)
 
@@ -27,16 +29,17 @@ def test_story_11(runner, epicstories):
     assert "Affecter un support pour l'évènement Aritomo" in result3.output
 
 
-def test_story_12_with_clients(runner, epicstories):
+def test_story_12_with_clients(epicstories):
 
-    epicstories.setattr(
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_role', MockFunction.mock_role_manager)
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_employee', MockFunction.mock_yuka)
 
@@ -45,19 +48,21 @@ def test_story_12_with_clients(runner, epicstories):
 
     assert not result.exception
     assert "Ce commercial gère des contracts actifs" in result.output
-    assert "Yuka        │       │ Commercial" in result2.output
+    expected = "Yuka│ │ Commercial"
+    assert expected.replace(" ", "") in result2.output.replace(" ", "")
 
 
-def test_story_12_without_clients(runner, epicstories):
+def test_story_12_without_clients(epicstories):
 
-    epicstories.setattr(
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(EmployeeView,
-                        'prompt_role', MockFunction.mock_role_manager)
-    epicstories.setattr(EmployeeView,
-                        'prompt_employee', MockFunction.mock_morihei)
+    mp.setattr(
+        EmployeeView, 'prompt_role', MockFunction.mock_role_manager)
+    mp.setattr(
+        EmployeeView, 'prompt_employee', MockFunction.mock_morihei)
 
     result = runner.invoke(epicevent.main, ['employee', 'update-role'])
     result2 = runner.invoke(epicevent.main, ['employee', 'list'])
@@ -67,16 +72,17 @@ def test_story_12_without_clients(runner, epicstories):
     assert "Morihei     │       │ Manager" in result2.output
 
 
-def test_story_13_fail(runner, epicstories):
+def test_story_13_fail(epicstories):
 
-    epicstories.setattr(
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_role', MockFunction.mock_role_commercial)
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_employee', MockFunction.mock_osynia)
 
@@ -88,24 +94,25 @@ def test_story_13_fail(runner, epicstories):
     assert "Osynia      │       │ Manager" in result2.output
 
 
-def test_story_13(runner, epicstories):
+def test_story_13(epicstories):
 
-    epicstories.setattr(
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_role', MockFunction.mock_role_manager)
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_employee', MockFunction.mock_morihei)
     result = runner.invoke(epicevent.main, ['employee', 'update-role'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_role', MockFunction.mock_role_commercial)
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_employee', MockFunction.mock_osynia)
 

@@ -8,24 +8,25 @@ from epicevents.views.contract_views import ContractView
 from epicevents.views.auth_views import AuthView
 
 
-def test_story_19(runner, epicstories):
-    epicstories.setattr(
+def test_story_19(epicstories):
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView,
         'prompt_select_support', MockFunction.mock_aritomo)
 
-    epicstories.setattr(
+    mp.setattr(
         ClientView,
         'prompt_client', MockFunction.mock_client0)
 
-    epicstories.setattr(
+    mp.setattr(
         ContractView,
         'prompt_select_contract', MockFunction.mock_contract1)
 
-    epicstories.setattr(
+    mp.setattr(
         EventView,
         'prompt_select_event', MockFunction.mock_event_contract1)
 

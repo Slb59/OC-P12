@@ -5,22 +5,22 @@ from epicevents.views.client_views import ClientView
 from epicevents.views.auth_views import AuthView
 
 
-def test_story_33(runner, epicstories):
-
-    epicstories.setattr(
+def test_story_33(epicstories):
+    (mp, runner) = epicstories
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_yuka)
     runner.invoke(epicevent.main, ['login'])
 
-    epicstories.setattr(
+    mp.setattr(
         EmployeeView, 'prompt_manager', MockFunction.mock_osynia)
-    epicstories.setattr(
+    mp.setattr(
         ClientView, 'prompt_client', MockFunction.mock_clientyuka)
 
     result = runner.invoke(epicevent.main, ['employee', 'task-contract'])
     assert not result.exception
     assert "Vos modifications ont été enregistrées" in result.output
 
-    epicstories.setattr(
+    mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
     result = runner.invoke(epicevent.main, ['employee', 'tasks'])

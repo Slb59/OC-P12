@@ -122,28 +122,26 @@ def epictest2():
 
 
 @pytest.fixture(scope='function')
-def epicstories(runner):
-
+def epicstories():
+    
     with MonkeyPatch.context() as mp:
-        mp.setattr(
-            AuthView, 'prompt_manager', MockFunction.mock_prompt_manager)
+        runner = CliRunner()
         mp.setattr(
             AuthView, 'prompt_baseinit', MockFunction.mock_prompt_baseinit)
         mp.setattr(
             AuthView, 'prompt_manager', MockFunction.mock_prompt_manager)
         mp.setattr(
-            AuthView,
-            'prompt_confirm_testdata', MockFunction.mock_prompt_confirm_yes)
+            AuthView, 'prompt_confirm_testdata',
+            MockFunction.mock_prompt_confirm_yes)
         mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
 
         runner.invoke(epicevent.main, ['initbase'])
+        yield (mp, runner)
+        # runner.invoke(epicevent.main, ['logout'])
 
-        yield mp
-
-        runner.invoke(epicevent.main, ['logout'])
-        db_url = "postgresql://postgres:postG!111@localhost:5432/epicStories"
-        drop_database(db_url)
-        time.sleep(10)
+    db_url = "postgresql://postgres:postG!111@localhost:5432/epicStories"
+    drop_database(db_url)
+    time.sleep(10)
 
 
 @pytest.fixture(scope="function")
