@@ -60,6 +60,13 @@ class EpicDatabaseWithData(EpicDatabase):
                          'Jumpstart Travel',
                          'Social bleu-ciel',
                          'Restaurants de la citadelle']
+        c = Client(
+            full_name='YukaCli',
+            email='yukacli@epic!.co',
+            phone='111-1111-1111',
+            company_name='Yuka compagny',
+            commercial_id=e1.id)
+        self.session.add(c)
         for i in range(20):
             c = Client(
                 full_name=f'Client n°{i}',

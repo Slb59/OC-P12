@@ -86,6 +86,10 @@ class MockFunction:
         return 'contrat1'
 
     @classmethod
+    def mock_clientyuka(cls, *args, **kwargs):
+        return 'YukaCli'
+
+    @classmethod
     def mock_choice1(cls, *args, **kwargs):
         return 1
 
