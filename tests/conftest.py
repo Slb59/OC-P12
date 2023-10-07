@@ -135,7 +135,61 @@ def epicstories(runner):
             AuthView,
             'prompt_confirm_testdata', MockFunction.mock_prompt_confirm_yes)
         mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
-        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_prompt_login)
+        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_login_osynia)
+
+        runner.invoke(epicevent.main, ['initbase'])
+        runner.invoke(epicevent.main, ['login'])
+
+        yield mp
+
+        runner.invoke(epicevent.main, ['logout'])
+        db_url = "postgresql://postgres:postG!111@localhost:5432/epicStories"
+        drop_database(db_url)
+        time.sleep(10)
+
+
+@pytest.fixture(scope='function')
+def epicstories_yuka(runner):
+
+    with MonkeyPatch.context() as mp:
+        mp.setattr(
+            AuthView, 'prompt_manager', MockFunction.mock_prompt_manager)
+        mp.setattr(
+            AuthView, 'prompt_baseinit', MockFunction.mock_prompt_baseinit)
+        mp.setattr(
+            AuthView, 'prompt_manager', MockFunction.mock_prompt_manager)
+        mp.setattr(
+            AuthView,
+            'prompt_confirm_testdata', MockFunction.mock_prompt_confirm_yes)
+        mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
+        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_login_yuka)
+
+        runner.invoke(epicevent.main, ['initbase'])
+        runner.invoke(epicevent.main, ['login'])
+
+        yield mp
+
+        runner.invoke(epicevent.main, ['logout'])
+        db_url = "postgresql://postgres:postG!111@localhost:5432/epicStories"
+        drop_database(db_url)
+        time.sleep(10)
+
+
+@pytest.fixture(scope='function')
+def epicstories_aritomo(runner):
+
+    with MonkeyPatch.context() as mp:
+        mp.setattr(
+            AuthView, 'prompt_manager', MockFunction.mock_prompt_manager)
+        mp.setattr(
+            AuthView, 'prompt_baseinit', MockFunction.mock_prompt_baseinit)
+        mp.setattr(
+            AuthView, 'prompt_manager', MockFunction.mock_prompt_manager)
+        mp.setattr(
+            AuthView,
+            'prompt_confirm_testdata', MockFunction.mock_prompt_confirm_yes)
+        mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
+        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_login_aritomo)
 
         runner.invoke(epicevent.main, ['initbase'])
         runner.invoke(epicevent.main, ['login'])

@@ -51,9 +51,9 @@ class EpicDatabaseWithData(EpicDatabase):
 
     def add_some_clients(self):
         self.dbemployees.add_employee('Morihei', 'moriH!111', 'Commercial')
-        self.dbemployees.add_employee('Yuka', 'yuka!111', 'Commercial')
+        self.dbemployees.add_employee('Yuka', 'yukA!111', 'Commercial')
         e1 = Commercial.find_by_username(self.session, 'Yuka')
-        self.dbemployees.add_employee('Esumi', 'esuM!111', 'Commercial')        
+        self.dbemployees.add_employee('Esumi', 'esuM!111', 'Commercial')
         e2 = Commercial.find_by_username(self.session, 'Esumi')
         company_names = ['League Computing',
                          'Valley Dressing',
@@ -72,7 +72,7 @@ class EpicDatabaseWithData(EpicDatabase):
         self.session.commit()
 
     def add_some_events(self):
-        self.dbemployees.add_employee('Aritomo', 'ari!111', 'Support')
+        self.dbemployees.add_employee('Aritomo', 'ariT!111', 'Support')
         self.dbemployees.add_employee('Michio', 'michi!111', 'Support')
         contracts = Contract.getall(self.session)
         locations = [
@@ -159,9 +159,8 @@ class EpicDatabaseWithData(EpicDatabase):
             t = Task(
                 description=f'Creer un contrat pour le client {c.full_name}',
                 employee_id=ch_manager.id)
-            self.session.add(t)        
+            self.session.add(t)
         self.session.commit()
-
 
     def create_a_test_database(self):
         self.add_some_clients()

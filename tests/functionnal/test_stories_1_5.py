@@ -13,7 +13,7 @@ def test_story_1(runner):
     with MonkeyPatch.context() as mp:
         mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
         mp.setattr(
-            AuthView, 'prompt_login', MockFunction.mock_prompt_login)
+            AuthView, 'prompt_login', MockFunction.mock_login_osynia)
 
         result = runner.invoke(epicevent.main, ['login'])
 
@@ -42,7 +42,7 @@ def test_story_4(runner):
 
     with MonkeyPatch.context() as mp:
         mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
-        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_prompt_login)
+        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_login_osynia)
 
         runner.invoke(epicevent.main, ['login'])
         result = runner.invoke(epicevent.main, ['logout'])
@@ -54,7 +54,7 @@ def test_story_5(runner):
 
     with MonkeyPatch.context() as mp:
         mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
-        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_prompt_login)
+        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_login_osynia)
         runner.invoke(epicevent.main, ['login'])
         result = runner.invoke(epicevent.main, ['employee', 'mydata'])
         runner.invoke(epicevent.main, ['logout'])

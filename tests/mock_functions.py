@@ -7,8 +7,16 @@ class MockFunction:
         return Config('tests/functionnal/database_userstories.ini')
 
     @classmethod
-    def mock_prompt_login(cls):
+    def mock_login_osynia(cls):
         return ("Osynia", "osyA!111")
+
+    @classmethod
+    def mock_login_yuka(cls):
+        return ("Yuka", "yukA!111")
+
+    @classmethod
+    def mock_login_aritomo(cls):
+        return ("Aritomo", "ariT!111")
 
     @classmethod
     def mock_prompt_confirm_no(cls):

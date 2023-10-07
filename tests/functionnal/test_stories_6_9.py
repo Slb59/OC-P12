@@ -14,7 +14,7 @@ def test_story_6_no_selection(runner):
 
     with MonkeyPatch.context() as mp:
         mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
-        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_prompt_login)
+        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_login_osynia)
         mp.setattr(
             EmployeeView,
             'prompt_confirm_commercial',
@@ -32,7 +32,7 @@ def test_story_6_with_commercial(runner):
 
     with MonkeyPatch.context() as mp:
         mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
-        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_prompt_login)
+        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_login_osynia)
         mp.setattr(
             EmployeeView,
             'prompt_confirm_commercial',
@@ -54,7 +54,7 @@ def test_story_6_with_commercial(runner):
 def test_story_7_noselection(runner):
     with MonkeyPatch.context() as mp:
         mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
-        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_prompt_login)
+        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_login_osynia)
         mp.setattr(
             EmployeeView,
             'prompt_confirm_commercial',
@@ -78,7 +78,7 @@ def test_story_7_noselection(runner):
 def test_story_8_noselection(runner):
     with MonkeyPatch.context() as mp:
         mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
-        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_prompt_login)
+        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_login_osynia)
         mp.setattr(
             EmployeeView,
             'prompt_confirm_commercial',
@@ -107,7 +107,7 @@ def test_story_8_noselection(runner):
 def test_story_9(runner):
     with MonkeyPatch.context() as mp:
         mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
-        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_prompt_login)
+        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_login_osynia)
         runner.invoke(epicevent.main, ['login'])
         result = runner.invoke(epicevent.main, ['employee', 'tasks'])
         runner.invoke(epicevent.main, ['logout'])
