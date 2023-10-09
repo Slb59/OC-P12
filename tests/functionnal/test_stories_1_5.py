@@ -22,32 +22,32 @@ def test_story_1(runner):
         assert "ERROR" not in result.output
 
 
-def test_story_2_and_3(runner):
+def test_story_2_and_3(epicstories):
+    (mp, runner) = epicstories
 
     def new_prompt_login(*args, **kwargs):
         return ("Inconnu", "_")
 
-    with MonkeyPatch.context() as mp:
-        mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
-        mp.setattr(AuthView, 'prompt_login', new_prompt_login)
+    mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
+    mp.setattr(AuthView, 'prompt_login', new_prompt_login)
 
-        result = runner.invoke(epicevent.main, ['login'])
+    result = runner.invoke(epicevent.main, ['login'])
 
-        assert not result.exception
-        assert "ERROR" in result.output
+    assert not result.exception
+    assert "ERROR" in result.output
 
 
-def test_story_4(runner):
+def test_story_4(epicstories):
+    (mp, runner) = epicstories
     expected = "Vous êtes déconnecté"
 
-    with MonkeyPatch.context() as mp:
-        mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
-        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_login_osynia)
+    mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
+    mp.setattr(AuthView, 'prompt_login', MockFunction.mock_login_osynia)
 
-        runner.invoke(epicevent.main, ['login'])
-        result = runner.invoke(epicevent.main, ['logout'])
-        assert not result.exception
-        assert expected in result.output
+    runner.invoke(epicevent.main, ['login'])
+    result = runner.invoke(epicevent.main, ['logout'])
+    assert not result.exception
+    assert expected in result.output
 
 
 def test_story_5(runner):

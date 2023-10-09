@@ -38,7 +38,7 @@ def test_story_27(epicstories):
     assert not result.exception
     assert "ERROR : Accès refusé, rôle manager requis." in result.output
 
-    result = runner.invoke(epicevent.main, ['employee', 'update-role'])
+    result = runner.invoke(epicevent.main, ['employee', 'updaterole'])
     assert not result.exception
     assert "ERROR : Accès refusé, rôle manager requis." in result.output
 

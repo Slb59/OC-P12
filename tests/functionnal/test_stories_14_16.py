@@ -90,7 +90,7 @@ def test_story_16(epicstories):
     mp.setattr(
         EmployeeView,
         'prompt_employee', MockFunction.mock_morihei)
-    result = runner.invoke(epicevent.main, ['employee', 'update-role'])
+    result = runner.invoke(epicevent.main, ['employee', 'updaterole'])
 
     mp.setattr(
         EmployeeView,

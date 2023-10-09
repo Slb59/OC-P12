@@ -64,7 +64,7 @@ def create():
 
 
 @cli_employee.command()
-def update_role():
+def updaterole():
     """ modify the role of an employee """
     app = EpicManager()
     if app.user:

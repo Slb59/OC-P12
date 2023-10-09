@@ -8,18 +8,15 @@ from epicevents.views.auth_views import AuthView
 def test_story_11(epicstories):
     (mp, runner) = epicstories
 
-    mp.setattr(
-        AuthView, 'prompt_login', MockFunction.mock_login_osynia)
+    mp.setattr(AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
 
     mp.setattr(
-        EmployeeView,
-        'prompt_role', MockFunction.mock_role_manager)
+        EmployeeView, 'prompt_role', MockFunction.mock_role_manager)
     mp.setattr(
-        EmployeeView,
-        'prompt_employee', MockFunction.mock_aritomo)
+        EmployeeView, 'prompt_employee', MockFunction.mock_aritomo)
 
-    result = runner.invoke(epicevent.main, ['employee', 'update-role'])
+    result = runner.invoke(epicevent.main, ['employee', 'updaterole'])
     result2 = runner.invoke(epicevent.main, ['employee', 'list'])
     result3 = runner.invoke(epicevent.main, ['employee', 'tasks'])
 
@@ -37,24 +34,22 @@ def test_story_12_with_clients(epicstories):
     runner.invoke(epicevent.main, ['login'])
 
     mp.setattr(
-        EmployeeView,
-        'prompt_role', MockFunction.mock_role_manager)
+        EmployeeView, 'prompt_role', MockFunction.mock_role_manager)
     mp.setattr(
-        EmployeeView,
-        'prompt_employee', MockFunction.mock_yuka)
+        EmployeeView, 'prompt_employee', MockFunction.mock_yuka)
 
-    result = runner.invoke(epicevent.main, ['employee', 'update-role'])
+    result = runner.invoke(epicevent.main, ['employee', 'updaterole'])
     result2 = runner.invoke(epicevent.main, ['employee', 'list'])
 
     assert not result.exception
     assert "Ce commercial gère des contracts actifs" in result.output
-    expected = "Yuka│ │ Commercial"
-    assert expected.replace(" ", "") in result2.output.replace(" ", "")
+    expected = "Yuka││Commercial"
+    assert expected in result2.output.replace(" ", "")
 
 
 def test_story_12_without_clients(epicstories):
-
     (mp, runner) = epicstories
+
     mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
     runner.invoke(epicevent.main, ['login'])
@@ -64,7 +59,7 @@ def test_story_12_without_clients(epicstories):
     mp.setattr(
         EmployeeView, 'prompt_employee', MockFunction.mock_morihei)
 
-    result = runner.invoke(epicevent.main, ['employee', 'update-role'])
+    result = runner.invoke(epicevent.main, ['employee', 'updaterole'])
     result2 = runner.invoke(epicevent.main, ['employee', 'list'])
 
     assert not result.exception
@@ -86,7 +81,7 @@ def test_story_13_fail(epicstories):
         EmployeeView,
         'prompt_employee', MockFunction.mock_osynia)
 
-    result = runner.invoke(epicevent.main, ['employee', 'update-role'])
+    result = runner.invoke(epicevent.main, ['employee', 'updaterole'])
     result2 = runner.invoke(epicevent.main, ['employee', 'list'])
 
     assert not result.exception
@@ -107,16 +102,14 @@ def test_story_13(epicstories):
     mp.setattr(
         EmployeeView,
         'prompt_employee', MockFunction.mock_morihei)
-    result = runner.invoke(epicevent.main, ['employee', 'update-role'])
+    result = runner.invoke(epicevent.main, ['employee', 'updaterole'])
 
     mp.setattr(
         EmployeeView,
         'prompt_role', MockFunction.mock_role_commercial)
-    mp.setattr(
-        EmployeeView,
-        'prompt_employee', MockFunction.mock_osynia)
+    mp.setattr(EmployeeView, 'prompt_employee', MockFunction.mock_osynia)
 
-    result = runner.invoke(epicevent.main, ['employee', 'update-role'])
+    result = runner.invoke(epicevent.main, ['employee', 'updaterole'])
     result2 = runner.invoke(epicevent.main, ['employee', 'list'])
 
     assert not result.exception
