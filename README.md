@@ -28,19 +28,53 @@ Une fois le contrat signé, le commercial crée l’événement dans la platefor
 département support qui sera responsable de l’organisation et du déroulé de l’événement.
 
 ## Technologies utilisées
-Base de données : PostgreSql
 
-ORM : SqlAlchemy
+<div align="center">
 
-Language de programmation : Python
-
-Interface utilisateur : Rich
-
-Journalisation : Sentry
+| Base de données | Interface    | Qualité                 |
+|-----------------|--------------|-------------------------|
+| sqlachemy       | click        | Flake8, Pylance         |
+| argon           | rich         | Pytest                  |
+| postgresql | questionnary | pytest-cov, pytest-html |
+| pgadmin    |              | sentry                  |
+| jwt |||
+</div>
 
 ## Installation
 
+- Dans un premier temps cloner le projet github et activer l'environnement virtuel.
+
+```
+git clone https://github.com/Slb59/OC-P12.git
+pipenv shell
+```
+
+- Pour installer la base de donnée, vous avez besoin de la connexion administrateur et du port pour l'accès. Il vous sera également demnandé un nom et un mot de passe pour le manager principal. Le manager pourra ensuite se connecter à la base pour créer les autres employés. L'outil d'installation propose également la création d'un jeu de données test.
+
+```
+python epicevent.py initbase
+```
+
 ## Utilisation
+
+- Pour se connecter l'utilisateur utilise la commande suivante:
+```
+python epicevent.py login
+```
+
+- La fonction de déconnection est également accessible:
+```
+python epicevent.py logout
+```
+
+- La liste des fonctions disponibles peut être visualisée en utilisant simplement les commandes suivantes:
+```
+python epicevent.py : commandes principales
+python epicevent.py employee : commandes relatives à la gestion des employés
+python epicevent.py client : commandes relatives à la gestion des clients
+python epicevent.py contract : commandes relatives à la gestion des contrats
+python epicevent.py event : commandes relatives à la gestion des évènements
+```
 
 ## Documentation
 
