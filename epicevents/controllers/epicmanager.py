@@ -24,8 +24,8 @@ class EpicManager:
     def __init__(self) -> None:
 
         # load .env file
-        db = self.get_config()
         self.env = Environ()
+        db = self.get_config()        
 
         # create database
         self.epic = EpicDatabase(**db.db_config)
@@ -35,7 +35,8 @@ class EpicManager:
         return "CRM EPIC EVENTS"
 
     def get_config(self):
-        return Config()
+        fichier_ini = self.env.DEFAULT_DATABASE + "_database.ini"
+        return Config(fichier_ini)
 
     @is_authenticated
     def check_logout(self) -> bool:
@@ -76,6 +77,7 @@ class EpicManager:
     def initbase(cls):
         stop_session()
         values = AuthView.prompt_baseinit()
+        
         file = create_config(*values)
         db = Config(file)
         result = AuthView.prompt_confirm_testdata()

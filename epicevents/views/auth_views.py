@@ -75,15 +75,12 @@ class AuthView:
                 **kwargs).ask()
         if username is None:
             raise KeyboardInterrupt
-        regex_password = r"(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9])"
-        regex_password += "(?=.*?[#?!@$%^&*-]).{8,}"
+
         password = questionary.password(
-            "Password administrateur:",
-            validate=lambda text: True
-            if re.match(regex_password, text)
-            else "Le format du mot de passe est invalide", **kwargs).ask()
+            "Password administrateur:", **kwargs).ask()
         if password is None:
-            raise KeyboardInterrupt  
+            raise KeyboardInterrupt
+
         port = questionary.text(
                 "Port:",
                 validate=lambda text: True

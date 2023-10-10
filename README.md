@@ -42,21 +42,21 @@ département support qui sera responsable de l’organisation et du déroulé de
 
 ## Installation
 
-- Dans un premier temps cloner le projet github et activer l'environnement virtuel.
-
-```
-git clone https://github.com/Slb59/OC-P12.git
-mkdir .venv
-pipenv install
-pipenv shell
-```
-
 - Creer le fichier d'environnement .env
 
 ```
 DEFAULT_DATABASE = <<nom de la base de données>>
 SECRET_KEY = <<clé d'encryptage des mots de passe>>
 TOKEN_DELTA = 120 # temps de validité d'un token de connexion
+```
+
+- Ensuite cloner le projet github et activer l'environnement virtuel.
+
+```
+git clone https://github.com/Slb59/OC-P12.git
+mkdir .venv
+pipenv install
+pipenv shell
 ```
 
 - Pour installer la base de donnée, vous avez besoin de la connexion administrateur et du port pour l'accès. Il vous sera également demnandé un nom et un mot de passe pour le manager principal. Le manager pourra ensuite se connecter à la base pour créer les autres employés. L'outil d'installation propose également la création d'un jeu de données test.
@@ -104,5 +104,3 @@ pytest --cov=./epicevents tests --cov-report html
 
 Les accès au rapport de tests report_test.html et à la couverture de tests index.html
 sont alors accessible depuis le répertoire htmlcov.
-
-
