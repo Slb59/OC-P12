@@ -1,7 +1,7 @@
 from argon2 import PasswordHasher
 from sqlalchemy.exc import IntegrityError
 from epicevents.views.data_views import DataView
-from epicevents.views.event_views import EventView
+from epicevents.views.business_views.event_views import EventView
 from epicevents.models.entities import (
     Department, Manager, Commercial, Support,
     Employee, Task

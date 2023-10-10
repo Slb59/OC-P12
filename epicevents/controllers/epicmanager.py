@@ -3,10 +3,10 @@ import random
 from epicevents.views.auth_views import AuthView
 from epicevents.views.error import ErrorView
 from epicevents.views.menu_views import MenuView
-from epicevents.views.contract_views import ContractView
-from epicevents.views.employee_views import EmployeeView
-from epicevents.views.client_views import ClientView
-from epicevents.views.event_views import EventView
+from epicevents.views.business_views.contract_views import ContractView
+from epicevents.views.business_views.employee_views import EmployeeView
+from epicevents.views.business_views.client_views import ClientView
+from epicevents.views.business_views.event_views import EventView
 from epicevents.views.data_views import DataView
 from epicevents.views.prompt_views import PromptView
 
@@ -77,7 +77,7 @@ class EpicManager:
     def initbase(cls):
         stop_session()
         values = AuthView.prompt_baseinit()
-        
+
         file = create_config(*values)
         db = Config(file)
         result = AuthView.prompt_confirm_testdata()

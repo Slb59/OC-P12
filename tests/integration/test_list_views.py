@@ -3,8 +3,8 @@ from epicevents.models.entities import (
     Contract, Event, EventType)
 from epicevents.views.console import console
 from epicevents.views.client_views import ClientView
-from epicevents.views.contract_views import ContractView
-from epicevents.views.event_views import EventView
+from epicevents.views.business_views.contract_views import ContractView
+from epicevents.views.business_views.event_views import EventView
 
 
 def initdb(db_session):

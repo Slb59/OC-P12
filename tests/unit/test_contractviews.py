@@ -1,4 +1,4 @@
-from epicevents.views.contract_views import ContractView
+from epicevents.views.business_views.contract_views import ContractView
 from ..utils import (
     KeyInputs, ask_with_patched_input)
 
