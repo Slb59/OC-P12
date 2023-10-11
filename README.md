@@ -65,6 +65,18 @@ pipenv shell
 python epicevent.py initbase
 ```
 
+- Si votre base de données est déjà existante, il vous suffit de creer un fichier <<nom de la base>>_database.ini
+Le fichier devra contenir les informations suivantes :
+
+```
+[postgresql]
+DATABASE = <<nom de la base>>
+HOST = <<host>>
+USER = <<admin user>>
+PASSWORD = <<admin password>>
+PORT = <<port>>
+```
+
 ## Utilisation
 
 - Pour se connecter l'utilisateur utilise la commande suivante:

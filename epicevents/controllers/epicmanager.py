@@ -348,12 +348,24 @@ class EpicManager:
     @is_authenticated
     @is_commercial
     def update_client(self):
+        """
+            - ask a select of a client in the clients of user list
+            - display client information
+            - ask for the new data
+            - update databse
+            - display new client information
+        """
         clients = self.epic.dbclients.get_clients(
             commercial_name=self.user.username)
         clients = [c.full_name for c in clients]
-        client = ClientView.prompt_client(clients)
-        data = ClientView.prompt_data_client()
-        self.epic.dbclients.update(client, data)
+        client_name = ClientView.prompt_client(clients)
+        client = self.epic.dbclients.get(client_name)
+        ClientView.display_client_info(client)
+        data = ClientView.prompt_data_client(full_name_required=False)
+        client_name = self.epic.dbclients.update(client_name, data)
+        print(f'get {client_name}')
+        client = self.epic.dbclients.get(client_name)
+        ClientView.display_client_info(client)
 
     @sentry_activate
     @is_authenticated

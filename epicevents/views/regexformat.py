@@ -1,3 +1,8 @@
+regex_email = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*"
+regex_email += "@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$"
+
+regex_phone = "^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$"
+
 regexformat = {
     '3cn': (
         r"^[A-Za-z0-9-]+$",
@@ -17,4 +22,6 @@ regexformat = {
         r"^[a-zA-Z ']+$",
         "Seul des caractères alpha sont autorisés"
     ),
+    'email': (regex_email, "Le format de l'email est invalide"),
+    'phone': (regex_phone, "Ce n'est pas un numéro de téléphone valide")
 }

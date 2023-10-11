@@ -8,10 +8,13 @@ __pycache__
 session.json
 
 # no base file
-database.ini
+*.ini
 
 # no tests files
 .pytest_cache
 .coverage
 .coverage.*
 htmlcov/
+
+# no utils file
+utils
