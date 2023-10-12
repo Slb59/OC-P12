@@ -25,7 +25,7 @@ class EpicManager:
 
         # load .env file
         self.env = Environ()
-        db = self.get_config()        
+        db = self.get_config()
 
         # create database
         self.epic = EpicDatabase(**db.db_config)
@@ -263,6 +263,20 @@ class EpicManager:
     @is_authenticated
     @is_manager
     def update_contract(self):
+        """
+            - ask to select a contract in a list of active contract
+            - ask which operation todo
+                - you can add a paiement then:
+                    - ask data for paiement
+                    - create paiement in database
+                - you can modify the data then:
+                    - display the data of actuel contract
+                    - ask for new data
+                    - update database
+                    - display new data
+                - you can signed a contrat
+                - you can cancel a contract
+        """
         contracts = self.epic.dbcontracts.get_active_contracts()
         refs = [c.ref for c in contracts]
         ref = ContractView.prompt_select_contract(refs)
@@ -278,8 +292,13 @@ class EpicManager:
                         DataView.display_interupt()
                 case 2:
                     try:
-                        data = ContractView.prompt_data_contract()
-                        self.epic.dbcontracts.update(ref, data)
+                        contract = self.epic.dbcontracts.get(ref)
+                        ContractView.display_contract_info(contract)
+                        data = ContractView.prompt_data_contract(
+                            ref_required=False, mt_required=False)
+                        newref = self.epic.dbcontracts.update(ref, data)
+                        contract = self.epic.dbcontracts.get(newref)
+                        ContractView.display_contract_info(contract)
                     except KeyboardInterrupt:
                         DataView.display_interupt()
                 case 3:
