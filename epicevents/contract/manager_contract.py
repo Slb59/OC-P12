@@ -22,7 +22,13 @@ class EpicManagerContract():
 
     @sentry_activate
     @is_authenticated
-    def list_of_contracts(self):
+    def list_of_contracts(self) -> None:
+        """
+            - offers to select a commercial
+            - offers to select a client
+            - offers to select a stat
+            - read database and display data
+        """
         state = None
         cname = self.controller_employee.choice_commercial()
         client = self.controller_client.choice_client(cname)
@@ -41,7 +47,13 @@ class EpicManagerContract():
     @sentry_activate
     @is_authenticated
     @is_manager
-    def create_contract(self):
+    def create_contract(self) -> None:
+        """
+            - ask to select a client
+            - ask data of contract
+            - update database
+            - generate a task waiting to be signed
+        """
         clients = self.epic.dbclients.get_clients()
         enames = [c.full_name for c in clients]
         ename = ClientView.prompt_client(enames)
