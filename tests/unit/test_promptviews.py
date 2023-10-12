@@ -5,7 +5,7 @@ from ..utils import (
     ask_with_patched_select, ask_with_patched_select_with_title
 )
 from epicevents.views.prompt_views import PromptView
-from epicevents.views.business_views.employee_views import EmployeeView
+from epicevents.employee.employee_views import EmployeeView
 from epicevents.views.client_views import ClientView
 
 

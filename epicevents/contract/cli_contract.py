@@ -1,5 +1,6 @@
 import click
 from epicevents.controllers.epicmanager import EpicManager
+from epicevents.contract.manager_contract import EpicManagerContract
 
 
 @click.group(name='contract')
@@ -12,8 +13,9 @@ def cli_contract():
 def list():
     """ list the contracts """
     app = EpicManager()
+    controle_contract = EpicManagerContract(app.user, app.epic)
     if app.user:
-        app.list_of_contracts()
+        controle_contract.list_of_contracts()
         app.refresh_session()
 
 
@@ -21,8 +23,9 @@ def list():
 def create():
     """ create a contract """
     app = EpicManager()
+    controle_contract = EpicManagerContract(app.user, app.epic)
     if app.user:
-        app.create_contract()
+        controle_contract.create_contract()
         app.refresh_session()
 
 
@@ -30,8 +33,9 @@ def create():
 def update():
     """ modify a contract """
     app = EpicManager()
+    controle_contract = EpicManagerContract(app.user, app.epic)
     if app.user:
-        app.update_contract()
+        controle_contract.update_contract()
         app.refresh_session()
 
 

@@ -1,11 +1,11 @@
 import click
 import sentry_sdk
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
-from epicevents.controllers.commands import cli_epic
-from epicevents.controllers.commands.cli_employee import cli_employee
-from epicevents.controllers.commands.cli_client import cli_client
-from epicevents.controllers.commands.cli_contract import cli_contract
-from epicevents.controllers.commands.cli_event import cli_event
+from epicevents.controllers import cli_epic
+from epicevents.employee.cli_employee import cli_employee
+from epicevents.client.cli_client import cli_client
+from epicevents.contract.cli_contract import cli_contract
+from epicevents.event.cli_event import cli_event
 
 
 def sentry_activate():

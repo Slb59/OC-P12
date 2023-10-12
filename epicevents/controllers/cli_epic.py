@@ -1,5 +1,6 @@
 import click
 from epicevents.controllers.epicmanager import EpicManager
+from epicevents.controllers.manager_dashboard import EpicManagerDashboard
 
 
 @click.command()
@@ -19,8 +20,8 @@ def logout():
 @click.command()
 def dashboard():
     """ access to menu """
-    app = EpicManager()
-    app.run()
+    controller = EpicManagerDashboard()
+    controller.run()
 
 
 @click.command()

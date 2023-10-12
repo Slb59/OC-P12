@@ -4,7 +4,7 @@ from rich.table import Table
 from rich import box
 from epicevents.views.console import console
 from epicevents.views.prompt_views import PromptView
-from ..regexformat import regexformat
+from ..views.regexformat import regexformat
 
 
 class ClientView:

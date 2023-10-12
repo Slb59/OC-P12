@@ -1,8 +1,8 @@
 import epicevent
 from ..mock_functions import MockFunction
-from epicevents.views.business_views.contract_views import ContractView
-from epicevents.views.business_views.event_views import EventView
-from epicevents.views.business_views.employee_views import EmployeeView
+from epicevents.contract.contract_views import ContractView
+from epicevents.event.event_views import EventView
+from epicevents.employee.employee_views import EmployeeView
 from epicevents.views.client_views import ClientView
 from epicevents.views.auth_views import AuthView
 

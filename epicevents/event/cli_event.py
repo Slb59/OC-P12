@@ -1,5 +1,5 @@
 import click
-from epicevents.controllers.epicmanager import EpicManager
+from epicevents.event.manager_event import EpicManagerEvent
 
 
 @click.group(name='event')
@@ -11,7 +11,7 @@ def cli_event():
 @cli_event.command()
 def list():
     """ list of events """
-    app = EpicManager()
+    app = EpicManagerEvent()
     if app.user:
         app.list_of_events()
         app.refresh_session()
@@ -20,7 +20,7 @@ def list():
 @cli_event.command()
 def update():
     """ modify an event """
-    app = EpicManager()
+    app = EpicManagerEvent()
     if app.user:
         app.update_event()
         app.refresh_session()
@@ -29,7 +29,7 @@ def update():
 @cli_event.command()
 def create():
     """ create an event """
-    app = EpicManager()
+    app = EpicManagerEvent()
     if app.user:
         app.create_event()
         app.refresh_session()
@@ -38,7 +38,7 @@ def create():
 @cli_event.command()
 def close():
     """ close an event """
-    app = EpicManager()
+    app = EpicManagerEvent()
     if app.user:
         app.terminate_event()
         app.refresh_session()
@@ -47,7 +47,7 @@ def close():
 @cli_event.command()
 def cancel():
     """ cancel an event """
-    app = EpicManager()
+    app = EpicManagerEvent()
     if app.user:
         app.cancel_event()
         app.refresh_session()

@@ -1,5 +1,6 @@
 import click
 from epicevents.controllers.epicmanager import EpicManager
+from epicevents.client.manager_client import EpicManagerClient
 
 
 @click.group(name='client')
@@ -12,8 +13,9 @@ def cli_client():
 def list():
     """ list all the clients """
     app = EpicManager()
+    controle_client = EpicManagerClient(app.user, app.epic)
     if app.user:
-        app.list_of_clients()
+        controle_client.list_of_clients()
         app.refresh_session()
 
 
@@ -21,8 +23,9 @@ def list():
 def update_commercial():
     """ modify the commercial of a client """
     app = EpicManager()
+    controle_client = EpicManagerClient(app.user, app.epic)
     if app.user:
-        app.update_client_commercial()
+        controle_client.update_client_commercial()
         app.refresh_session()
 
 
@@ -30,8 +33,9 @@ def update_commercial():
 def create():
     """ create a new client """
     app = EpicManager()
+    controle_client = EpicManagerClient(app.user, app.epic)
     if app.user:
-        app.create_client()
+        controle_client.create_client()
         app.refresh_session()
 
 
@@ -39,8 +43,9 @@ def create():
 def update():
     """ modify data of a client """
     app = EpicManager()
+    controle_client = EpicManagerClient(app.user, app.epic)
     if app.user:
-        app.update_client()
+        controle_client.update_client()
         app.refresh_session()
 
 

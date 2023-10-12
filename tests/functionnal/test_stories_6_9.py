@@ -2,10 +2,10 @@ import epicevent
 
 from ..mock_functions import MockFunction
 from epicevents.views.auth_views import AuthView
-from epicevents.views.business_views.employee_views import EmployeeView
+from epicevents.employee.employee_views import EmployeeView
 from epicevents.views.client_views import ClientView
 from epicevents.views.prompt_views import PromptView
-from epicevents.views.business_views.contract_views import ContractView
+from epicevents.contract.contract_views import ContractView
 
 
 def test_story_6_no_selection(epicstories):
