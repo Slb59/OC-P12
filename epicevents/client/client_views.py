@@ -2,6 +2,7 @@ import questionary
 import re
 from rich.table import Table
 from rich import box
+
 from epicevents.views.console import console
 from epicevents.views.prompt_views import PromptView
 from ..views.regexformat import regexformat
@@ -34,6 +35,11 @@ class ClientView:
 
     @classmethod
     def prompt_full_name(cls) -> str:
+        """ ask to prompt a full_name
+
+        Returns:
+            str: the string enter
+        """
         return questionary.text(
             "Nom complet:",
             validate=lambda text: True

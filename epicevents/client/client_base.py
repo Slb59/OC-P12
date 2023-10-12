@@ -1,8 +1,6 @@
 from sqlalchemy.exc import IntegrityError
 from epicevents.views.data_views import DataView
-from epicevents.models.entities import (
-    Commercial, Client
-)
+from epicevents.models.entities import Commercial, Client
 
 
 class ClientBase:
