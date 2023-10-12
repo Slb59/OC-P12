@@ -188,10 +188,20 @@ class EpicManager:
     @sentry_activate
     @is_authenticated
     def update_profil(self):
+        """
+            - ask confirm to update data
+            - show profil data
+            - ask new data
+            - update database
+            - display new data
+        """
         result = EmployeeView.prompt_confirm_profil()
         if result:
-            profil = EmployeeView.prompt_data_profil()
+            tasks = self.epic.dbemployees.get_tasks(self.user)
+            DataView.display_profil(self.user, len(tasks))
+            profil = EmployeeView.prompt_data_profil(False, False, False)
             self.epic.dbemployees.update_profil(self.user, profil)
+            DataView.display_profil(self.user, len(tasks))
             DataView.display_data_update()
 
     @sentry_activate

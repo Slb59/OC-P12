@@ -136,9 +136,6 @@ class Employee(Base):
     def update_role(self, new_role):
         self.role = new_role
 
-    def update_profil(self, session, data):
-        session.query(Employee).filter_by(id=self.id).update(data)
-
 
 class ContractsAreActived(Exception):
     def __init__(self, message="Some contracts are actived"):
