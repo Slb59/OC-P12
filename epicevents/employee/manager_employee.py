@@ -14,6 +14,14 @@ class EpicManagerEmployee():
         self.epic = base
 
     def choice_commercial(self) -> str:
+        """
+            - ask to confirm a selection
+            - read the list in database
+            - ask to choose a commercial
+
+        Returns:
+            str: commercial username
+        """
         # select a commercial
         cname = None
         result = EmployeeView.prompt_confirm_commercial()
@@ -25,7 +33,10 @@ class EpicManagerEmployee():
 
     @sentry_activate
     @is_authenticated
-    def show_profil(self):
+    def show_profil(self) -> None:
+        """
+        read data of the current user and display it
+        """
         tasks = self.epic.dbemployees.get_tasks(self.user)
         DataView.display_profil(self.user, len(tasks))
 
@@ -51,14 +62,21 @@ class EpicManagerEmployee():
     @sentry_activate
     @is_authenticated
     @is_manager
-    def list_of_employees(self):
+    def list_of_employees(self) -> None:
+        """
+        read database of employees and display it
+        """
         employees = self.epic.dbemployees.get_employees()
         EmployeeView.display_list_employees(employees)
 
     @sentry_activate
     @is_authenticated
     @is_manager
-    def create_new_employee(self):
+    def create_new_employee(self) -> None:
+        """
+            - prompt data of employee
+            - update database
+        """
         roles = self.epic.dbemployees.get_roles()
         try:
             data = EmployeeView.prompt_data_employee(roles)
@@ -69,7 +87,12 @@ class EpicManagerEmployee():
     @sentry_activate
     @is_authenticated
     @is_manager
-    def update_employee_role(self):
+    def update_employee_role(self) -> None:
+        """
+            - ask to select an employee
+            - ask to select a role
+            - update database
+        """
         employees = self.epic.dbemployees.get_employees()
         enames = [e.username for e in employees]
         ename = EmployeeView.prompt_employee(enames)
@@ -81,7 +104,12 @@ class EpicManagerEmployee():
     @sentry_activate
     @is_authenticated
     @is_manager
-    def update_employee_password(self):
+    def update_employee_password(self) -> None:
+        """
+            - ask to select an employee
+            - ask the new password
+            - update database
+        """
         employees = self.epic.dbemployees.get_employees()
         enames = [e.username for e in employees]
         ename = EmployeeView.prompt_employee(enames)
@@ -91,7 +119,11 @@ class EpicManagerEmployee():
     @sentry_activate
     @is_authenticated
     @is_manager
-    def inactivate_employee(self):
+    def inactivate_employee(self) -> None:
+        """
+            - ask to select an employee
+            - update database
+        """
         employees = self.epic.dbemployees.get_employees()
         enames = [e.username for e in employees]
         ename = EmployeeView.prompt_employee(enames)
@@ -106,13 +138,20 @@ class EpicManagerTask():
 
     @sentry_activate
     @is_authenticated
-    def list_of_task(self):
+    def list_of_task(self) -> None:
+        """ Read database tasks and display it
+        """
         tasks = self.epic.dbemployees.get_tasks(self.user)
         EmployeeView.display_list_tasks(tasks)
 
     @sentry_activate
     @is_authenticated
-    def terminate_a_task(self):
+    def terminate_a_task(self) -> None:
+        """
+            - ask to confirm operation
+            - ask to select a task
+            - update database
+        """
         result = EmployeeView.prompt_confirm_task()
         if result:
             all_tasks_id = []
@@ -128,7 +167,12 @@ class EpicManagerTask():
     @sentry_activate
     @is_authenticated
     @is_commercial
-    def add_task_create_contract(self):
+    def add_task_create_contract(self) -> None:
+        """
+            - ask to select a manager
+            - ask to select a client
+            - generate a task to the manager
+        """
         managers = self.epic.dbemployees.get_managers()
         managers = [e.username for e in managers]
         manager = EmployeeView.prompt_manager(managers)
