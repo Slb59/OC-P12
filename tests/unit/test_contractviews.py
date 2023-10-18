@@ -45,4 +45,3 @@ def test_confirm_close_contract():
 def test_workflow_contract_is_over():
     expected = "Evénements terminés, solder le contrat contract_ref"
     assert ContractView.workflow_contract_is_over("contract_ref") == expected
- 

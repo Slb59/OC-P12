@@ -6,34 +6,12 @@ from epicevents.models.entities import (
 )
 
 
-def initdb(db_session):
-    management_dpt = Department(name='management department')
-    support_dpt = Department(name='support department')
-    commercial_dpt = Department(name='commercial department')
-    db_session.add_all([management_dpt, support_dpt, commercial_dpt])
-
-
-def add_commercials(db_session):
-    d = Department.find_by_name(db_session, 'commercial department')
-    e1 = Commercial(username='Yuka', department_id=d.id, role='C')
-    e2 = Commercial(username='Esumi', department_id=d.id, role='C')
-    e3 = Commercial(username='Morihei', department_id=d.id, role='C')
-    db_session.add_all([e1, e2, e3])
-
-
 def add_managers(db_session):
     d = Department.find_by_name(db_session, 'management department')
     e1 = Manager(username='Osynia', department_id=d.id, role='M')
     e2 = Manager(username='Misoka', department_id=d.id, role='M')
     db_session.add_all([e1, e2])
 
-
-def add_yuka(db_session):
-    d = Department.find_by_name(db_session, 'commercial department')
-    e1 = Commercial(
-        username='Yuka', password='Yuka', department_id=d.id, role='C')
-    db_session.add(e1)
- 
 
 def add_tasks_on_yuka(db_session):
     e = Commercial.find_by_username(db_session, 'Yuka')
@@ -51,22 +29,24 @@ def add_tasks_on_yuka(db_session):
 
 class TestEmployees:
 
-    def test_list_departments(self, db_session):
+    def test_list_departments(
+            self, db_session,
+            commercial_department,
+            support_department,
+            management_department):
         """
         count list of department is 3
         and the first one is management department
         """
-        # given / when
-        initdb(db_session)
+        # GIVEN there is 3 departmenet in database
         # then
         assert db_session.query(Department).count() == 3
         departments = Department.getall(db_session)
-        assert departments[0].name == 'management department'
+        assert departments[2].name == management_department
 
-    def test_repr_employee(self, db_session):
-        # given
-        initdb(db_session)
-        d = Department.find_by_name(db_session, 'commercial department')
+    def test_repr_employee(self, db_session, commercial_department):
+        # GIVEN there is a commercial department
+        d = Department.find_by_name(db_session, commercial_department)
         e = Commercial(username='Yuka', department_id=d.id, role='C')
         e.email = 'Yuka@example.com'
         db_session.add(e)
@@ -79,9 +59,9 @@ class TestEmployees:
         e.state = 'I'
         assert repr(e) == f'Employee n°{e.id} is inactivate'
 
-    def test_to_dict(self, db_session):
-        initdb(db_session)
-        d = Department.find_by_name(db_session, 'commercial department')
+    def test_to_dict(self, db_session, commercial_department):
+        # GIVEN database has a commercial department
+        d = Department.find_by_name(db_session, commercial_department)
         result = {
             'username': 'Yuka',
             'password': 'Yuka',
@@ -96,9 +76,10 @@ class TestEmployees:
         e = Employee.find_by_username(db_session, 'Yuka')
         assert result == e.to_dict()
 
-    def test_getall(self, db_session):
-        initdb(db_session)
-        add_commercials(db_session)
+    def test_getall(
+            self, db_session, add_3_commercials):
+        # GIVEN database has a commercial department
+        # GiVEN database has 3 commercials
         e1 = Employee.find_by_username(db_session, 'Yuka')
         e2 = Employee.find_by_username(db_session, 'Esumi')
         e3 = Employee.find_by_username(db_session, 'Morihei')
@@ -106,38 +87,36 @@ class TestEmployees:
         employees = Employee.getall(db_session)
         assert result == employees
 
-    def test_list_employee_department(self, db_session):
+    def test_list_employee_department(self, db_session, add_3_commercials):
         """
-        count list of employees in department 3
+        count list of employees in department commercial
         """
-        # given
-        initdb(db_session)
-        # when
-        add_commercials(db_session)
-        d3 = db_session.query(Department).all()[2]
+        # GIVEN database has a commercial department
+        # GiVEN database has 3 commercials
+        # WHEN
+        d = db_session.query(Department).all()[0]
         # then
-        assert len(d3.employees) == 3
+        assert len(d.employees) == 3
 
-    def test_list_employee_tasks(self, db_session):
-        # given
-        initdb(db_session)
-        add_yuka(db_session)
+    def test_list_employee_tasks(self, db_session, yuka):
+        # GIVEN database has a commercial department
+        # GIVEN database has yuka as commercial
         # when
         add_tasks_on_yuka(db_session)
-        e = Commercial.find_by_username(db_session, 'Yuka')
+        e = Commercial.find_by_username(db_session, yuka)
         # then
         assert len(e.tasks) == 3
 
-    def test_find_by_userpwd(self, db_session):
-        initdb(db_session)
-        add_yuka(db_session)
-        e = Employee.find_by_username(db_session, 'Yuka')
+    def test_find_by_userpwd(self, db_session, yuka):
+        # GIVEN database has a commercial department
+        # GIVEN database has yuka as commercial
+        e = Employee.find_by_username(db_session, yuka)
         result = Employee.find_by_userpwd(db_session, 'Yuka', 'Yuka')
         assert e == result
 
-    def test_find_by_department(self, db_session):
-        initdb(db_session)
-        add_commercials(db_session)
+    def test_find_by_department(self, db_session, add_3_commercials):
+        # GIVEN database has a commercial department
+        # GIVEN database has 3 commercials
         d = Department.find_by_name(db_session, 'commercial department')
         e1 = Employee.find_by_username(db_session, 'Yuka')
         e2 = Employee.find_by_username(db_session, 'Esumi')
@@ -146,9 +125,11 @@ class TestEmployees:
         employees = Employee.find_by_department(db_session, d.id)
         assert employees == result
 
-    def test_getall_commercials(self, db_session):
-        initdb(db_session)
-        add_commercials(db_session)
+    def test_getall_commercials(
+            self, db_session, add_3_commercials, management_department):
+        # GIVEN database has a commercial department
+        # GIVEN database has 3 commercials
+        # GIVEN database has a management department
         add_managers(db_session)
         e1 = Employee.find_by_username(db_session, 'Yuka')
         e2 = Employee.find_by_username(db_session, 'Esumi')
@@ -162,11 +143,10 @@ class TestEmployees:
 
 class TestTask:
 
-    def test_repr_task(self, db_session):
-        # given
-        initdb(db_session)
-        add_yuka(db_session)
-        e = Employee.find_by_username(db_session, 'Yuka')
+    def test_repr_task(self, db_session, yuka):
+        # GIVEN database has a commercial department
+        # GIVEN yuka is a employee of commercial department
+        e = Employee.find_by_username(db_session, yuka)
         # when
         t = Task(description='ma description', employee_id=e.id)
         db_session.add(t)
@@ -178,10 +158,8 @@ class TestTask:
 
 class TestEmployeeUnique:
 
-    def test_department_unique_name(self, db_session):
-        # given
-        management_dpt = Department(name='management department')
-        db_session.add(management_dpt)
+    def test_department_unique_name(self, db_session, management_department):
+        # GIVEN database has a management department
         # when
         newdpt = Department(name='management department')
         with pytest.raises(IntegrityError) as e_info:
@@ -190,15 +168,13 @@ class TestEmployeeUnique:
         # then except IntegrityError
         assert e_info.type is IntegrityError
 
-    def test_employee_unique_name(self, db_session):
-        # given
-        management_dpt = Department(name='management department')
-        db_session.add(management_dpt)
-        d = Department.find_by_name(db_session, 'management department')
-        e1 = Commercial(username='Yuka', department_id=d.id, role='C')
-        db_session.add(e1)
+    def test_employee_unique_name(
+            self, db_session, commercial_department, yuka):
+        # GIVEN database has a commercial department
+        # GIVEN yuka is employee od commercial department
+        d = Department.find_by_name(db_session, commercial_department)
         # when
-        e2 = Commercial(username='Yuka', department_id=d.id, role='C')
+        e2 = Commercial(username=yuka, department_id=d.id, role='C')
         with pytest.raises(IntegrityError) as e_info:
             db_session.add(e2)
             db_session.commit()

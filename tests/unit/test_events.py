@@ -10,22 +10,7 @@ log = logging.getLogger()
 
 class TestEvent:
 
-    def initdb(self, db_session):
-        commercial_dpt = Department(name='commercial department')
-        support_dpt = Department(name='support department')
-        db_session.add_all([commercial_dpt, support_dpt])
-        event_type1 = EventType(title='conference')
-        event_type2 = EventType(title='forum')
-        event_type3 = EventType(title='show')
-        event_type4 = EventType(title='seminar')
-        db_session.add_all(
-            [event_type1, event_type2, event_type3, event_type4]
-            )
-
     def add_employees(self, db_session):
-        d = Department.find_by_name(db_session, 'commercial department')
-        e1 = Commercial(username='Yuka', department_id=d.id, role='C')
-        db_session.add(e1)
         d = Department.find_by_name(db_session, 'support department')
         e1 = Support(username='Aritomo', department_id=d.id, role='S')
         e2 = Support(username='Michio', department_id=d.id, role='S')
@@ -73,14 +58,15 @@ class TestEvent:
                    )
         db_session.add_all([e1, e2, e3])
 
-    def test_list_support(self, db_session):
-        self.initdb(db_session)
+    def test_list_support(
+            self, db_session, yuka, support_department):
         self.add_employees(db_session)
-        d = Department.find_by_name(db_session, 'support department')
+        d = Department.find_by_name(db_session, support_department)
         assert len(d.employees) == 3
 
-    def test_list_events_from_contract(self, db_session):
-        self.initdb(db_session)
+    def test_list_events_from_contract(
+            self, db_session,
+            yuka, support_department, event_types):
         self.add_employees(db_session)
         self.add_client_to_yuka(db_session)
         self.add_contract_on_client(db_session)
@@ -88,8 +74,9 @@ class TestEvent:
         c = Contract.find_by_ref(db_session, '2023091301')
         assert len(c.events) == 3
 
-    def test_list_events_from_support(self, db_session):
-        self.initdb(db_session)
+    def test_list_events_from_support(
+            self, db_session,
+            yuka, support_department, event_types):
         self.add_employees(db_session)
         self.add_client_to_yuka(db_session)
         self.add_contract_on_client(db_session)
@@ -107,8 +94,9 @@ class TestEvent:
         event.support_id = support.id
         assert len(support.events) == 2
 
-    def test_list_events_no_support(self, db_session):
-        self.initdb(db_session)
+    def test_list_events_no_support(
+            self, db_session,
+            yuka, support_department, event_types):
         self.add_employees(db_session)
         self.add_client_to_yuka(db_session)
         self.add_contract_on_client(db_session)

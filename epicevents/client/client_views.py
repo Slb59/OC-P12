@@ -31,7 +31,7 @@ class ClientView:
             str: a client full_name
         """
         return PromptView.prompt_select(
-                "Choix du client:", all_clients)
+                "Choix du client:", all_clients, **kwargs)
 
     @classmethod
     def prompt_full_name(cls) -> str:

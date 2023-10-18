@@ -6,7 +6,7 @@ from ..utils import (
 )
 from epicevents.views.prompt_views import PromptView
 from epicevents.employee.employee_views import EmployeeView
-from epicevents.views.client_views import ClientView
+from epicevents.client.client_views import ClientView
 
 
 def test_confirm_enter_default_yes():

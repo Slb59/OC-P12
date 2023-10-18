@@ -9,7 +9,12 @@ class EventBase:
     def __init__(self, session) -> None:
         self.session = session
 
-    def get_types(self):
+    def get_types(self) -> list:
+        """List all of event type
+
+        Returns:
+            list: list of instance of EventType
+        """
         return EventType.getall(self.session)
 
     def get_events(
