@@ -3,6 +3,7 @@ import logging
 
 from pytest import MonkeyPatch
 from epicevents.controllers.epicmanager import EpicManager
+from epicevents.employee.manager_employee import EpicManagerEmployee
 from epicevents.controllers.session import create_session
 from epicevents.views.auth_views import AuthView
 from epicevents.views.console import error_console
@@ -29,20 +30,12 @@ def test_check_logout():
 
 def test_list_of_employees(capsys):
     app = EpicManager()
+    controle_employee = EpicManagerEmployee(app.user, app.epic)
     e = app.epic.check_connection('Osynia', 'osyA!111')
     create_session(e, app.env.TOKEN_DELTA, app.env.SECRET_KEY)
-    app.list_of_employees()
+    controle_employee.list_of_employees()
     str_output = capsys.readouterr().out
     assert 'Osynia' in str_output
-
-
-def test_create_new_employee(mocklogin, capsys):
-    app = EpicManager()
-    e = app.epic.check_connection('Osynia', 'osyA!111')
-    create_session(e, app.env.TOKEN_DELTA, app.env.SECRET_KEY)
-    # with mock.patch.object(__builtins__, 'input', lambda: 'some_input'):
-    #     app.create_new_employee()
-    assert False
 
 
 def test_login_fail():

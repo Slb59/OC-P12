@@ -1,4 +1,5 @@
 import click
+from epicevents.controllers.epicmanager import EpicManager
 from epicevents.event.manager_event import EpicManagerEvent
 
 
@@ -11,45 +12,50 @@ def cli_event():
 @cli_event.command()
 def list():
     """ list of events """
-    app = EpicManagerEvent()
+    app = EpicManager()
+    controle_event = EpicManagerEvent(app.user, app.epic)
     if app.user:
-        app.list_of_events()
+        controle_event.list_of_events()
         app.refresh_session()
 
 
 @cli_event.command()
 def update():
     """ modify an event """
-    app = EpicManagerEvent()
+    app = EpicManager()
+    controle_event = EpicManagerEvent(app.user, app.epic)
     if app.user:
-        app.update_event()
+        controle_event.update_event()
         app.refresh_session()
 
 
 @cli_event.command()
 def create():
     """ create an event """
-    app = EpicManagerEvent()
+    app = EpicManager()
+    controle_event = EpicManagerEvent(app.user, app.epic)
     if app.user:
-        app.create_event()
+        controle_event.create_event()
         app.refresh_session()
 
 
 @cli_event.command()
 def close():
     """ close an event """
-    app = EpicManagerEvent()
+    app = EpicManager()
+    controle_event = EpicManagerEvent(app.user, app.epic)
     if app.user:
-        app.terminate_event()
+        controle_event.terminate_event()
         app.refresh_session()
 
 
 @cli_event.command()
 def cancel():
     """ cancel an event """
-    app = EpicManagerEvent()
+    app = EpicManager()
+    controle_event = EpicManagerEvent(app.user, app.epic)
     if app.user:
-        app.cancel_event()
+        controle_event.cancel_event()
         app.refresh_session()
 
 

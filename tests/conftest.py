@@ -123,7 +123,7 @@ def epictest2():
 
 @pytest.fixture(scope='function')
 def epicstories():
-    
+
     with MonkeyPatch.context() as mp:
         runner = CliRunner()
         mp.setattr(

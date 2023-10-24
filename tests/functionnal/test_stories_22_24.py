@@ -4,12 +4,13 @@ from ..mock_functions import MockFunction
 from epicevents.contract.contract_views import ContractView
 from epicevents.views.menu_views import MenuView
 from epicevents.employee.employee_views import EmployeeView
-from epicevents.views.client_views import ClientView
+from epicevents.client.client_views import ClientView
 from epicevents.views.prompt_views import PromptView
 from epicevents.views.auth_views import AuthView
 
 
 def test_story_22(epicstories):
+    """ a manager add paiement on contract """
     (mp, runner) = epicstories
     mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
@@ -48,12 +49,13 @@ def test_story_22(epicstories):
     result = runner.invoke(epicevent.main, ['contract', 'list'])
 
     assert not result.exception
-    expected = "contrat1  │ Client n°0  "
-    expected += "│ 3000    │ 2000     │ Signé"
+    expected = "contrat1│YukaCli"
+    expected += "│3000│2000│Signé"
     assert expected.replace(' ', '') in result.output.replace(' ', '')
 
 
 def test_story_23(epicstories):
+    """ a manager add a paiement on contract and balanced it"""
     (mp, runner) = epicstories
     mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
@@ -92,9 +94,8 @@ def test_story_23(epicstories):
     result = runner.invoke(epicevent.main, ['contract', 'list'])
 
     assert not result.exception
-    expected = "contrat1                    │ Client n°0  "
-    expected += "│ 3000    │ 0        │ Soldé"
-    assert expected.replace(' ', '') in result.output.replace(' ', '')
+    expected = "contrat1│YukaCli│3000│0│Soldé"
+    assert expected in result.output.replace(' ', '')
 
 
 def test_story_24(epicstories):

@@ -1,25 +1,24 @@
 import epicevent
-from pytest import MonkeyPatch
 
 from epicevents.controllers.epicmanager import EpicManager
 from epicevents.views.auth_views import AuthView
 from ..mock_functions import MockFunction
 
 
-def test_story_1(runner):
+def test_story_1(epicstories):
 
+    (mp, runner) = epicstories
     expected = "La base epicStories est opérationnelle"
 
-    with MonkeyPatch.context() as mp:
-        mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
-        mp.setattr(
-            AuthView, 'prompt_login', MockFunction.mock_login_osynia)
+    mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
+    mp.setattr(
+        AuthView, 'prompt_login', MockFunction.mock_login_osynia)
 
-        result = runner.invoke(epicevent.main, ['login'])
+    result = runner.invoke(epicevent.main, ['login'])
 
-        assert not result.exception
-        assert expected in result.output
-        assert "ERROR" not in result.output
+    assert not result.exception
+    assert expected in result.output
+    assert "ERROR" not in result.output
 
 
 def test_story_2_and_3(epicstories):
@@ -50,14 +49,14 @@ def test_story_4(epicstories):
     assert expected in result.output
 
 
-def test_story_5(runner):
+def test_story_5(epicstories):
+    (mp, runner) = epicstories
 
-    with MonkeyPatch.context() as mp:
-        mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
-        mp.setattr(AuthView, 'prompt_login', MockFunction.mock_login_osynia)
-        runner.invoke(epicevent.main, ['login'])
-        result = runner.invoke(epicevent.main, ['employee', 'mydata'])
-        runner.invoke(epicevent.main, ['logout'])
+    mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
+    mp.setattr(AuthView, 'prompt_login', MockFunction.mock_login_osynia)
+    runner.invoke(epicevent.main, ['login'])
+    result = runner.invoke(epicevent.main, ['employee', 'mydata'])
+    runner.invoke(epicevent.main, ['logout'])
 
-        assert not result.exception
-        assert "Osynia" in result.output
+    assert not result.exception
+    assert "Osynia" in result.output

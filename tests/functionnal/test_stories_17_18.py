@@ -2,7 +2,7 @@ import epicevent
 
 from ..mock_functions import MockFunction
 from epicevents.employee.employee_views import EmployeeView
-from epicevents.views.client_views import ClientView
+from epicevents.client.client_views import ClientView
 from epicevents.contract.contract_views import ContractView
 from epicevents.views.prompt_views import PromptView
 from epicevents.views.menu_views import MenuView

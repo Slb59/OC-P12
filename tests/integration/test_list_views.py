@@ -2,7 +2,7 @@ from epicevents.models.entities import (
     Department, Commercial, Client, Support,
     Contract, Event, EventType)
 from epicevents.views.console import console
-from epicevents.views.client_views import ClientView
+from epicevents.client.client_views import ClientView
 from epicevents.contract.contract_views import ContractView
 from epicevents.event.event_views import EventView
 

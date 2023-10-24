@@ -3,12 +3,13 @@ import epicevent
 from ..mock_functions import MockFunction
 from epicevents.event.event_views import EventView
 from epicevents.employee.employee_views import EmployeeView
-from epicevents.views.client_views import ClientView
+from epicevents.client.client_views import ClientView
 from epicevents.contract.contract_views import ContractView
 from epicevents.views.auth_views import AuthView
 
 
 def test_story_19(epicstories):
+    """ a manager assign support to event """
     (mp, runner) = epicstories
     mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
