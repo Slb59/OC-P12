@@ -10,6 +10,7 @@ from epicevents.views.auth_views import AuthView
 
 
 def test_story_17(epicstories):
+    """ a manager create a new contract """
     (mp, runner) = epicstories
     mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)

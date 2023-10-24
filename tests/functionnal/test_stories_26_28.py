@@ -25,6 +25,7 @@ def test_story_26(epicstories):
 
 
 def test_story_27(epicstories):
+    """ a commercial try acces forbidden functions """
     (mp, runner) = epicstories
     mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_yuka)

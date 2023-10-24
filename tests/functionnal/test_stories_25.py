@@ -6,6 +6,7 @@ from epicevents.views.auth_views import AuthView
 
 
 def test_story_25(epicstories):
+    """ an employee terminate a task"""
     (mp, runner) = epicstories
     mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)

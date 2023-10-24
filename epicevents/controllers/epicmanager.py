@@ -48,8 +48,10 @@ class EpicManager:
         e = self.epic.check_connection(username, password)
         if e:
             create_session(e, self.env.TOKEN_DELTA, self.env.SECRET_KEY)
+            return True
         else:
             ErrorView.display_error_login()
+            return False
 
     @sentry_activate
     def check_session(self):

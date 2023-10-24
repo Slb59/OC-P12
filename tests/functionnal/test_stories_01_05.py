@@ -10,7 +10,6 @@ def test_story_1(epicstories):
     (mp, runner) = epicstories
     expected = "La base epicStories est opérationnelle"
 
-    mp.setattr(EpicManager, 'get_config', MockFunction.mock_base)
     mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
 

@@ -49,9 +49,8 @@ def test_story_22(epicstories):
     result = runner.invoke(epicevent.main, ['contract', 'list'])
 
     assert not result.exception
-    expected = "contrat1│YukaCli"
-    expected += "│3000│2000│Signé"
-    assert expected.replace(' ', '') in result.output.replace(' ', '')
+    expected = "contrat1│YukaCli│3000│2000│Signé"
+    assert expected in result.output.replace(' ', '')
 
 
 def test_story_23(epicstories):

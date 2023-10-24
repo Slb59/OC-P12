@@ -47,7 +47,7 @@ def test_story_6_with_commercial(epicstories):
 
 
 def test_story_7_noselection(epicstories):
-
+    """ an employee ask for contract list with no selection """
     (mp, runner) = epicstories
     mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)
@@ -70,6 +70,7 @@ def test_story_7_noselection(epicstories):
 
 
 def test_story_8_noselection(epicstories):
+    """ an employee ask for event list with no selection """
     (mp, runner) = epicstories
     mp.setattr(
         AuthView, 'prompt_login', MockFunction.mock_login_osynia)

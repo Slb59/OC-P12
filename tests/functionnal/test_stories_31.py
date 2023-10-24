@@ -8,6 +8,7 @@ from epicevents.views.auth_views import AuthView
 
 
 def test_story_31(epicstories):
+    """ a commercial create a new event """
     (mp, runner) = epicstories
 
     def mock_type_select(*args, **kwargs):

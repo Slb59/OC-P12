@@ -95,6 +95,8 @@ class EpicDatabase:
                     return e
             except VerifyMismatchError as e:
                 capture_exception(e)
+        else:
+            return None
 
     def check_employee(self, username) -> Employee:
         """

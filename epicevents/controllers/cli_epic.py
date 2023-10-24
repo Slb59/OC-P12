@@ -8,6 +8,7 @@ def login(**kwargs):
     """ login to the database """
     app = EpicManager()
     app.login(**kwargs)
+    app.epic.database_disconnect()
 
 
 @click.command()
@@ -15,6 +16,7 @@ def logout():
     """ logout from database """
     app = EpicManager()
     app.check_logout()
+    app.epic.database_disconnect()
 
 
 @click.command()

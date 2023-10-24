@@ -6,12 +6,13 @@ from epicevents.views.auth_views import AuthView
 
 
 def test_story_30(epicstories):
+    """ a commercial update client data """
     (mp, runner) = epicstories
 
-    def newdata():
+    def newdata(*args, **kwargs):
         return {
             'full_name': 'YukaCliNew', 'email': 'yukaclinew@epic.co',
-            'phone': '222-2222-2222',
+            'phone': '0322222222',
             'company_name': 'NewCompagny Yuka'}
 
     mp.setattr(
@@ -35,6 +36,6 @@ def test_story_30(epicstories):
     assert "Vos modifications ont été enregistrées" in result.output
 
     result = runner.invoke(epicevent.main, ['client', 'list'])
-    expected = "YukaCliNew  │ yukaclinew@epic.co   │ 222-2222-2222 │ "
-    expected += "NewCompagny Yuka            │ Yuka"
-    assert expected in result.output
+    expected = "YukaCliNew│yukaclinew@epic.co│0322222222│"
+    expected += "NewCompagnyYuka│Yuka"
+    assert expected in result.output.replace(' ', '')

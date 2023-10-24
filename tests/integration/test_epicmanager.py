@@ -38,7 +38,7 @@ def test_list_of_employees(capsys):
     assert 'Osynia' in str_output
 
 
-def test_login_fail():
+def test_login_fail(**kwargs):
 
     def new_prompt_login(*args, **kwargs):
         return ('Inconnu', 'incA?222')
@@ -48,6 +48,6 @@ def test_login_fail():
         mp.setattr(AuthView, 'prompt_manager', new_prompt_login)
         app = EpicManager()
         with error_console.capture() as capture:
-            app.login()
+            app.login(**kwargs)
         str_output = capture.get()
         assert expected in str_output
