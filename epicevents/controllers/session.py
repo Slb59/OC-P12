@@ -2,26 +2,26 @@ import os
 import json
 import jwt
 from datetime import datetime, timedelta, timezone
+from .config import Environ
 
 
 def create_session(e, delta, secret):
-    # data = e.to_dict()
     data = {
         'username': e.username,
-        'exp': datetime.now(tz=timezone.utc) + timedelta(seconds=delta)
+        'exp': datetime.now(tz=timezone.utc) + timedelta(seconds=delta),
+        'role': e.role.code
     }
     token = jwt.encode(data, secret, algorithm='HS256')
-    save_session(e.to_dict(), token)
+    save_session(token)
 
 
-def save_session(user, token):
+def save_session(token):
     """
     takes a dictionary user as an argument and serializes it
     in a file called 'session.json'
     """
-    user['token'] = token
     with open('session.json', 'w') as f:
-        json.dump(user, f, indent=4)
+        json.dump(token, f, indent=4)
 
 
 def load_session():
@@ -32,16 +32,7 @@ def load_session():
     try:
         with open('session.json', 'r') as f:
             session_data = json.load(f)
-            return session_data.get('token', None)
-    except FileNotFoundError:
-        return None
-
-
-def read_role():
-    try:
-        with open('session.json', 'r') as f:
-            session_data = json.load(f)
-            return session_data.get('role', None)
+            return session_data
     except FileNotFoundError:
         return None
 
@@ -54,3 +45,20 @@ def stop_session():
         os.remove('session.json')
     except OSError:
         pass
+
+
+def read_role():
+    """ read role code from the session token
+    return None if can't read data
+    """
+    try:
+        token = load_session()
+        if token:
+            env = Environ()
+            user_info = jwt.decode(
+                            token, env.SECRET_KEY, algorithms=['HS256'])
+            return user_info['role']
+        else:
+            return None
+    except Exception:
+        return None

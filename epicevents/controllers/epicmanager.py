@@ -43,6 +43,11 @@ class EpicManager:
 
     @sentry_activate
     def login(self, **kwargs) -> bool:
+        """ stop session and create a new one after prompt login
+
+        Returns:
+            bool: True if login is ok
+        """
         stop_session()
         (username, password) = AuthView.prompt_login(**kwargs)
         e = self.epic.check_connection(username, password)
@@ -59,8 +64,7 @@ class EpicManager:
         if token:
             user_info = jwt.decode(
                             token, self.env.SECRET_KEY, algorithms=['HS256'])
-            username = user_info['username']
-            e = self.epic.check_employee(username)
+            e = self.epic.check_employee(user_info['username'])
             if e:
                 return e
 

@@ -40,7 +40,7 @@ class EpicManagerDashboard():
             case '05':
                 self.manager_event.list_of_events()
             case '06':
-                match self.user.role.code:
+                match self.manager.user.role.code:
                     case 'M':
                         self.manager_employee.list_of_employees()
                     case 'C':
@@ -48,7 +48,7 @@ class EpicManagerDashboard():
                     case 'S':
                         self.manager_event.terminate_event()
             case '07':
-                match self.user.role.code:
+                match self.manager.user.role.code:
                     case 'M':
                         self.manager_employee.create_new_employee()
                     case 'C':
@@ -56,13 +56,13 @@ class EpicManagerDashboard():
                     case 'S':
                         self.manager_event.cancel_event()
             case '08':
-                match self.user.role.code:
+                match self.manager.user.role.code:
                     case 'M':
                         self.manager_employee.update_employee_role()
                     case 'C':
                         self.manager_event.create_event()
             case '09':
-                match self.user.role.code:
+                match self.manager.user.role.code:
                     case 'M':
                         self.manager_employee.inactivate_employee()
                     case 'C':
